@@ -13,7 +13,8 @@
 #
 #   1. link the clips in samples/trump_5real_5fake.csv from DATA_ROOT into RUN_DIR/input
 #   2. run Narrow-Frequency-Range/stl_pipeline.py on them  ->  RUN_DIR/output
-#   3. one log spectrogram per output clip (spectrograms.py) ->  RUN_DIR/spectrograms
+#   3. one constant-Q log spectrogram per narrowband clip  ->  RUN_DIR/spectrograms
+#   4. the same for the original clips                     ->  RUN_DIR/spectrograms_original
 #
 # One-time, on a login node (compute nodes may not reach GitHub):
 #   bash $HOME/Narrow-Frequency-Range/setup_stl.sh
@@ -34,15 +35,19 @@ echo "data root:     $DATA_ROOT"
 echo "run dir:       $RUN_DIR"
 echo "python:        $(which python)"
 
-echo; echo "===== 1/3 prepare samples ====="
+echo; echo "===== 1/4 prepare samples ====="
 python "$CLONE_DIR/prepare_samples.py" --data-root "$DATA_ROOT" --samples "$SAMPLES_CSV" --out "$RUN_DIR/input" || exit 1
 
-echo; echo "===== 2/3 narrowband pipeline ====="
+echo; echo "===== 2/4 narrowband pipeline ====="
 python "$NFR_DIR/stl_pipeline.py" --stl-bin "$STL_BIN" --input "$RUN_DIR/input" --output "$RUN_DIR/output"
 pipe_status=$?
 
-echo; echo "===== 3/3 log spectrograms ====="
+echo; echo "===== 3/4 spectrograms, narrowband ====="
 python "$NFR_DIR/spectrograms.py" --input "$RUN_DIR/output" --output "$RUN_DIR/spectrograms"
 spec_status=$?
 
-[ $pipe_status -eq 0 ] && [ $spec_status -eq 0 ]
+echo; echo "===== 4/4 spectrograms, original ====="
+python "$NFR_DIR/spectrograms.py" --input "$RUN_DIR/input" --output "$RUN_DIR/spectrograms_original"
+orig_status=$?
+
+[ $pipe_status -eq 0 ] && [ $spec_status -eq 0 ] && [ $orig_status -eq 0 ]
