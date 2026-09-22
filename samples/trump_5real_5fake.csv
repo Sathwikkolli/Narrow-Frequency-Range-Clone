@@ -1,0 +1,11 @@
+label,attack,filename
+real,Original,Donald_Trump_01090.wav
+real,Original,Donald_Trump_01124.wav
+real,Original,Donald_Trump_03330.wav
+real,Original,Donald_Trump_00386.wav
+real,Original,Donald_Trump_01925.wav
+fake,F5TTS,Donald_Trump_00392.wav
+fake,XTTSV2,Donald_Trump_00418.wav
+fake,FISHSPEECH,Donald_Trump_00150.wav
+fake,COZYVOICE2,Donald_Trump_00353_COZYVOICE2__Donald_Trump_00001.wav
+fake,STYLETTS2,Donald_Trump_00337.wav
