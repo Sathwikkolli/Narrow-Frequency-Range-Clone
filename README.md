@@ -31,5 +31,5 @@ sbatch run_trump_samples.sbatch
 The results go to `runs/trump_5real_5fake/output/` (8 kHz .wav files, with the same
 `real/` and `fake/<ATTACK>/` layout as the input), along with `pipeline_log.csv`. The input
 links, plus `manifest.csv` mapping each one back to its dataset path, go to `runs/trump_5real_5fake/input/`.
-One log spectrogram per output clip (magma colours) goes to `runs/trump_5real_5fake/spectrograms/`, e.g.
+One constant-Q log spectrogram per output clip (magma colours) goes to `runs/trump_5real_5fake/spectrograms/`, e.g.
 `real_Donald_Trump_01090.png` or `fake_F5TTS_Donald_Trump_00392.png`.
