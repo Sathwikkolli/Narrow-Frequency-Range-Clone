@@ -1,0 +1,11 @@
+file,status,input_rate,active_level_dbov,activity_pct,saturated,error
+fake/COZYVOICE2/Donald_Trump_00353_COZYVOICE2__Donald_Trump_00001.wav,ok,24000,-33.884,89.188,False,
+fake/F5TTS/Donald_Trump_00392.wav,ok,24000,-30.646,89.633,False,
+fake/FISHSPEECH/Donald_Trump_00150.wav,ok,44100,-37.118,93.074,False,
+fake/STYLETTS2/Donald_Trump_00337.wav,ok,24000,-38.012,91.705,False,
+fake/XTTSV2/Donald_Trump_00418.wav,ok,24000,-30.886,89.899,False,
+real/Donald_Trump_00386.wav,ok,16000,-35.288,94.071,False,
+real/Donald_Trump_01090.wav,ok,16000,-27.215,97.118,False,
+real/Donald_Trump_01124.wav,ok,16000,-25.412,99.499,False,
+real/Donald_Trump_01925.wav,ok,16000,-37.381,88.398,False,
+real/Donald_Trump_03330.wav,ok,16000,-31.65,98.119,False,

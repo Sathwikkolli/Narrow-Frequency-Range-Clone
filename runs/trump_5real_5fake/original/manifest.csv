@@ -1,0 +1,11 @@
+label,attack,input,source
+real,Original,real/Donald_Trump_01090.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/-/Donald_Trump_01090.wav
+real,Original,real/Donald_Trump_01124.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/-/Donald_Trump_01124.wav
+real,Original,real/Donald_Trump_03330.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/-/Donald_Trump_03330.wav
+real,Original,real/Donald_Trump_00386.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/-/Donald_Trump_00386.wav
+real,Original,real/Donald_Trump_01925.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/-/Donald_Trump_01925.wav
+fake,F5TTS,fake/F5TTS/Donald_Trump_00392.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/F5TTS/Donald_Trump_00392.wav
+fake,XTTSV2,fake/XTTSV2/Donald_Trump_00418.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/XTTSV2/Donald_Trump_00418.wav
+fake,FISHSPEECH,fake/FISHSPEECH/Donald_Trump_00150.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/FISHSPEECH/Donald_Trump_00150.wav
+fake,COZYVOICE2,fake/COZYVOICE2/Donald_Trump_00353_COZYVOICE2__Donald_Trump_00001.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/COZYVOICE2/Donald_Trump_00353_COZYVOICE2__Donald_Trump_00001.wav
+fake,STYLETTS2,fake/STYLETTS2/Donald_Trump_00337.wav,/nfs/turbo/umd-hafiz/issf_server_data/famousfigures/Donald_Trump/STYLETTS2/Donald_Trump_00337.wav
