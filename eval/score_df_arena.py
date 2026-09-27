@@ -185,7 +185,7 @@ class Clips(Dataset):
 
 # ---------------------------------------------------------------- model hooks
 
-def describe_modules(model, limit=400):
+def describe_modules(model, limit=5000):
     """Print the module tree with Linear shapes, so hook targets can be pinned by name."""
     print(f"{'module':<70} {'type':<22} shape")
     for i, (name, m) in enumerate(model.named_modules()):
