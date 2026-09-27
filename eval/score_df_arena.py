@@ -230,6 +230,16 @@ class Taps:
             self.gate_module = gate[0][0]
             self.handles.append(gate[0][1].register_forward_hook(self._take_gates))
 
+    def reset(self):
+        """Clear before every forward so a hook that does not fire is detected.
+
+        Without this, a missed hook would leave the previous clip's tensor in place
+        and it would be recorded against the next utterance -- the counts would
+        still line up, so the misalignment would be silent and would corrupt the
+        embedding analysis while leaving the scores untouched.
+        """
+        self.emb = self.gates = None
+
     def _take_emb(self, mod, inp, out):
         t = inp[0].detach()
         self.emb = t.reshape(t.shape[0], -1).float().cpu().numpy()
@@ -327,6 +337,7 @@ def main():
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)) or ".", exist_ok=True)
     embs, gates, rates = [], [], {}
+    want_emb = bool(args.save_embeddings) and taps.emb_module is not None
     done, t0 = 0, time.time()
     with open(args.out, "w", newline="") as fh, torch.inference_mode():
         w = csv.writer(fh)
@@ -342,11 +353,18 @@ def main():
             # DataLoader still batches, which is what keeps the NFS reads and FLAC
             # decoding overlapped with compute; only the forward is serial.
             for j in range(batch.shape[0]):
+                taps.reset()
                 lg = model(input_values=batch[j])["logits"].float().cpu().numpy().reshape(-1)
-                if taps.emb is not None:
+                if want_emb:
+                    if taps.emb is None:
+                        sys.exit(f"embedding hook did not fire on {rows[int(idx[j])]['utt']}; "
+                                 "refusing to continue with misaligned embeddings")
                     embs.append(taps.emb.astype("float16"))
-                if taps.gates is not None:
-                    gates.append(taps.gates.astype("float32"))
+                    if taps.gate_module is not None:
+                        if taps.gates is None:
+                            sys.exit(f"gate hook did not fire on "
+                                     f"{rows[int(idx[j])]['utt']}")
+                        gates.append(taps.gates.astype("float32"))
                 i, sr, dur = int(idx[j]), int(srs[j]), float(durs[j])
                 r = rows[i]
                 rates[sr] = rates.get(sr, 0) + 1
