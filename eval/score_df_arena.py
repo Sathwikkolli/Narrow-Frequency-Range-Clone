@@ -259,7 +259,11 @@ def main():
     ap.add_argument("--save-embeddings", default=None,
                     help="also write an .npz of embeddings, gates, ids and scores here")
     ap.add_argument("--model", default="Speech-Arena-2025/DF_Arena_1B_V_1")
-    ap.add_argument("--batch-size", type=int, default=16)
+    ap.add_argument("--batch-size", type=int, default=16,
+                    help="clips fetched and decoded per DataLoader step. This is an "
+                         "I/O prefetch group, NOT a model batch: the model scores one "
+                         "clip per forward because backbone.py unsqueezes the batch "
+                         "axis itself. Raising it does not use more GPU memory.")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--limit", type=int, default=0, help="score only the first N clips")
     ap.add_argument("--precision", choices=["fp32", "tf32", "fp16", "bf16"], default="fp32",
@@ -332,12 +336,18 @@ def main():
             batch = batch.to(dev, non_blocking=True)
             if cast and dev == "cuda":
                 batch = batch.to(cast)
-            logits = model(input_values=batch)["logits"].float().cpu().numpy()
-            if taps.emb is not None:
-                embs.append(taps.emb.astype("float16"))
-            if taps.gates is not None:
-                gates.append(taps.gates.astype("float32"))
-            for lg, i, sr, dur in zip(logits, idx.tolist(), srs.tolist(), durs.tolist()):
+            # One clip per forward: backbone.py does x.unsqueeze(0) itself, so it
+            # takes a 1-D waveform and its internal shapes assume a batch of one.
+            # Passing a real batch reaches conv1d as a 4-D tensor and raises. The
+            # DataLoader still batches, which is what keeps the NFS reads and FLAC
+            # decoding overlapped with compute; only the forward is serial.
+            for j in range(batch.shape[0]):
+                lg = model(input_values=batch[j])["logits"].float().cpu().numpy().reshape(-1)
+                if taps.emb is not None:
+                    embs.append(taps.emb.astype("float16"))
+                if taps.gates is not None:
+                    gates.append(taps.gates.astype("float32"))
+                i, sr, dur = int(idx[j]), int(srs[j]), float(durs[j])
                 r = rows[i]
                 rates[sr] = rates.get(sr, 0) + 1
                 # id2label = {0: spoof, 1: bonafide}; monotone in bonafide-ness
@@ -345,7 +355,7 @@ def main():
                             f"{lg[1] - lg[0]:.6f}", f"{lg[0]:.6f}", f"{lg[1]:.6f}",
                             sr, f"{dur:.3f}", int(dur * TARGET_SR < MAX_LEN),
                             r["clipped"], r["padded"]])
-            done += len(idx)
+            done += batch.shape[0]
             if done % (args.batch_size * 50) < args.batch_size:
                 rate = done / max(time.time() - t0, 1e-9)
                 eta = (len(rows) - done) / max(rate, 1e-9)

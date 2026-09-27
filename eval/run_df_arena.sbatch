@@ -40,7 +40,9 @@ SPLIT=${SPLIT:-eval}
 CONDITIONS=${CONDITIONS:-"P0 B1 C1"}
 OUT_DIR=${OUT_DIR:-$CLONE_DIR/runs/dfarena_$SPLIT}
 MODEL=${MODEL:-Speech-Arena-2025/DF_Arena_1B_V_1}
-BATCH=${BATCH:-8}                 # 8 fits a 16 GB V100; raise to 24-32 on a 48 GB A40
+BATCH=${BATCH:-16}                # I/O prefetch group, not a model batch: the model
+                                  # scores one clip per forward (backbone.py adds the
+                                  # batch axis itself). Does not affect GPU memory.
 PRECISION=${PRECISION:-fp32}      # fp32 for the P0 validation; fp16 once it is confirmed
                                   # (tf32 is a no-op on V100 -- Ampere and later only)
 LIMIT=${LIMIT:-0}
