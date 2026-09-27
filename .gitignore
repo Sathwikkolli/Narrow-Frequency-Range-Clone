@@ -1,3 +1,8 @@
 runs/
 *.log
 __pycache__/
+
+# demo site assets: audio and derived images are not committed
+web/audio/
+web/spectrograms/
+web/clips.json
