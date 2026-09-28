@@ -117,7 +117,12 @@ def read_manifest(patterns, keep_failed=False):
                 fid = (r.get("file_id") or "").strip()
                 if not fid or fid in seen:
                     continue
-                if not keep_failed and (r.get("status") or "ok").strip().lower() != "ok":
+                # Drop only rows the builder marked as failed. A resumed shard writes
+                # "exists", and the ITU chain writes "ok_no_active_speech" -- both are
+                # successful builds, and requiring an exact "ok" silently discarded
+                # every row of a resumed shard.
+                status = (r.get("status") or "ok").strip().lower()
+                if not keep_failed and status.startswith("failed"):
                     dropped += 1
                     continue
                 seen.add(fid)
@@ -125,7 +130,7 @@ def read_manifest(patterns, keep_failed=False):
     if not rows:
         sys.exit(f"no usable rows across {len(files)} manifest file(s)")
     print(f"manifest: {len(files)} shard(s), {len(rows)} clips"
-          + (f", {dropped} dropped for status != ok" if dropped else ""), flush=True)
+          + (f", {dropped} dropped as FAILED in the build" if dropped else ""), flush=True)
     return rows
 
 
