@@ -29,7 +29,8 @@ class AasistAdapter:
     name = "w2v2-aasist"
     window = 64600
     batch_ok = True
-    half_ok = True
+    half_ok = False           # SSLModel.extract_feat calls self.model.train() on a
+                              # dtype change, silently enabling dropout while scoring
     gate_name = None          # no per-layer gating module in this back-end
 
     def build(self, device, ckpt, repo=None):

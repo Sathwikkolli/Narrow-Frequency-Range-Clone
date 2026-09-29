@@ -36,7 +36,8 @@ class Nes2NetAdapter:
     name = "nes2net-x"
     window = 64000            # the repo's '4s' mode; see the caveat above
     batch_ok = True
-    half_ok = True
+    half_ok = False           # SSLModel.extract_feat calls self.model.train() on a
+                              # dtype change, silently enabling dropout while scoring
     gate_name = None
 
     def build(self, device, ckpt, repo=None):

@@ -31,7 +31,8 @@ class SlsAdapter:
     name = "w2v2-sls"
     window = 64600
     batch_ok = True
-    half_ok = True
+    half_ok = False           # SSLModel.extract_feat calls self.model.train() on a
+                              # dtype change, silently enabling dropout while scoring
     gate_name = None          # set once the module tree is inspected on the cluster
 
     def build(self, device, ckpt, repo=None):
