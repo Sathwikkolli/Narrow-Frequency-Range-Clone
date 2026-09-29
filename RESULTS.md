@@ -118,16 +118,83 @@ is for.
 
 ---
 
+## W2V2-AASIST — Tak et al., Odyssey 2022 (`LA_model.pth`)
+
+XLS-R 300M front end, 447k AASIST back-end, trained on ASVspoof2019 LA train.
+
+| Condition | EER % | 95% CI | AUC | d′ | n |
+|---|---|---|---|---|---|
+| `RAW` | **0.228** | 0.16–0.31 | 0.9997 | 13.08 | 71,237 |
+| `P0` | **0.203** | 0.15–0.27 | 0.9996 | 11.70 | 71,237 |
+| `B1` | **0.244** | 0.19–0.34 | 0.9993 | 11.61 | 71,237 |
+| `C1` | **0.247** | 0.19–0.34 | 0.9993 | 11.64 | 71,237 |
+| `F0` | 0.202 | 0.16–0.26 | 0.9997 | 12.18 | 67,676 † |
+| `F1` | 0.319 | 0.26–0.43 | 0.9994 | 9.90 | 67,676 † |
+| `F2` | 0.274 | 0.22–0.36 | 0.9994 | 11.42 | 64,115 † |
+| `F3` | 0.287 | 0.22–0.36 | 0.9994 | 11.48 | 64,115 † |
+| `F4` | 0.318 | 0.24–0.38 | 0.9994 | 11.19 | 64,115 † |
+| `F5` | 0.289 | 0.24–0.38 | 0.9994 | 11.39 | 64,115 † |
+
+† provisional — merged while shards 17–19 were still running. RAW, P0, B1 and C1
+are complete and final.
+
+### The result: the front end decides everything
+
+```
+P0 -> B1      RawNet2   +29.59 pp      4.60% -> 35.73%
+              AASIST     +0.04 pp      0.20% ->  0.24%
+```
+
+RawNet2 falls to near-chance; AASIST does not move. Same audio, same loader, same
+protocol, same trials — the only difference is the front end.
+
+RawNet2's SincConv filters are laid out across 0–8 kHz, so band-limiting silences
+roughly half of them. XLS-R is a learned representation pretrained on wideband
+speech, and on this dataset it keeps whatever it relies on inside 300–3400 Hz.
+
+### It also validates the harness
+
+`RAW` at 0.228% sits on the ~0.22% usually reported for W2V2-AASIST on 2019 LA
+eval. Reproducing a published figure on unmodified audio means the window, the
+score convention, the protocol join and the loader are all correct — which
+retroactively supports RawNet2's numbers too.
+
+### Limitation — read this before claiming robustness
+
+AASIST holds **d′ 11–13 and AUC ≈ 0.9993 in every condition**. It has effectively
+saturated ASVspoof2019 LA eval, so there is almost no headroom in which to
+*observe* degradation: the 0.20% → 0.32% range is a real ordering but only a
+handful of trials wide.
+
+The defensible claim is therefore narrow: *narrowband does not meaningfully
+degrade W2V2-AASIST on ASVspoof2019 LA eval.* It is **not** evidence that XLS-R
+front ends are robust to narrowband in general. A set where AASIST starts around
+2–3% — ASVspoof2021 DF, or In-the-Wild — would have the dynamic range to test
+that properly, and is the obvious follow-up.
+
+Note also that P0 (0.203%) is very slightly *better* than RAW (0.228%), the
+opposite of RawNet2's 1.55 pp penalty. At this EER the difference is within the
+confidence intervals, so the honest reading is that level normalisation does
+nothing to AASIST either way.
+
+---
+
 ## Remaining models
 
-| Model | Env | Checkpoint | Status |
-|---|---|---|---|
-| RawNet2 | `wmcompare` | ✅ | **done** |
-| W2V2-AASIST | `ssl_spoof` | ✅ `LA_model.pth` | smoke test |
-| Nes2Net-X | `ssl_spoof` | ✅ | ready |
-| W2V2-SLS | `sls` (scratch) | ✅ `MMpaper_model.pth` | ready |
-| LCNN | `lcnn` (scratch) | ✅ | needs 16 kHz B1/C1 |
-| TCM-ADD | `ssl_spoof` | ⬜ OneDrive | blocked on download |
+| Model | Front end | Status |
+|---|---|---|
+| RawNet2 | SincConv | ✅ complete |
+| W2V2-AASIST | XLS-R 300M | ✅ complete (F-conditions to re-merge) |
+| Nes2Net-X | XLS-R 300M | running |
+| W2V2-SLS | XLS-R 300M | running |
+| TCM-ADD | XLS-R 300M | running |
+| LCNN | LFCC | running |
+
+Nes2Net, SLS and TCM share AASIST's XLS-R front end, so the open question is
+whether they land near AASIST's ~0.2% or whether the back-end matters after all.
+LCNN is the one to watch: LFCC spreads its resolution evenly across 0–8 kHz, so
+if the front end really is what decides this, LCNN should behave like RawNet2
+rather than like the SSL models.
 
 LCNN reads through its own tooling with `wav_samp_rate = 16000` hardcoded, so it
 cannot read the 8 kHz conditions; it needs resampled copies of `B1` and `C1`
