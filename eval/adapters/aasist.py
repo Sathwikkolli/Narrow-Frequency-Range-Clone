@@ -22,7 +22,7 @@ This is the validation anchor for the whole suite: it is the best-documented
 model here, so if the harness reproduces its published number the loader is
 trustworthy for the rest.
 """
-from _common import load_model, logits2, ns
+from ._common import load_model, logits2, ns
 
 
 class AasistAdapter:

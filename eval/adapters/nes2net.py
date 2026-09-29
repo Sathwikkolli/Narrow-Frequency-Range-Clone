@@ -29,7 +29,7 @@ Taken from easy_inference_demo.py in that repo, not guessed:
 
 Back-end is 511k parameters -- the lightest SSL back-end in the suite.
 """
-from _common import load_model, logits2, ns
+from ._common import load_model, logits2, ns
 
 
 class Nes2NetAdapter:

@@ -24,7 +24,7 @@ band-limiting shifts the evidence to different layers, this is the model that ca
 show it. Worth capturing gates if a gating module turns out to be tappable by
 name; leaving gate_name None until the module tree is inspected.
 """
-from _common import load_model, logits2, ns
+from ._common import load_model, logits2, ns
 
 
 class SlsAdapter:

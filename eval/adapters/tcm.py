@@ -32,7 +32,7 @@ The dtype branch fires under autocast/fp16/bf16 and silently puts XLS-R into
 TRAIN mode -- dropout active -- during scoring. No error, just quietly wrong
 numbers. Hence half_ok = False; the harness refuses fp16/bf16 for this model.
 """
-from _common import load_model, logits2, ns
+from ._common import load_model, logits2, ns
 
 
 class TcmAdapter:
