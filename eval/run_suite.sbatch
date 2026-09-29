@@ -108,9 +108,15 @@ echo "shard      $SHARD/$NSHARDS   batch $BATCH   precision $PRECISION"
 echo "python     $(which python)"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null
 
+# A LIMIT run is a smoke test, not a real shard. It must never write the filename
+# a full run uses: the resume check below would then skip that condition and the
+# merge would report a short shard as complete.
+SUFFIX=""
+[ "$LIMIT" != "0" ] && SUFFIX="_limit${LIMIT}"
+
 fail=0
 for COND in $CONDITIONS; do
-    OUT="$OUT_DIR/scores/${ADAPTER}_${COND}_$(printf '%04d' "$SHARD").csv"
+    OUT="$OUT_DIR/scores/${ADAPTER}_${COND}_$(printf '%04d' "$SHARD")${SUFFIX}.csv"
     if [ -s "$OUT" ]; then
         echo "--- $COND: $OUT exists, skipping ---"
         continue
@@ -128,7 +134,7 @@ for COND in $CONDITIONS; do
 
     EMB_ARGS=()
     if [ "$SAVE_EMB" = "1" ]; then
-        EMB_ARGS=(--save-embeddings "$OUT_DIR/emb/${ADAPTER}_${COND}_$(printf '%04d' "$SHARD").npz")
+        EMB_ARGS=(--save-embeddings "$OUT_DIR/emb/${ADAPTER}_${COND}_$(printf '%04d' "$SHARD")${SUFFIX}.npz")
     fi
 
     echo
