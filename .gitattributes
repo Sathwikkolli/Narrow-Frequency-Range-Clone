@@ -1,0 +1,5 @@
+# Shell scripts and Python must keep LF, or bash on Great Lakes fails with
+# "\r: command not found" after a checkout on Windows.
+*.sh      text eol=lf
+*.sbatch  text eol=lf
+*.py      text eol=lf
