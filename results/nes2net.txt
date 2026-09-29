@@ -1,0 +1,297 @@
+
+================================================================
+runs/suite/nes2net_B1.csv   [cond B1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.775%   95% CI [0.693, 0.870]
+  EER threshold     -1.2995
+  AUC               0.99913
+  d-prime           6.436
+  score mean/sd     bonafide +4.746/1.772   spoof -3.706/0.557
+  at EER threshold  acc 99.23%  F1 0.9636  P 0.936  R 0.992
+  at thr +0.0000    acc 99.46%  F1 0.9741  FAR 0.36%  FRR 2.07%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.146%
+    A08   n=4914     0.122%
+    A09   n=4914     0.081%
+    A10   n=4914     1.467%
+    A11   n=4914     1.589%
+    A12   n=4914     0.472%
+    A13   n=4914     0.122%
+    A14   n=4914     0.122%
+    A15   n=4914     0.146%
+    A16   n=4914     0.302%
+    A17   n=4914     0.669%
+    A18   n=4914     1.467%
+    A19   n=4914     0.954%
+
+================================================================
+runs/suite/nes2net_C1.csv   [cond C1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.774%   95% CI [0.693, 0.894]
+  EER threshold     -1.3140
+  AUC               0.99913
+  d-prime           6.390
+  score mean/sd     bonafide +4.728/1.782   spoof -3.708/0.556
+  at EER threshold  acc 99.23%  F1 0.9636  P 0.937  R 0.992
+  at thr +0.0000    acc 99.47%  F1 0.9742  FAR 0.35%  FRR 2.12%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.180%
+    A08   n=4914     0.122%
+    A09   n=4914     0.098%
+    A10   n=4914     1.484%
+    A11   n=4914     1.606%
+    A12   n=4914     0.472%
+    A13   n=4914     0.146%
+    A14   n=4914     0.146%
+    A15   n=4914     0.180%
+    A16   n=4914     0.302%
+    A17   n=4914     0.669%
+    A18   n=4914     1.443%
+    A19   n=4914     0.954%
+
+================================================================
+runs/suite/nes2net_F0.csv   [cond F0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.124%   95% CI [0.097, 0.192]
+  EER threshold     +3.0311
+  AUC               0.99994
+  d-prime           21.329
+  score mean/sd     bonafide +7.464/0.436   spoof -3.768/0.604
+  at EER threshold  acc 99.88%  F1 0.9940  P 0.989  R 0.999
+  at thr +0.0000    acc 99.58%  F1 0.9802  FAR 0.46%  FRR 0.04%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.017%
+    A08   n=4914     0.017%
+    A09   n=4914     0.017%
+    A10   n=4914     0.221%
+    A11   n=4914     0.122%
+    A12   n=4914     0.041%
+    A13   n=4914     0.017%
+    A14   n=4914     0.017%
+    A15   n=4914     0.017%
+    A16   n=4914     0.024%
+    A17   n=4914     0.326%
+    A18   n=4914     0.367%
+    A19   n=4914     0.343%
+
+================================================================
+runs/suite/nes2net_F1.csv   [cond F1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               1.210%   95% CI [1.088, 1.332]
+  EER threshold     -1.4336
+  AUC               0.99846
+  d-prime           5.775
+  score mean/sd     bonafide +5.220/2.091   spoof -3.673/0.609
+  at EER threshold  acc 98.79%  F1 0.9440  P 0.904  R 0.988
+  at thr +0.0000    acc 99.24%  F1 0.9634  FAR 0.51%  FRR 2.96%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.302%
+    A08   n=4914     0.204%
+    A09   n=4914     0.187%
+    A10   n=4914     3.171%
+    A11   n=4914     2.013%
+    A12   n=4914     0.978%
+    A13   n=4914     0.227%
+    A14   n=4914     0.244%
+    A15   n=4914     0.407%
+    A16   n=4914     0.547%
+    A17   n=4914     0.757%
+    A18   n=4914     1.280%
+    A19   n=4914     1.100%
+
+================================================================
+runs/suite/nes2net_F2.csv   [cond F2]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.969%   95% CI [0.870, 1.074]
+  EER threshold     -0.8396
+  AUC               0.99905
+  d-prime           6.723
+  score mean/sd     bonafide +5.575/1.839   spoof -3.676/0.637
+  at EER threshold  acc 99.03%  F1 0.9547  P 0.921  R 0.990
+  at thr +0.0000    acc 99.32%  F1 0.9675  FAR 0.56%  FRR 1.71%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.204%
+    A08   n=4914     0.122%
+    A09   n=4914     0.105%
+    A10   n=4914     2.363%
+    A11   n=4914     1.548%
+    A12   n=4914     0.791%
+    A13   n=4914     0.122%
+    A14   n=4914     0.139%
+    A15   n=4914     0.261%
+    A16   n=4914     0.407%
+    A17   n=4914     0.693%
+    A18   n=4914     1.076%
+    A19   n=4914     0.873%
+
+================================================================
+runs/suite/nes2net_F3.csv   [cond F3]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.856%   95% CI [0.775, 0.966]
+  EER threshold     -0.6705
+  AUC               0.99925
+  d-prime           6.806
+  score mean/sd     bonafide +5.414/1.766   spoof -3.624/0.640
+  at EER threshold  acc 99.14%  F1 0.9599  P 0.930  R 0.991
+  at thr +0.0000    acc 99.34%  F1 0.9686  FAR 0.58%  FRR 1.36%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.163%
+    A08   n=4914     0.163%
+    A09   n=4914     0.065%
+    A10   n=4914     2.200%
+    A11   n=4914     1.199%
+    A12   n=4914     0.635%
+    A13   n=4914     0.098%
+    A14   n=4914     0.105%
+    A15   n=4914     0.187%
+    A16   n=4914     0.285%
+    A17   n=4914     0.710%
+    A18   n=4914     1.019%
+    A19   n=4914     0.954%
+
+================================================================
+runs/suite/nes2net_F4.csv   [cond F4]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.938%   95% CI [0.829, 1.060]
+  EER threshold     -0.7927
+  AUC               0.99919
+  d-prime           6.644
+  score mean/sd     bonafide +5.390/1.810   spoof -3.629/0.640
+  at EER threshold  acc 99.06%  F1 0.9562  P 0.924  R 0.991
+  at thr +0.0000    acc 99.32%  F1 0.9679  FAR 0.58%  FRR 1.48%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.146%
+    A08   n=4914     0.139%
+    A09   n=4914     0.065%
+    A10   n=4914     2.421%
+    A11   n=4914     1.222%
+    A12   n=4914     0.750%
+    A13   n=4914     0.098%
+    A14   n=4914     0.098%
+    A15   n=4914     0.268%
+    A16   n=4914     0.350%
+    A17   n=4914     0.693%
+    A18   n=4914     1.076%
+    A19   n=4914     0.954%
+
+================================================================
+runs/suite/nes2net_F5.csv   [cond F5]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.938%   95% CI [0.843, 1.047]
+  EER threshold     -0.8295
+  AUC               0.99899
+  d-prime           6.663
+  score mean/sd     bonafide +5.549/1.853   spoof -3.672/0.630
+  at EER threshold  acc 99.06%  F1 0.9562  P 0.924  R 0.991
+  at thr +0.0000    acc 99.32%  F1 0.9677  FAR 0.55%  FRR 1.77%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.180%
+    A08   n=4914     0.139%
+    A09   n=4914     0.105%
+    A10   n=4914     2.363%
+    A11   n=4914     1.508%
+    A12   n=4914     0.750%
+    A13   n=4914     0.139%
+    A14   n=4914     0.163%
+    A15   n=4914     0.261%
+    A16   n=4914     0.431%
+    A17   n=4914     0.693%
+    A18   n=4914     1.076%
+    A19   n=4914     0.832%
+
+================================================================
+runs/suite/nes2net_P0.csv   [cond P0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.148%   95% CI [0.109, 0.204]
+  EER threshold     +2.1920
+  AUC               0.99993
+  d-prime           21.886
+  score mean/sd     bonafide +7.421/0.483   spoof -3.771/0.538
+  at EER threshold  acc 99.85%  F1 0.9930  P 0.987  R 0.999
+  at thr +0.0000    acc 99.69%  F1 0.9851  FAR 0.34%  FRR 0.10%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.017%
+    A08   n=4914     0.024%
+    A09   n=4914     0.017%
+    A10   n=4914     0.187%
+    A11   n=4914     0.122%
+    A12   n=4914     0.041%
+    A13   n=4914     0.017%
+    A14   n=4914     0.017%
+    A15   n=4914     0.017%
+    A16   n=4914     0.024%
+    A17   n=4914     0.326%
+    A18   n=4914     0.343%
+    A19   n=4914     0.309%
+
+================================================================
+runs/suite/nes2net_RAW.csv   [cond RAW]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.136%   95% CI [0.108, 0.190]
+  EER threshold     +3.1306
+  AUC               0.99997
+  d-prime           17.358
+  score mean/sd     bonafide +7.467/0.377   spoof -3.730/0.831
+  at EER threshold  acc 99.86%  F1 0.9934  P 0.988  R 0.999
+  at thr +0.0000    acc 98.98%  F1 0.9530  FAR 1.13%  FRR 0.03%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.017%
+    A08   n=4914     0.017%
+    A09   n=4914     0.000%
+    A10   n=4914     0.244%
+    A11   n=4914     0.105%
+    A12   n=4914     0.041%
+    A13   n=4914     0.000%
+    A14   n=4914     0.000%
+    A15   n=4914     0.017%
+    A16   n=4914     0.024%
+    A17   n=4914     0.343%
+    A18   n=4914     0.285%
+    A19   n=4914     0.367%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             71237     0.775         [0.69, 0.87]   0.9991     6.436
+  C1             71237     0.774         [0.69, 0.89]   0.9991     6.390
+  F0             71237     0.124         [0.10, 0.19]   0.9999    21.329
+  F1             71237     1.210         [1.09, 1.33]   0.9985     5.775
+  F2             71237     0.969         [0.87, 1.07]   0.9991     6.723
+  F3             71237     0.856         [0.77, 0.97]   0.9992     6.806
+  F4             71237     0.938         [0.83, 1.06]   0.9992     6.644
+  F5             71237     0.938         [0.84, 1.05]   0.9990     6.663
+  P0             71237     0.148         [0.11, 0.20]   0.9999    21.886
+  RAW            71237     0.136         [0.11, 0.19]   1.0000    17.358
+
+wrote results/nes2net.json
