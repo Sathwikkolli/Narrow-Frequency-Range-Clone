@@ -51,6 +51,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 TARGET_SR = 16000
 
+# torch.inference_mode() landed in torch 1.9. The SSL models (AASIST, TCM,
+# Nes2Net) pin torch 1.8.1 through their fairseq commit, so fall back to
+# no_grad there -- equivalent for scoring, marginally slower.
+NO_GRAD = getattr(torch, "inference_mode", torch.no_grad)
+
 LABEL_WORDS = {"bonafide": "bonafide", "bona-fide": "bonafide", "bona_fide": "bonafide",
                "real": "bonafide", "genuine": "bonafide", "human": "bonafide",
                "spoof": "spoof", "fake": "spoof", "spoofed": "spoof", "synthetic": "spoof"}
@@ -328,7 +333,7 @@ def main():
     embs, gates, rates = [], [], {}
     want_emb = bool(args.save_embeddings)
     done, t0 = 0, time.time()
-    with open(args.out, "w", newline="") as fh, torch.inference_mode():
+    with open(args.out, "w", newline="") as fh, NO_GRAD():
         w = csv.writer(fh)
         w.writerow(CSV_FIELDS)
         for batch, idx, srs, durs in loader:
