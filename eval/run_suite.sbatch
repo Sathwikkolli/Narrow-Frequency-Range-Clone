@@ -4,10 +4,10 @@
 #SBATCH --partition=gpu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=12
 #SBATCH --gpus=1
-#SBATCH --mem=32g
-#SBATCH --time=04:00:00
+#SBATCH --mem=16g
+#SBATCH --time=01:00:00
 #SBATCH --array=0-19
 #SBATCH --output=logs/suite_%A_%a.log
 
@@ -15,10 +15,21 @@
 #
 # Each array task takes one shard of the trial list and scores EVERY condition
 # for it, so the model is loaded once per task rather than once per condition.
-# Inference needs 2-4 GB, so the V100 "gpu" partition is fine; "spgpu" (A40) is
-# 2-3x faster and less contested when you want the results sooner:
 #
-#   ADAPTER=rawnet2 sbatch --partition=spgpu eval/run_suite.sbatch
+# RESOURCES. Inference needs only 2-4 GB of GPU memory, so the request is small
+# on purpose: a short time limit and modest memory are what let the scheduler
+# backfill these into gaps. A task does ~3.6k clips per condition; even for an
+# XLS-R model that is 15-30 min for all ten, so an hour is already slack. Asking
+# for more does NOT make a job run longer -- it only makes it wait longer to
+# start, which is the usual cause of PENDING (Priority). The bottleneck is FLAC
+# decoding off turbo, hence 12 CPUs rather than a bigger GPU.
+#
+# Submit to both GPU partitions and take whichever frees first ("spgpu" is A40,
+# 2-3x faster than the V100 "gpu" nodes and usually less contested):
+#
+#   ADAPTER=rawnet2 sbatch --partition=gpu,spgpu eval/run_suite.sbatch
+#
+# Cap concurrency with --array=0-19%5 if the account's GPU limit is tight.
 #
 # SUBMIT:
 #   mkdir -p logs
