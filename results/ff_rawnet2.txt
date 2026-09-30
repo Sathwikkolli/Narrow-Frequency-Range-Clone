@@ -1,0 +1,267 @@
+
+================================================================
+runs/ff_trump/rawnet2_B1.csv   [cond B1]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    8000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               38.344%   95% CI [37.466, 39.273]
+  EER threshold     -0.0058
+  AUC               0.66444
+  d-prime           0.387
+  score mean/sd     bonafide -0.122/0.512   spoof -0.512/1.328
+  at EER threshold  acc 61.66%  F1 0.5752  P 0.539  R 0.617
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     33.988%
+    E2TTS n=500     53.814%
+    F5TTS n=500     33.965%
+    FISHSPEECH n=499     37.880%
+    LLASA n=836     35.650%
+    MASKGCT n=655     45.037%
+    SSRSPEECH n=252     39.730%
+    STYLETTS2 n=501     48.668%
+    XTTSV2 n=501     44.111%
+    ZONOS n=1933    29.432%
+
+================================================================
+runs/ff_trump/rawnet2_C1.csv   [cond C1]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    8000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               38.432%   95% CI [37.484, 39.398]
+  EER threshold     -0.0059
+  AUC               0.66312
+  d-prime           0.382
+  score mean/sd     bonafide -0.125/0.518   spoof -0.506/1.316
+  at EER threshold  acc 61.57%  F1 0.5743  P 0.538  R 0.616
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     34.540%
+    E2TTS n=500     53.804%
+    F5TTS n=500     33.596%
+    FISHSPEECH n=499     38.043%
+    LLASA n=836     35.987%
+    MASKGCT n=655     44.855%
+    SSRSPEECH n=252     39.688%
+    STYLETTS2 n=501     48.352%
+    XTTSV2 n=501     44.500%
+    ZONOS n=1933    29.594%
+
+================================================================
+runs/ff_trump/rawnet2_F0.csv   [cond F0]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               44.889%   95% CI [43.898, 45.881]
+  EER threshold     -0.0116
+  AUC               0.54055
+  d-prime           -0.376
+  score mean/sd     bonafide -0.868/2.246   spoof -0.239/0.728
+  at EER threshold  acc 55.10%  F1 0.5082  P 0.472  R 0.551
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     38.743%
+    E2TTS n=500     53.199%
+    F5TTS n=500     32.797%
+    FISHSPEECH n=499     31.097%
+    LLASA n=836     45.343%
+    MASKGCT n=655     46.889%
+    SSRSPEECH n=252     46.426%
+    STYLETTS2 n=501     52.294%
+    XTTSV2 n=501     38.477%
+    ZONOS n=1933    49.862%
+
+================================================================
+runs/ff_trump/rawnet2_F1.csv   [cond F1]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               28.627%   95% CI [27.811, 29.495]
+  EER threshold     -0.5452
+  AUC               0.76169
+  d-prime           0.673
+  score mean/sd     bonafide -1.048/2.122   spoof -2.618/2.525
+  at EER threshold  acc 71.37%  F1 0.6774  P 0.645  R 0.714
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     26.473%
+    E2TTS n=500     44.197%
+    F5TTS n=500     23.979%
+    FISHSPEECH n=499     29.659%
+    LLASA n=836     33.971%
+    MASKGCT n=655     29.189%
+    SSRSPEECH n=252     24.607%
+    STYLETTS2 n=501     41.488%
+    XTTSV2 n=501     29.590%
+    ZONOS n=1933    17.900%
+
+================================================================
+runs/ff_trump/rawnet2_F2.csv   [cond F2]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               28.609%   95% CI [27.742, 29.451]
+  EER threshold     -0.5592
+  AUC               0.76194
+  d-prime           0.679
+  score mean/sd     bonafide -1.058/2.131   spoof -2.651/2.541
+  at EER threshold  acc 71.39%  F1 0.6776  P 0.645  R 0.714
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     26.738%
+    E2TTS n=500     44.402%
+    F5TTS n=500     24.000%
+    FISHSPEECH n=499     30.060%
+    LLASA n=836     34.094%
+    MASKGCT n=655     29.007%
+    SSRSPEECH n=252     24.209%
+    STYLETTS2 n=501     41.315%
+    XTTSV2 n=501     30.152%
+    ZONOS n=1933    17.994%
+
+================================================================
+runs/ff_trump/rawnet2_F3.csv   [cond F3]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               28.397%   95% CI [27.581, 29.256]
+  EER threshold     -0.4910
+  AUC               0.76600
+  d-prime           0.696
+  score mean/sd     bonafide -0.959/1.974   spoof -2.516/2.473
+  at EER threshold  acc 71.60%  F1 0.6798  P 0.647  R 0.716
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     26.738%
+    E2TTS n=500     44.218%
+    F5TTS n=500     24.421%
+    FISHSPEECH n=499     30.070%
+    LLASA n=836     33.971%
+    MASKGCT n=655     28.847%
+    SSRSPEECH n=252     24.156%
+    STYLETTS2 n=501     41.315%
+    XTTSV2 n=501     29.936%
+    ZONOS n=1933    17.180%
+
+================================================================
+runs/ff_trump/rawnet2_F4.csv   [cond F4]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               28.503%   95% CI [27.680, 29.300]
+  EER threshold     -0.3781
+  AUC               0.76675
+  d-prime           0.679
+  score mean/sd     bonafide -0.852/1.847   spoof -2.300/2.381
+  at EER threshold  acc 71.50%  F1 0.6787  P 0.646  R 0.715
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     26.738%
+    E2TTS n=500     44.597%
+    F5TTS n=500     24.000%
+    FISHSPEECH n=499     29.854%
+    LLASA n=836     34.330%
+    MASKGCT n=655     29.007%
+    SSRSPEECH n=252     24.209%
+    STYLETTS2 n=501     41.672%
+    XTTSV2 n=501     30.120%
+    ZONOS n=1933    17.227%
+
+================================================================
+runs/ff_trump/rawnet2_F5.csv   [cond F5]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               28.485%   95% CI [27.705, 29.363]
+  EER threshold     -0.5948
+  AUC               0.76115
+  d-prime           0.676
+  score mean/sd     bonafide -1.103/2.198   spoof -2.718/2.568
+  at EER threshold  acc 71.51%  F1 0.6789  P 0.646  R 0.715
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     26.452%
+    E2TTS n=500     43.797%
+    F5TTS n=500     23.979%
+    FISHSPEECH n=499     30.212%
+    LLASA n=836     33.982%
+    MASKGCT n=655     29.007%
+    SSRSPEECH n=252     24.282%
+    STYLETTS2 n=501     40.937%
+    XTTSV2 n=501     30.541%
+    ZONOS n=1933    17.947%
+
+================================================================
+runs/ff_trump/rawnet2_P0.csv   [cond P0]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               49.415%   95% CI [48.361, 50.443]
+  EER threshold     -0.5020
+  AUC               0.49965
+  d-prime           -0.232
+  score mean/sd     bonafide -2.781/3.604   spoof -2.038/2.739
+  at EER threshold  acc 50.58%  F1 0.4630  P 0.427  R 0.506
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     46.513%
+    E2TTS n=500     48.411%
+    F5TTS n=500     44.434%
+    FISHSPEECH n=499     27.268%
+    LLASA n=836     55.977%
+    MASKGCT n=655     51.451%
+    SSRSPEECH n=252     42.496%
+    STYLETTS2 n=501     42.913%
+    XTTSV2 n=501     46.865%
+    ZONOS n=1933    56.752%
+
+================================================================
+runs/ff_trump/rawnet2_RAW.csv   [cond RAW]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)    16000 Hz
+  duration          median 8.40 s, mean 8.28 s, 3.8% under the 4.04 s window
+  EER               46.067%   95% CI [45.076, 47.139]
+  EER threshold     -0.1377
+  AUC               0.51300
+  d-prime           -0.391
+  score mean/sd     bonafide -2.789/4.043   spoof -1.495/2.350
+  at EER threshold  acc 53.93%  F1 0.4965  P 0.460  R 0.539
+  at thr +0.0000    acc 57.89%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     42.597%
+    E2TTS n=500     48.974%
+    F5TTS n=500     38.999%
+    FISHSPEECH n=499     36.268%
+    LLASA n=836     46.765%
+    MASKGCT n=655     47.597%
+    SSRSPEECH n=252     45.221%
+    STYLETTS2 n=501     50.071%
+    XTTSV2 n=501     41.121%
+    ZONOS n=1933    51.567%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             11290    38.344       [37.47, 39.27]   0.6644     0.387
+  C1             11290    38.432       [37.48, 39.40]   0.6631     0.382
+  F0             11290    44.889       [43.90, 45.88]   0.5406    -0.376
+  F1             11290    28.627       [27.81, 29.49]   0.7617     0.673
+  F2             11290    28.609       [27.74, 29.45]   0.7619     0.679
+  F3             11290    28.397       [27.58, 29.26]   0.7660     0.696
+  F4             11290    28.503       [27.68, 29.30]   0.7667     0.679
+  F5             11290    28.485       [27.70, 29.36]   0.7612     0.676
+  P0             11290    49.415       [48.36, 50.44]   0.4996    -0.232
+  RAW            11290    46.067       [45.08, 47.14]   0.5130    -0.391
+
+wrote results/ff_rawnet2.json
