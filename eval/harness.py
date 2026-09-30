@@ -87,6 +87,20 @@ def read_labels(path):
 
     Fields are identified by content, not position, so the .trn/.trl variants and
     the whitespace or comma separated forms all parse.
+
+    Two corpora use this. ASVspoof2019 LA looks like
+
+        LA_0069  LA_E_9332881  -  A13  spoof
+
+    and Famous Figures, prepared by eval/prep_ff.py, looks like
+
+        Donald_Trump  FF_STYLETTS2_Donald_Trump_00001  -  STYLETTS2  spoof
+
+    so the utterance id is matched on having two or more underscores rather than
+    an "LA_" prefix -- that still picks LA_E_9332881 over LA_0069 (one
+    underscore) and the speaker field over neither. The attack id falls back to
+    position when the A-nn pattern does not apply, because FF names its attacks
+    in full and per-attack EER is worth keeping.
     """
     out = {}
     with open(path) as fh:
@@ -96,11 +110,14 @@ def read_labels(path):
             if not f:
                 continue
             label = next((LABEL_WORDS[t.lower()] for t in f if t.lower() in LABEL_WORDS), None)
-            utt = next((t for t in f if t.startswith("LA_") and t.count("_") >= 2), None)
+            utt = next((t for t in f
+                        if t.count("_") >= 2 and t.lower() not in LABEL_WORDS), None)
             if label is None or utt is None:
                 continue
             attack = next((t for t in f
-                           if len(t) == 3 and t[0] == "A" and t[1:].isdigit()), "-")
+                           if len(t) == 3 and t[0] == "A" and t[1:].isdigit()), None)
+            if attack is None:
+                attack = f[3] if len(f) >= 5 else "-"
             out[utt] = (label, attack)
     if not out:
         sys.exit(f"no bonafide/spoof lines in {path} -- is it really a CM protocol?")
