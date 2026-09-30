@@ -101,6 +101,17 @@ def main():
     ap.add_argument("--nshards", type=int, default=1)
     ap.add_argument("--overwrite", action="store_true")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--min-samples", type=int, default=4000,
+                    help="drop clips shorter than this many 16 kHz samples "
+                         "(default 4000 = 0.25 s). The DSP methods in nfr.py use "
+                         "long FIR designs -- Parks-McClellan at a 25 Hz transition "
+                         "is ~875 taps -- and scipy's filtfilt requires the input to "
+                         "exceed 3*(taps-1), i.e. 2625 samples. Famous Figures "
+                         "contains clips of 320 and 640 samples (0.02-0.04 s) which "
+                         "fail that check, and build_shard.py exits non-zero if ANY "
+                         "file in a shard fails, killing the whole shard. They are "
+                         "dropped here rather than per-condition so every condition "
+                         "scores an identical trial list. Set 0 to keep everything.")
     args = ap.parse_args()
 
     rows = read_protocol(args.protocol, args.speaker)
@@ -118,7 +129,7 @@ def main():
     print(f"out        {out_dir}")
     print(f"resampler  {RESAMPLER}  ->  {TARGET_SR} Hz", flush=True)
 
-    man, prot, rates, n_clip, failed, t0 = [], [], Counter(), 0, 0, time.time()
+    man, prot, rates, n_clip, failed, short, t0 = [], [], Counter(), 0, 0, 0, time.time()
     for i, (uid, source, label, src_path) in enumerate(rows, 1):
         r = dict.fromkeys(FIELDS, "")
         r.update(cond="FF", subset=args.subset, file_id=uid, speaker=args.speaker,
@@ -128,12 +139,26 @@ def main():
         try:
             if dst.exists() and not args.overwrite:
                 r["status"] = "exists"
+                r["out_samples"] = sf.info(str(dst)).frames
+                if args.min_samples and r["out_samples"] < args.min_samples:
+                    # written by an earlier run before the filter existed
+                    dst.unlink()
+                    short += 1
+                    r["status"] = f"dropped: {r['out_samples']} < {args.min_samples} samples"
+                    man.append(r)
+                    continue
             else:
                 x, sr = sf.read(src_path, dtype="float32", always_2d=True)
                 x = x.mean(axis=1)
                 rates[sr] += 1
                 r["src_rate"], r["in_samples"] = sr, len(x)
                 y = np.asarray(resample(x, sr), dtype="float64")
+                if args.min_samples and len(y) < args.min_samples:
+                    short += 1
+                    r.update(out_samples=len(y),
+                             status=f"dropped: {len(y)} < {args.min_samples} samples")
+                    man.append(r)
+                    continue
                 peak = float(np.max(np.abs(y))) if len(y) else 0.0
                 i16 = np.round(y * 32767.0)
                 clipped = int(np.count_nonzero((i16 > 32767) | (i16 < -32768)))
@@ -164,12 +189,14 @@ def main():
     with open(ppath, mode) as fh:
         fh.write("\n".join(prot) + "\n")
 
-    n_bona = sum(1 for r in man if r["label"] == "bonafide")
+    kept = [r for r in man if not str(r["status"]).startswith(("dropped", "FAILED"))]
+    n_bona = sum(1 for r in kept if r["label"] == "bonafide")
     print(f"\n  wrote {mpath}")
-    print(f"  wrote {ppath}")
-    print(f"  {len(man) - failed}/{len(man)} ok"
+    print(f"  wrote {ppath}  ({len(prot)} trials)")
+    print(f"  {len(kept)}/{len(man)} kept"
+          + (f", {short} dropped as too short (< {args.min_samples} samples)" if short else "")
           + (f", {failed} FAILED" if failed else ""))
-    print(f"  {n_bona} bonafide / {len(man) - n_bona} spoof")
+    print(f"  {n_bona} bonafide / {len(kept) - n_bona} spoof")
     print(f"  source rates: {dict(rates)}")
     if n_clip:
         print(f"  NOTE: {n_clip} samples clipped at full scale (not corrected)")
