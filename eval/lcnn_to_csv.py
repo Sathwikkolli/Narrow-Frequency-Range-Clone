@@ -59,7 +59,11 @@ def parse_scores(path):
             fields = [t for t in fields if t]
             if fields and fields[0].lower() == "output":
                 fields = fields[1:]
-            utt = next((t for t in fields if t.startswith("LA_") and t.count("_") >= 2), None)
+            # Two corpora: ASVspoof ids look like LA_E_9332881, Famous Figures ids
+            # like FF_STYLETTS2_Donald_Trump_00001. Match on underscore count rather
+            # than an "LA_" prefix so both parse, excluding the numeric score field.
+            utt = next((t for t in fields
+                        if t.count("_") >= 2 and not num.match(t)), None)
             score = next((t for t in reversed(fields) if num.match(t)), None)
             if utt is None or score is None:
                 bad.append((ln, s[:120]))
