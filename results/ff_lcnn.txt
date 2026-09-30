@@ -1,5 +1,53 @@
 
 ================================================================
+runs/ff_trump/lcnn_B1.csv   [cond B1]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)     Hz
+  EER               38.999%   95% CI [38.077, 40.009]
+  EER threshold     -6.0844
+  AUC               0.64989
+  d-prime           0.630
+  score mean/sd     bonafide -2.695/6.665   spoof -6.145/3.951
+  at EER threshold  acc 61.00%  F1 0.5685  P 0.532  R 0.610
+  at thr +0.0000    acc 64.84%  F1 0.3846  FAR 6.96%  FRR 73.92%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     46.482%
+    E2TTS n=500     33.565%
+    F5TTS n=500     13.820%
+    FISHSPEECH n=499     36.874%
+    LLASA n=836     44.381%
+    MASKGCT n=655     40.454%
+    SSRSPEECH n=252     39.300%
+    STYLETTS2 n=501     19.756%
+    XTTSV2 n=501     33.973%
+    ZONOS n=1933    46.289%
+
+================================================================
+runs/ff_trump/lcnn_C1.csv   [cond C1]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)     Hz
+  EER               33.402%   95% CI [32.497, 34.269]
+  EER threshold     -4.5910
+  AUC               0.73525
+  d-prime           0.881
+  score mean/sd     bonafide -0.285/6.722   spoof -5.709/5.531
+  at EER threshold  acc 66.60%  F1 0.6267  P 0.592  R 0.666
+  at thr +0.0000    acc 67.70%  F1 0.4962  FAR 10.54%  FRR 62.22%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     51.258%
+    E2TTS n=500     14.999%
+    F5TTS n=500     10.006%
+    FISHSPEECH n=499     36.052%
+    LLASA n=836     40.911%
+    MASKGCT n=655     44.127%
+    SSRSPEECH n=252     34.490%
+    STYLETTS2 n=501     18.384%
+    XTTSV2 n=501     29.721%
+    ZONOS n=1933    34.919%
+
+================================================================
 runs/ff_trump/lcnn_F0.csv   [cond F0]
 ================================================================
   trials            11290  (4754 bonafide / 6536 spoof)
@@ -144,6 +192,30 @@ runs/ff_trump/lcnn_F5.csv   [cond F5]
     ZONOS n=1933    60.210%
 
 ================================================================
+runs/ff_trump/lcnn_P0.csv   [cond P0]
+================================================================
+  trials            11290  (4754 bonafide / 6536 spoof)
+  source rate(s)     Hz
+  EER               28.982%   95% CI [28.148, 29.886]
+  EER threshold     -8.3212
+  AUC               0.76824
+  d-prime           0.907
+  score mean/sd     bonafide -4.507/6.798   spoof -9.832/4.762
+  at EER threshold  acc 71.02%  F1 0.6736  P 0.641  R 0.710
+  at thr +0.0000    acc 65.69%  F1 0.3611  FAR 3.29%  FRR 76.97%
+  per-attack EER (attack vs. all bonafide):
+    COZYVOICE2 n=359     43.956%
+    E2TTS n=500     10.159%
+    F5TTS n=500     12.426%
+    FISHSPEECH n=499     17.436%
+    LLASA n=836     38.751%
+    MASKGCT n=655     33.280%
+    SSRSPEECH n=252     23.821%
+    STYLETTS2 n=501     19.357%
+    XTTSV2 n=501     37.484%
+    ZONOS n=1933    30.220%
+
+================================================================
 runs/ff_trump/lcnn_RAW.csv   [cond RAW]
 ================================================================
   trials            11290  (4754 bonafide / 6536 spoof)
@@ -171,12 +243,15 @@ runs/ff_trump/lcnn_RAW.csv   [cond RAW]
 summary
 ================================================================
   condition          n     EER %               95% CI      AUC   d-prime
+  B1             11290    38.999       [38.08, 40.01]   0.6499     0.630
+  C1             11290    33.402       [32.50, 34.27]   0.7352     0.881
   F0             11290    28.371       [27.49, 29.28]   0.7703     0.933
   F1             11290    42.994       [42.03, 43.88]   0.6020     0.446
   F2             11290    42.870       [41.97, 43.77]   0.6025     0.446
   F3             11290    41.904       [41.02, 42.81]   0.6108     0.476
   F4             11290    41.373       [40.47, 42.35]   0.6196     0.494
   F5             11290    43.312       [42.30, 44.17]   0.6006     0.444
+  P0             11290    28.982       [28.15, 29.89]   0.7682     0.907
   RAW            11290    28.210       [27.32, 29.07]   0.7745     0.929
 
 wrote results/ff_lcnn.json
