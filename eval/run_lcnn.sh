@@ -67,6 +67,12 @@ for COND in $CONDITIONS; do
         fail=1; continue
     fi
 
+    # same opt-out harness.py honours, so one file drops a condition for all six models
+    if [ -f "$OUT_DIR/scores/SKIP_CONDITIONS" ] && grep -qw "$COND" "$OUT_DIR/scores/SKIP_CONDITIONS"; then
+        echo "--- $COND: listed in $OUT_DIR/scores/SKIP_CONDITIONS, skipping ---"
+        continue
+    fi
+
     OUT="$OUT_DIR/scores/lcnn_${COND}.csv"
     if [ -s "$OUT" ]; then
         echo "--- $COND: $OUT exists, skipping ---"

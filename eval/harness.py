@@ -313,6 +313,17 @@ def main():
         if not args.manifest or not args.nb_root:
             sys.exit("pass --manifest and --nb-root, or --audio-dir")
         rows = read_manifest(args.manifest, args.keep_failed)
+
+    # A queued sbatch task cannot have its CONDITIONS changed, so a condition is
+    # dropped from a run in flight by listing it in <scores dir>/SKIP_CONDITIONS.
+    # Checked before the protocol join and the model load, so a skip costs seconds.
+    # Scoped to that one scores folder, and nothing is written for the condition.
+    skip_file = Path(os.path.dirname(os.path.abspath(args.out))) / "SKIP_CONDITIONS"
+    if skip_file.is_file():
+        cond = rows[0]["cond"].strip()
+        if cond in skip_file.read_text().split():
+            print(f"SKIPPED: {cond} is listed in {skip_file}; nothing scored", flush=True)
+            return
     rows = build(rows, read_labels(args.labels), args.nb_root)
     if args.nshards > 1:
         rows = rows[args.shard::args.nshards]

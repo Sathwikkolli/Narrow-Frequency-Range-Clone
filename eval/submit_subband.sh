@@ -32,7 +32,9 @@ MODELS=${MODELS:-$HOME/models}
 PART=${PART:-gpu,spgpu}
 DATASETS=${DATASETS:-"asv itw"}
 ADAPTERS=${ADAPTERS:-"rawnet2 aasist nes2net tcm sls"}
-CONDS=${CONDS:-"LP2000 LP3400 LP4000 LP5000 LP6000 LP7000 HP100 HP300 HP500 HP1000"}
+# One low-pass and the four high-pass cutoffs. LP3400 + HP300 are the two halves of
+# F3. LP2000/4000/5000/6000/7000 were built too and can be passed back in via CONDS.
+CONDS=${CONDS:-"LP3400 HP100 HP300 HP500 HP1000"}
 DRY=${DRY:-0}
 
 ASV_NFR=${ASV_NFR:-$D/AsvSpoofData_2019_NFR}
