@@ -1,0 +1,102 @@
+[
+  {
+    "name": "runs/subband/lcnn_LP3400.csv",
+    "cond": "LP3400",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.1371645356663398,
+    "eer_ci": [
+      0.13447414243281788,
+      0.13980488834029073
+    ],
+    "eer_threshold": 6.394097,
+    "auc": 0.9306251971498011,
+    "dprime": 2.518835013507031,
+    "bonafide_mean": 8.206227145343304,
+    "bonafide_sd": 2.320855320738477,
+    "spoof_mean": -7.858645248755518,
+    "spoof_sd": 8.715897583296064,
+    "pct_under_window": NaN
+  },
+  {
+    "name": "runs/subband/lcnn_HP100.csv",
+    "cond": "HP100",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.06678399507453528,
+    "eer_ci": [
+      0.06456922157910497,
+      0.06934359622222405
+    ],
+    "eer_threshold": 5.99469,
+    "auc": 0.9802775505254195,
+    "dprime": 2.8483916199720434,
+    "bonafide_mean": 9.078558184092456,
+    "bonafide_sd": 2.1494847934936994,
+    "spoof_mean": -9.457618135171098,
+    "spoof_sd": 8.948485549458315,
+    "pct_under_window": NaN
+  },
+  {
+    "name": "runs/subband/lcnn_HP300.csv",
+    "cond": "HP300",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.1499571758866849,
+    "eer_ci": [
+      0.14711290112116343,
+      0.15309395120094277
+    ],
+    "eer_threshold": 3.925285,
+    "auc": 0.924642742372701,
+    "dprime": 2.1625056507307083,
+    "bonafide_mean": 6.941561822977567,
+    "bonafide_sd": 3.1669106212953286,
+    "spoof_mean": -6.707220563069409,
+    "spoof_sd": 8.345045336979332,
+    "pct_under_window": NaN
+  },
+  {
+    "name": "runs/subband/lcnn_HP500.csv",
+    "cond": "HP500",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.18150785254534665,
+    "eer_ci": [
+      0.17837603059822377,
+      0.1844676568814387
+    ],
+    "eer_threshold": 7.340477,
+    "auc": 0.8983343876012391,
+    "dprime": 2.1431016835480317,
+    "bonafide_mean": 9.276553545207342,
+    "bonafide_sd": 3.0070037940383703,
+    "spoof_mean": -6.142170011098588,
+    "spoof_sd": 9.720045113921044,
+    "pct_under_window": NaN
+  },
+  {
+    "name": "runs/subband/lcnn_HP1000.csv",
+    "cond": "HP1000",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.1488497891389697,
+    "eer_ci": [
+      0.1457441258750546,
+      0.15203600825587435
+    ],
+    "eer_threshold": -7.993771,
+    "auc": 0.9195016076441584,
+    "dprime": 2.250318071583133,
+    "bonafide_mean": -2.0408911303874913,
+    "bonafide_sd": 5.86913395858012,
+    "spoof_mean": -20.31159175299771,
+    "spoof_sd": 9.868571009677762,
+    "pct_under_window": NaN
+  }
+]
