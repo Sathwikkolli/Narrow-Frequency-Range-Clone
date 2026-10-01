@@ -35,6 +35,7 @@
 #   mkdir -p logs
 #   ADAPTER=rawnet2 sbatch eval/run_suite.sbatch              # all 10 conditions
 #   ADAPTER=tcm CONDITIONS="RAW P0 B1" sbatch eval/run_suite.sbatch
+#   ADAPTER=aasist CONDITIONS="LP3400 HP300" OUT_DIR=$PWD/runs/subband sbatch eval/run_suite.sbatch
 #   ADAPTER=rawnet2 LIMIT=200 sbatch --array=0 eval/run_suite.sbatch   # smoke test
 #
 # TCM: pass CKPT explicitly to pick a seed, e.g. CKPT=$MODELS/tcm_ckpt/best_0.pth
@@ -127,7 +128,8 @@ for COND in $CONDITIONS; do
       RAW) SRC_ARGS=(--audio-dir "$RAW_ROOT/ASVspoof2019_LA_eval/flac" --cond RAW) ;;
       P0|B1|C1)
            SRC_ARGS=(--manifest "$NB_ROOT/manifest/${COND}_eval_"*.csv --nb-root "$NB_ROOT") ;;
-      F0|F1|F2|F3|F4|F5)
+      # LP<hz>/HP<hz>: the sub-band sweep from eval/build_subband.py, same tree as F*
+      F0|F1|F2|F3|F4|F5|LP[0-9]*|HP[0-9]*)
            SRC_ARGS=(--manifest "$NFR_ROOT/manifest/${COND}_eval_"*.csv --nb-root "$NFR_ROOT") ;;
       *)   echo "unknown condition '$COND'"; fail=1; continue ;;
     esac
