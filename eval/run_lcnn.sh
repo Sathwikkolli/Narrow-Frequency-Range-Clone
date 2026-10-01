@@ -49,7 +49,8 @@ audio_dir() {
       RAW)              echo "$RAW_ROOT/ASVspoof2019_LA_${SUBSET}/flac" ;;
       P0)               echo "$NB_ROOT/ASVspoof2019_LA_${SUBSET}/$1/flac" ;;
       B1|C1)            echo "$NB16_ROOT/ASVspoof2019_LA_${SUBSET}/$1/flac" ;;   # 16 kHz copies
-      F0|F1|F2|F3|F4|F5) echo "$NFR_ROOT/ASVspoof2019_LA_${SUBSET}/$1/flac" ;;
+      # LP<hz>/HP<hz>: the sub-band sweep from eval/build_subband.py, same tree as F*
+      F0|F1|F2|F3|F4|F5|LP[0-9]*|HP[0-9]*) echo "$NFR_ROOT/ASVspoof2019_LA_${SUBSET}/$1/flac" ;;
       *) echo "" ;;
     esac
 }
@@ -72,7 +73,9 @@ for COND in $CONDITIONS; do
         continue
     fi
 
-    SET_NAME="nfr_${COND}"
+    # SET_PREFIX keeps corpora apart: the baseline names its score file (and any
+    # cache) after the set, so two corpora sharing a condition name would collide.
+    SET_NAME="${SET_PREFIX:-nfr}_${COND}"
     echo
     echo "=== lcnn / $COND ==="
     echo "    audio $DIR"
