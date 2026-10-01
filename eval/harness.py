@@ -350,7 +350,11 @@ def main():
     embs, gates, rates = [], [], {}
     want_emb = bool(args.save_embeddings)
     done, t0 = 0, time.time()
-    with open(args.out, "w", newline="") as fh, NO_GRAD():
+    # Written under a temporary name and renamed only once every clip is scored. A
+    # crash mid-run would otherwise leave a header-only CSV at args.out, which the
+    # sbatch resume check ("exists, skipping") then mistakes for a finished shard.
+    part = args.out + ".part"
+    with open(part, "w", newline="") as fh, NO_GRAD():
         w = csv.writer(fh)
         w.writerow(CSV_FIELDS)
         for batch, idx, srs, durs in loader:
@@ -388,6 +392,7 @@ def main():
                 print(f"  {done}/{len(rows)}  {rate:.1f} clips/s  "
                       f"eta {(len(rows) - done) / max(rate, 1e-9) / 60:.1f} min", flush=True)
 
+    os.replace(part, args.out)
     secs = time.time() - t0
     print(f"wrote {done} scores to {args.out}")
     print(f"source sample rates seen: {rates}")

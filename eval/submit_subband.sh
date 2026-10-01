@@ -5,6 +5,7 @@
 #   bash eval/submit_subband.sh            # check everything, then submit
 #   DRY=1 bash eval/submit_subband.sh      # check and print, submit nothing
 #   DATASETS=itw bash eval/submit_subband.sh
+#   DATASETS=asv ADAPTERS=sls ARRAY=0,2,3 bash eval/submit_subband.sh   # chosen shards
 #
 # What it queues:
 #   ASVspoof2019   score rawnet2 aasist nes2net tcm sls      -> runs/subband
@@ -44,6 +45,14 @@ env_of() {
       rawnet2) echo wmcompare ;;
       sls)     echo "$SCR/envs/sls" ;;
       *)       echo ssl_spoof ;;
+    esac
+}
+# The sls env's torch build has no kernels for the A40s on spgpu ("CUDA error: no
+# kernel image is available"), so it can only go to the V100 partition.
+part_of() {
+    case "$1" in
+      sls) echo gpu ;;
+      *)   echo "$PART" ;;
     esac
 }
 # empty means "let run_suite.sbatch pick", which is what those runs did
@@ -106,7 +115,7 @@ score() {  # score <dataset-label> <out-dir> <adapter> [extra sbatch args...]
     mkdir -p "$out"; [ "$DRY" = 1 ] || touch "$out/.submit_subband"
     ADAPTER=$a CONDA_ENV=$(env_of "$a") CKPT=$(ckpt_of "$a") CONDITIONS="$CONDS" \
     OUT_DIR=$CLONE_DIR/$out CLONE_DIR=$CLONE_DIR MODELS=$MODELS \
-        run "$ds score $a" --partition="$PART" --mem=24g "$@" eval/run_suite.sbatch >/dev/null
+        run "$ds score $a" --partition="$(part_of "$a")" --mem=24g ${ARRAY:+--array="$ARRAY"} "$@"             eval/run_suite.sbatch >/dev/null
 }
 
 for ds in $DATASETS; do
