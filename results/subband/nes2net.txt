@@ -1,0 +1,152 @@
+
+================================================================
+runs/subband/nes2net_LP3400.csv   [cond LP3400]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.204%   95% CI [0.150, 0.285]
+  EER threshold     -0.2406
+  AUC               0.99991
+  d-prime           12.996
+  score mean/sd     bonafide +6.885/1.065   spoof -3.740/0.449
+  at EER threshold  acc 99.80%  F1 0.9902  P 0.983  R 0.998
+  at thr +0.0000    acc 99.82%  F1 0.9912  FAR 0.18%  FRR 0.24%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.041%
+    A08   n=4914     0.024%
+    A09   n=4914     0.024%
+    A10   n=4914     0.407%
+    A11   n=4914     0.122%
+    A12   n=4914     0.098%
+    A13   n=4914     0.041%
+    A14   n=4914     0.024%
+    A15   n=4914     0.041%
+    A16   n=4914     0.081%
+    A17   n=4914     0.343%
+    A18   n=4914     0.343%
+    A19   n=4914     0.367%
+
+================================================================
+runs/subband/nes2net_HP100.csv   [cond HP100]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.150%   95% CI [0.109, 0.207]
+  EER threshold     +2.3038
+  AUC               0.99995
+  d-prime           21.514
+  score mean/sd     bonafide +7.442/0.452   spoof -3.775/0.582
+  at EER threshold  acc 99.85%  F1 0.9928  P 0.987  R 0.999
+  at thr +0.0000    acc 99.62%  F1 0.9818  FAR 0.42%  FRR 0.05%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.017%
+    A08   n=4914     0.017%
+    A09   n=4914     0.017%
+    A10   n=4914     0.221%
+    A11   n=4914     0.146%
+    A12   n=4914     0.041%
+    A13   n=4914     0.017%
+    A14   n=4914     0.017%
+    A15   n=4914     0.017%
+    A16   n=4914     0.024%
+    A17   n=4914     0.326%
+    A18   n=4914     0.367%
+    A19   n=4914     0.326%
+
+================================================================
+runs/subband/nes2net_HP300.csv   [cond HP300]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.313%   95% CI [0.231, 0.381]
+  EER threshold     +1.2884
+  AUC               0.99989
+  d-prime           15.523
+  score mean/sd     bonafide +7.211/0.740   spoof -3.757/0.671
+  at EER threshold  acc 99.69%  F1 0.9850  P 0.973  R 0.997
+  at thr +0.0000    acc 99.42%  F1 0.9725  FAR 0.63%  FRR 0.18%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.024%
+    A08   n=4914     0.122%
+    A09   n=4914     0.017%
+    A10   n=4914     0.506%
+    A11   n=4914     0.350%
+    A12   n=4914     0.163%
+    A13   n=4914     0.017%
+    A14   n=4914     0.017%
+    A15   n=4914     0.065%
+    A16   n=4914     0.098%
+    A17   n=4914     0.367%
+    A18   n=4914     0.635%
+    A19   n=4914     0.424%
+
+================================================================
+runs/subband/nes2net_HP500.csv   [cond HP500]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.623%   95% CI [0.530, 0.707]
+  EER threshold     -0.2857
+  AUC               0.99941
+  d-prime           9.159
+  score mean/sd     bonafide +6.544/1.441   spoof -3.640/0.630
+  at EER threshold  acc 99.38%  F1 0.9706  P 0.948  R 0.994
+  at thr +0.0000    acc 99.43%  F1 0.9732  FAR 0.55%  FRR 0.68%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.081%
+    A08   n=4914     0.285%
+    A09   n=4914     0.058%
+    A10   n=4914     0.856%
+    A11   n=4914     0.326%
+    A12   n=4914     0.489%
+    A13   n=4914     0.065%
+    A14   n=4914     0.122%
+    A15   n=4914     0.221%
+    A16   n=4914     0.285%
+    A17   n=4914     0.669%
+    A18   n=4914     1.565%
+    A19   n=4914     1.409%
+
+================================================================
+runs/subband/nes2net_HP1000.csv   [cond HP1000]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               1.414%   95% CI [1.265, 1.550]
+  EER threshold     -0.6139
+  AUC               0.99814
+  d-prime           6.457
+  score mean/sd     bonafide +5.592/1.846   spoof -3.537/0.769
+  at EER threshold  acc 98.59%  F1 0.9351  P 0.889  R 0.986
+  at thr +0.0000    acc 98.83%  F1 0.9455  FAR 1.07%  FRR 1.99%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.261%
+    A08   n=4914     0.431%
+    A09   n=4914     0.180%
+    A10   n=4914     1.450%
+    A11   n=4914     0.227%
+    A12   n=4914     1.100%
+    A13   n=4914     0.204%
+    A14   n=4914     0.227%
+    A15   n=4914     0.326%
+    A16   n=4914     0.750%
+    A17   n=4914     2.078%
+    A18   n=4914     2.380%
+    A19   n=4914     3.986%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  LP3400         71237     0.204         [0.15, 0.29]   0.9999    12.996
+  HP100          71237     0.150         [0.11, 0.21]   0.9999    21.514
+  HP300          71237     0.313         [0.23, 0.38]   0.9999    15.523
+  HP500          71237     0.623         [0.53, 0.71]   0.9994     9.159
+  HP1000         71237     1.414         [1.26, 1.55]   0.9981     6.457
+
+wrote results/subband/nes2net.json

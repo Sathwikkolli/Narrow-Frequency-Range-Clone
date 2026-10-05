@@ -1,0 +1,152 @@
+
+================================================================
+runs/subband/tcm_LP3400.csv   [cond LP3400]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.408%   95% CI [0.324, 0.503]
+  EER threshold     -1.2572
+  AUC               0.99971
+  d-prime           11.640
+  score mean/sd     bonafide +3.739/0.807   spoof -4.130/0.513
+  at EER threshold  acc 99.59%  F1 0.9805  P 0.966  R 0.996
+  at thr +0.0000    acc 99.71%  F1 0.9858  FAR 0.23%  FRR 0.84%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.041%
+    A08   n=4914     0.081%
+    A09   n=4914     0.024%
+    A10   n=4914     0.506%
+    A11   n=4914     0.326%
+    A12   n=4914     0.268%
+    A13   n=4914     0.024%
+    A14   n=4914     0.041%
+    A15   n=4914     0.146%
+    A16   n=4914     0.204%
+    A17   n=4914     0.547%
+    A18   n=4914     1.321%
+    A19   n=4914     0.750%
+
+================================================================
+runs/subband/tcm_HP100.csv   [cond HP100]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.244%   95% CI [0.201, 0.313]
+  EER threshold     -0.2649
+  AUC               0.99988
+  d-prime           14.787
+  score mean/sd     bonafide +4.057/0.567   spoof -4.137/0.541
+  at EER threshold  acc 99.76%  F1 0.9883  P 0.979  R 0.998
+  at thr +0.0000    acc 99.77%  F1 0.9889  FAR 0.23%  FRR 0.29%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.024%
+    A08   n=4914     0.041%
+    A09   n=4914     0.017%
+    A10   n=4914     0.227%
+    A11   n=4914     0.221%
+    A12   n=4914     0.122%
+    A13   n=4914     0.017%
+    A14   n=4914     0.024%
+    A15   n=4914     0.058%
+    A16   n=4914     0.122%
+    A17   n=4914     0.390%
+    A18   n=4914     0.832%
+    A19   n=4914     0.465%
+
+================================================================
+runs/subband/tcm_HP300.csv   [cond HP300]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               1.470%   95% CI [1.332, 1.618]
+  EER threshold     -2.0116
+  AUC               0.99837
+  d-prime           6.803
+  score mean/sd     bonafide +3.192/1.374   spoof -4.009/0.594
+  at EER threshold  acc 98.53%  F1 0.9326  P 0.885  R 0.985
+  at thr +0.0000    acc 99.23%  F1 0.9621  FAR 0.31%  FRR 4.79%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.384%
+    A08   n=4914     0.587%
+    A09   n=4914     0.285%
+    A10   n=4914     2.136%
+    A11   n=4914     2.217%
+    A12   n=4914     1.042%
+    A13   n=4914     0.146%
+    A14   n=4914     0.513%
+    A15   n=4914     1.059%
+    A16   n=4914     0.710%
+    A17   n=4914     1.426%
+    A18   n=4914     2.951%
+    A19   n=4914     1.973%
+
+================================================================
+runs/subband/tcm_HP500.csv   [cond HP500]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               5.301%   95% CI [4.990, 5.588]
+  EER threshold     -3.2078
+  AUC               0.98324
+  d-prime           2.928
+  score mean/sd     bonafide +0.928/2.262   spoof -3.902/0.572
+  at EER threshold  acc 94.70%  F1 0.7868  P 0.673  R 0.947
+  at thr +0.0000    acc 96.16%  F1 0.7823  FAR 0.45%  FRR 33.26%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     2.934%
+    A08   n=4914     3.969%
+    A09   n=4914     2.078%
+    A10   n=4914     5.232%
+    A11   n=4914     4.394%
+    A12   n=4914     4.295%
+    A13   n=4914     3.236%
+    A14   n=4914     4.295%
+    A15   n=4914     4.434%
+    A16   n=4914     3.619%
+    A17   n=4914     7.670%
+    A18   n=4914    10.376%
+    A19   n=4914     8.811%
+
+================================================================
+runs/subband/tcm_HP1000.csv   [cond HP1000]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               11.869%   95% CI [11.489, 12.304]
+  EER threshold     -3.1894
+  AUC               0.94123
+  d-prime           1.935
+  score mean/sd     bonafide -0.468/2.129   spoof -3.643/0.924
+  at EER threshold  acc 88.13%  F1 0.6053  P 0.461  R 0.881
+  at thr +0.0000    acc 92.47%  F1 0.5361  FAR 1.73%  FRR 57.88%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     5.511%
+    A08   n=4914     5.494%
+    A09   n=4914     4.906%
+    A10   n=4914     7.915%
+    A11   n=4914     8.502%
+    A12   n=4914     8.078%
+    A13   n=4914     6.757%
+    A14   n=4914     8.142%
+    A15   n=4914     6.675%
+    A16   n=4914     7.612%
+    A17   n=4914    21.917%
+    A18   n=4914    25.316%
+    A19   n=4914    26.311%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  LP3400         71237     0.408         [0.32, 0.50]   0.9997    11.640
+  HP100          71237     0.244         [0.20, 0.31]   0.9999    14.787
+  HP300          71237     1.470         [1.33, 1.62]   0.9984     6.803
+  HP500          71237     5.301         [4.99, 5.59]   0.9832     2.928
+  HP1000         71237    11.869       [11.49, 12.30]   0.9412     1.935
+
+wrote results/subband/tcm.json
