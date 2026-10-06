@@ -16,9 +16,9 @@
 #   slurm logs        $SCR/itu_train/slurm_logs/
 #   final best.pth    $FINAL_ROOT/<run>/               (turbo, copied on finish)
 #
-# CHAIN copies of the 1-day job are queued with --dependency=singleton; each
+# CHAIN copies of the 7-hour job are queued with --dependency=singleton; each
 # resumes where the last stopped and the spare ones exit at once. 50 epochs is
-# the cap, so the default of 8 one-day slots is generous -- raise it if a run
+# the cap; at a worst case of ~1 h/epoch that is ~50 h, so 10 slots of 7 h cover it -- raise it if a run
 # writes no DONE.json by the time the chain ends, and just submit again: a
 # re-submission resumes from last.pth.
 
@@ -33,7 +33,7 @@ SMOKE=${SMOKE:-0}
 AFTER=${AFTER:-}
 ACCUM=${ACCUM:-1}
 DRY=${DRY:-0}
-CHAIN=${CHAIN:-8}
+CHAIN=${CHAIN:-10}
 
 T=/nfs/turbo/umd-hafiz/issf_server_data
 SCR=${SCR:-/scratch/hafiz_root/hafiz1/$USER}
@@ -87,7 +87,7 @@ echo "run dir    $RUN_DIR"
 echo "final dir  ${FINAL_DIR:-<none, smoke test>}"
 DEP=singleton
 [ -n "$AFTER" ] && DEP="singleton,afterok:$AFTER"
-echo "jobs       $CHAIN chained x 1 day on spgpu, batch split $ACCUM, dependency $DEP"
+echo "jobs       $CHAIN chained x 7 h on spgpu, batch split $ACCUM, dependency $DEP"
 [ -f "$RUN_DIR/last.pth" ] && echo "resuming   from $RUN_DIR/last.pth"
 [ "$DRY" = "1" ] && { echo "DRY=1: nothing submitted"; exit 0; }
 
