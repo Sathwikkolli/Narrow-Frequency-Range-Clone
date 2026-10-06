@@ -3,17 +3,20 @@
 #SBATCH --partition=spgpu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=4
 #SBATCH --gpus=1
-#SBATCH --mem=48g
-#SBATCH --time=2-00:00:00
+#SBATCH --mem=40g
+#SBATCH --time=1-00:00:00
 
 # --- one training run; submitted by train/submit.sh, not by hand ---
 #
 # submit.sh queues several copies of this job under one name with
 # --dependency=singleton, so they run one after another. Each copy resumes from
 # last.pth, and once the run has written DONE.json the remaining copies exit in
-# seconds. That is how a run of unknown length fits in 2-day slots.
+# seconds. That is how a run of unknown length fits in 1-day slots.
+#
+# 4 CPUs / 40 GB is one GPU's share of an spgpu node (32 CPUs, ~380 GB, 8 A40s).
+# Asking for more means waiting for a node with several GPUs' worth of CPUs free.
 #
 # spgpu (A40, 48 GB) only: fine-tuning XLS-R at the published batch size does not
 # fit a 16 GB V100.
