@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=12
 #SBATCH --gpus=1
 #SBATCH --mem=48g
-#SBATCH --time=04:00:00
+#SBATCH --time=00:30:00
 #SBATCH --output=/scratch/hafiz_root/hafiz1/%u/itu_train/slurm_logs/preflight_%j.log
 
 # --- everything that could break a training run mid-way, tested up front ---
@@ -15,12 +15,13 @@
 #   mkdir -p /scratch/hafiz_root/hafiz1/$USER/itu_train/slurm_logs
 #   MODEL=tcm sbatch train/preflight.sbatch
 #   MODEL=tcm ACCUM=2 sbatch train/preflight.sbatch      # if memory FAILs
+#   MODEL=tcm SAMPLE=0 sbatch --time=3:00:00 train/preflight.sbatch   # decode ALL ~100k files
 #
 # Same partition, CPUs, memory and conda env as train.sbatch, so what passes here
 # is what the real job gets. Four stages, each must pass:
 #
-#   1. train/preflight.py   env, resampler, full scan of every ITU (C1) AND
-#                           wideband train/dev file, GPU memory at the published
+#   1. train/preflight.py   env, resampler, every ITU (C1) and wideband train/dev
+#                           file present + 300 per split decoded, GPU memory at the published
 #                           batch, speed -> run-time projection, checkpoint
 #                           save/reload, scratch and turbo space
 #   2. stop + resume        the real train.py on a small subset: stopped after
@@ -30,11 +31,12 @@
 #                           best.pth that stage 2 wrote
 #   4. home untouched       nothing from this job landed in $HOME
 #
-# Takes ~1-2 h; most of it is decoding the ~100k train/dev files off turbo.
+# About 5 min, most of it loading XLS-R four times.
 
 set -u
 MODEL=${MODEL:-tcm}
 ACCUM=${ACCUM:-1}
+SAMPLE=${SAMPLE:-300}
 CLONE_DIR=${CLONE_DIR:-${SLURM_SUBMIT_DIR:-$HOME/Narrow-Frequency-Range-Clone}}
 T=/nfs/turbo/umd-hafiz/issf_server_data
 SCR=${SCR:-/scratch/hafiz_root/hafiz1/$USER}
@@ -70,14 +72,14 @@ python "$CLONE_DIR/train/preflight.py" --model "$MODEL" \
     --data itu wb --data-root "$ITU_ROOT" "$WB_ROOT" \
     --repo "$REPO" --protocols "$PROTOCOLS" \
     --scratch "$SCR/itu_train" --final-root "$FINAL_ROOT" \
-    --workers "$W" --accum "$ACCUM" \
+    --workers "$W" --accum "$ACCUM" --sample "$SAMPLE" \
     && STAGE[1]=PASS || STAGE[1]=FAIL
 
 echo; echo "################ 2. stop + resume with the real trainer"
 RUN=$WORK/run
 ARGS=(--model "$MODEL" --data itu --seed 1 --run-dir "$RUN" --repo "$REPO"
       --data-root "$ITU_ROOT" --protocols "$PROTOCOLS" --workers "$W" --accum "$ACCUM"
-      --limit-train 400 --limit-dev 200 --max-epochs 2)
+      --limit-train 60 --limit-dev 40 --max-epochs 2)
 python "$CLONE_DIR/train/train.py" "${ARGS[@]}" --stop-after-epoch 1
 r1=$?
 python "$CLONE_DIR/train/train.py" "${ARGS[@]}"

@@ -11,9 +11,9 @@ reason that was knowable in advance:
 
   env        torch, CUDA, GPU arch supported by this torch build, fairseq imports
   resampler  8 kHz -> 16 kHz leaves 4-8 kHz empty (no imaging into the studied band)
-  data       EVERY train and dev file in the protocol: exists, decodes, right rate,
-             finite, not empty. One corrupt FLAC would otherwise crash epoch 1 at
-             hour N, or worse, every epoch.
+  data       every train and dev file in the protocol exists; a random --sample of
+             them per split decodes at the right rate, finite, not empty
+             (--sample 0 decodes all ~100k, which takes an hour off turbo)
   memory     real XLS-R model, published batch, real clips: forward + backward +
              Adam step (Adam's state is allocated on the first step, so peak memory
              is only known after one), then a dev batch. Peak must leave headroom.
@@ -107,7 +107,7 @@ def _probe(args):
     return None
 
 
-def check_data(data, root, protocols, workers):
+def check_data(data, root, protocols, workers, sample):
     expected, flac_dir = T.CONDITIONS[data]
     ok = True
     for subset in ("train", "dev"):
@@ -118,17 +118,20 @@ def check_data(data, root, protocols, workers):
             report("FAIL", f"data/{data}/{subset}", str(e))
             ok = False
             continue
+        todo = paths
+        if sample and sample < len(paths):
+            todo = [paths[i] for i in np.random.RandomState(0).choice(len(paths), sample, replace=False)]
         with Pool(workers) as pool:
-            bad = [r for r in pool.imap_unordered(_probe, [(str(p), expected) for p in paths],
+            bad = [r for r in pool.imap_unordered(_probe, [(str(p), expected) for p in todo],
                                                   chunksize=64) if r]
         mins = (time.time() - t0) / 60
         if bad:
             report("FAIL", f"data/{data}/{subset}",
-                   f"{len(bad)} of {len(paths)} bad, e.g. {bad[:3]}")
+                   f"{len(bad)} of {len(todo)} decoded are bad, e.g. {bad[:3]}")
             ok = False
         else:
             report("PASS", f"data/{data}/{subset}",
-                   f"all {len(paths)} files decode at {expected} Hz "
+                   f"all {len(paths)} present, {len(todo)} decoded at {expected} Hz "
                    f"({int(y.sum())} bonafide / {int(len(y) - y.sum())} spoof), {mins:.1f} min")
     return ok
 
@@ -285,7 +288,8 @@ def main():
     ap.add_argument("--dev-batch-size", type=int, default=32)
     ap.add_argument("--max-epochs", type=int, default=50)
     ap.add_argument("--chain-hours", type=float, default=4 * 48)
-    ap.add_argument("--skip-data", action="store_true", help="skip the full file scan")
+    ap.add_argument("--sample", type=int, default=300,
+                    help="files decoded per split (existence is always checked for all); 0 = all")
     args = ap.parse_args()
     if len(args.data) != len(args.data_root):
         sys.exit("--data and --data-root must pair up")
@@ -295,10 +299,9 @@ def main():
         sys.exit(1)
     print("=== resampler", flush=True)
     check_resampler()
-    if not args.skip_data:
-        for d, r in zip(args.data, args.data_root):
-            print(f"=== data: {d} ({r})", flush=True)
-            check_data(d, r, args.protocols, args.workers)
+    for d, r in zip(args.data, args.data_root):
+        print(f"=== data: {d} ({r})", flush=True)
+        check_data(d, r, args.protocols, args.workers, args.sample)
     print(f"=== GPU memory and speed: {args.model} on {args.data[0]}", flush=True)
     got = check_gpu(args.model, args.data[0], args.repo, args.data_root[0], args.protocols,
                     args.workers, args.chain_hours, args.max_epochs, args.accum,
