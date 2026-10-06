@@ -1,0 +1,463 @@
+<title>NFR Anti-spoofing Work Summary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column, sections follow the paper structure; wide tables scroll inside their own frame. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1b2129; --muted:#5b6573; --line:#dde1e7;
+  --accent:#1f5fa8; --accent-soft:#e6eef8; --done:#1d7a4f; --done-soft:#e3f3ea; --wait:#9a5b00; --wait-soft:#fbefd9;
+  --band:#cfe0f3;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa5b3; --line:#2c3440;
+  --accent:#7fb2ea; --accent-soft:#1c2a3b; --done:#6cc99a; --done-soft:#17302a; --wait:#e8b45c; --wait-soft:#33281a;
+  --band:#22364d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2028; --fg:#e4e8ee; --muted:#9aa5b3; --line:#2c3440;
+  --accent:#7fb2ea; --accent-soft:#1c2a3b; --done:#6cc99a; --done-soft:#17302a; --wait:#e8b45c; --wait-soft:#33281a;
+  --band:#22364d; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15.5px;line-height:1.6;padding:40px 20px 80px;padding-block:40px 80px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:2.1rem;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:600;padding-bottom:8px;border-bottom:2px solid var(--fg)}
+h3{font-size:1.08rem;font-weight:600}
+p{margin:0;max-width:68ch}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:18px}
+.sub{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:14px}
+.lede{font-size:1.06rem;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:6px;max-width:70ch}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:3px;word-break:break-all}
+.chip{display:inline-block;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;vertical-align:2px;margin-left:6px;font-weight:500}
+.chip.done{background:var(--done-soft);color:var(--done)}
+.chip.wait{background:var(--wait-soft);color:var(--wait)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 16px}
+dt{color:var(--muted);font-size:.9rem}
+dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+caption{caption-side:top;text-align:left;padding:12px 14px 4px;font-weight:600;font-family:var(--f-display);font-size:.98rem}
+th,td{padding:7px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+thead th{font-weight:600;color:var(--muted);font-size:.8rem;border-bottom:1px solid var(--fg)}
+tbody tr:last-child td{border-bottom:none}
+tr.sep td{border-top:1px solid var(--muted)}
+td.num,th.num{font-family:var(--f-mono);font-size:.84rem}
+td.best{font-weight:600;color:var(--accent)}
+td.pend{color:var(--wait);font-family:var(--f-body);font-style:italic}
+.group th{background:var(--accent-soft);color:var(--fg);text-align:center;border-bottom:none}
+.note{font-size:.9rem;color:var(--muted)}
+.obs{border-left:3px solid var(--accent);padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:6px}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.88rem}
+.flow span{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:4px 9px}
+.flow i{color:var(--muted);font-style:normal}
+svg text{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem}
+@media (max-width:520px){h1{font-size:1.7rem} dl{grid-template-columns:1fr} dt{margin-top:6px}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Work summary for the paper team · ASVspoof · telephony band</span>
+  <h1>Narrow Frequency Range and Distorted Anti-spoofing</h1>
+  <p class="lede">Everything that has been built, run and measured so far, laid out in the order of the planned paper. Numbers are copied from the project's Loop page. Items still running are marked <span class="chip wait">pending</span>.</p>
+
+  <svg viewBox="0 0 640 74" role="img" aria-label="Frequency axis from 50 Hz to 20 kHz, with the kept telephone band 300 to 3400 Hz shaded" style="width:100%;max-width:640px">
+    <rect x="223" y="14" width="185" height="30" rx="3" style="fill:var(--band)"></rect>
+    <line x1="20" y1="44" x2="620" y2="44" style="stroke:var(--muted)" stroke-width="1"></line>
+    <g>
+      <line x1="20" y1="44" x2="20" y2="50" style="stroke:var(--muted)"></line><text x="20" y="64" text-anchor="middle">50</text>
+      <line x1="112" y1="44" x2="112" y2="50" style="stroke:var(--muted)"></line><text x="112" y="64" text-anchor="middle">100</text>
+      <line x1="223" y1="44" x2="223" y2="50" style="stroke:var(--muted)"></line><text x="223" y="64" text-anchor="middle">300</text>
+      <line x1="325" y1="44" x2="325" y2="50" style="stroke:var(--muted)"></line><text x="325" y="64" text-anchor="middle">1k</text>
+      <line x1="408" y1="44" x2="408" y2="50" style="stroke:var(--muted)"></line><text x="408" y="64" text-anchor="middle">3.4k</text>
+      <line x1="530" y1="44" x2="530" y2="50" style="stroke:var(--muted)"></line><text x="530" y="64" text-anchor="middle">10k</text>
+      <line x1="620" y1="44" x2="620" y2="50" style="stroke:var(--muted)"></line><text x="620" y="64" text-anchor="middle">20k Hz</text>
+    </g>
+    <text x="315" y="33" text-anchor="middle" style="fill:var(--fg)">kept band: 300–3400 Hz</text>
+  </svg>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#links">Links</a><a href="#status">Status</a><a href="#data">Data creation</a><a href="#systems">Systems</a><a href="#setup">Setup</a><a href="#results">Results</a><a href="#figures">Figures</a><a href="#open">Open items</a>
+  </nav>
+</header>
+
+<section id="links">
+  <h2>Where everything lives</h2>
+  <div class="panel">
+    <dl>
+      <dt>Code</dt><dd><a href="https://github.com/issflab/Narrow-Frequency-Range-/tree/main">github.com/issflab/Narrow-Frequency-Range-</a></dd>
+      <dt>ITU audio</dt><dd><a href="https://drive.google.com/drive/u/2/folders/1mARaRVoXtBKuWU3u-1HZ5OJZi01MlyH2">Google Drive folder: ITU outputs</a></dd>
+      <dt>Physical recordings</dt><dd><a href="https://drive.google.com/drive/u/2/folders/1NbiE8aMTHm5IXPmvYvJNEKKurcFX7guX">Google Drive folder: call and device recordings</a></dd>
+      <dt>ITU-T software</dt><dd><a href="https://github.com/openitu/STL">github.com/openitu/STL</a> (G.191 Software Tool Library)</dd>
+      <dt>NFR dataset</dt><dd><code>/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019_NFR</code> (Great Lakes)</dd>
+      <dt>Figures</dt><dd>All plots are in the Loop page “Narrow Frequency Range and Distorted Anti-spoofing”</dd>
+    </dl>
+  </div>
+</section>
+
+<section id="status">
+  <h2>What has been done</h2>
+  <div class="panel">
+    <ul>
+      <li>Five DSP methods to convert normal speech to the narrow frequency range, compared on cut quality and speed <span class="chip done">done</span></li>
+      <li>Constant-Q spectrograms and difference plots for the same audio under each method <span class="chip done">done</span></li>
+      <li>Telephony simulation chosen and run with the ITU-T G.191 toolkit (P0, B1, C1) <span class="chip done">done</span></li>
+      <li>Physical recordings of one utterance: phone call, Device A, Device B <span class="chip done">done</span></li>
+      <li>ASVspoof 2019 LA evaluation set converted with the ITU pipeline and the five DSP methods <span class="chip done">done</span></li>
+      <li>DF-Arena-1B scored on the ITU and DSP conditions, including per-attack EER <span class="chip done">done</span></li>
+      <li>RawNet2, LCNN, AASIST, Nes2Net, TCM, SLS scored on ASVspoof 2019 LA, In-the-Wild and Famous Figures (Trump) <span class="chip done">done</span></li>
+      <li>Fixed-threshold FPR / FRR and score-distribution analysis <span class="chip done">done</span></li>
+      <li>Sub-band ablation (low-pass / high-pass separately) <span class="chip wait">partly pending</span></li>
+      <li>Step-by-step analysis of why TCM and SLS degrade, why Nes2Net is inconsistent and why AASIST is stable <span class="chip wait">not started</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="data">
+  <h2>Narrow frequency band data creation</h2>
+
+  <div class="sub">
+    <h3>NFR methods (F1–F5)</h3>
+    <p>All five keep 300 Hz – 3.4 kHz. F0 is the control: the source scaled by the same constant −6 dB headroom the five methods use.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h3>F1 · Parks–McClellan (equiripple FIR)</h3><p>Chooses coefficients to minimise the worst error anywhere in the spectrum, so leftover error is spread evenly. Sharpest, cleanest cut for a given cost. Default when quality matters.</p></div>
+    <div class="panel"><h3>F2 · Kaiser window FIR</h3><p>Truncates the ideal infinite filter and tapers it so the edges do not ring. A bit more compute than F1 for the same quality, but a closed-form design that cannot fail. Good for automatically generated filters.</p></div>
+    <div class="panel"><h3>F3 · Elliptic IIR</h3><p>Feeds past outputs back, so it is about eight times cheaper than the FIR methods. Used for live processing on phones and small chips. Trade-off: frequencies are delayed by different amounts, smearing timing near the band edges.</p></div>
+    <div class="panel"><h3>F4 · Polyphase decimation</h3><p>Lowers the sampling rate instead of filtering, so content above the new Nyquist disappears. Fastest and shrinks the file. If anti-aliasing is weak, high frequencies fold back into the kept band.</p></div>
+    <div class="panel"><h3>F5 · FFT overlap-add</h3><p>The same filter as F2, applied in blocks in the frequency domain. Identical output, about ten times faster once the filter is long.</p></div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <caption>How the five methods differ when keeping 300 Hz – 3.4 kHz of the same speech</caption>
+      <thead><tr><th>Method</th><th>Removed above 3.4 kHz</th><th>Removed below 300 Hz</th><th>Passband wobble</th><th>Cut sharpness</th><th>Time for 6 s audio</th></tr></thead>
+      <tbody>
+        <tr><td>Parks–McClellan</td><td class="num">122 dB</td><td class="num best">86 dB</td><td class="num">0.39 dB</td><td class="num">74 Hz</td><td class="num">199 ms</td></tr>
+        <tr><td>Kaiser FIR</td><td class="num best">161 dB</td><td class="num best">87 dB</td><td class="num best">0.02 dB</td><td class="num">64 Hz</td><td class="num">241 ms</td></tr>
+        <tr><td>Elliptic IIR</td><td class="num">65 dB</td><td class="num">61 dB</td><td class="num">1.00 dB</td><td class="num best">45 Hz</td><td class="num best">11 ms</td></tr>
+        <tr><td>Polyphase dec.</td><td class="num best">161 dB</td><td class="num best">86 dB</td><td class="num best">0.01 dB</td><td class="num">64 Hz</td><td class="num">38 ms</td></tr>
+        <tr><td>FFT overlap</td><td class="num">86 dB</td><td class="num">74 dB</td><td class="num best">0.01 dB</td><td class="num">65 Hz</td><td class="num best">11 ms</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Higher is better for “removed”; lower is better for wobble, sharpness (−3 dB to −60 dB, both edges averaged) and time (includes filter design). Highlighted = best. The polyphase time was read off a chart; check it against the original plot.</p>
+
+  <div class="sub">
+    <h3>Why constant-Q spectrograms</h3>
+    <p>The first spectrogram used a fixed 2048-sample window (43 ms at 48 kHz, hop 256). That gives about 23 Hz resolution everywhere, too coarse for the speaker's F0 (about 100–140 Hz), so F0 looked blurred. The switch to constant-Q (Q = 18, 48 bins per octave, 50 Hz – 20 kHz, hop 240 samples = 5 ms) gives a window of about 150 ms at 120 Hz and 4.5 ms at 4 kHz, so F0 and its harmonics appear as clear lines while high-frequency timing stays sharp.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Telephony simulation with ITU-T G.191</h3>
+    <p>Chosen because it is the official tool set phone companies use to test call quality, so the conditions follow a real standard. It is free, runs on Great Lakes and gives the same output every time.</p>
+    <div class="flow" aria-label="ITU pipeline">
+      <span>FF Trump real and fake audio</span><i>→</i><span>stereo to mono, 16 kHz</span><i>→</i><span>downsample to 8 kHz</span><i>→</i><span>telephone band shaping (IRS8)</span><i>→</i><span>level normalisation (ITU-T P.56)</span><i>→</i><span>save narrowband clip</span><i>→</i><span>constant-Q spectrogram</span>
+    </div>
+    <p>Three conditions, each changing one thing so the cause of any change can be identified:</p>
+    <ul>
+      <li><b>P0</b>: control, level normalisation only (ITU-T P.56, −26 dBov), 16 kHz</li>
+      <li><b>B1</b>: narrowband telephone, 8 kHz, 300–3400 Hz via the IRS handset response (ITU-T P.48)</li>
+      <li><b>C1</b>: B1 plus the G.711 µ-law codec, matching a landline call</li>
+    </ul>
+    <p><b>RAW</b> in the tables means the untouched original audio.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Physical recordings</h3>
+    <p>Utterance 3 was recorded over a phone call and on two devices (Device A, Device B). The recordings were aligned to Device A and compared with constant-Q spectrograms (48 bins/octave, 16 kHz).</p>
+  </div>
+</section>
+
+<section id="systems">
+  <h2>Anti-spoofing systems</h2>
+  <div class="panel">
+    <ul>
+      <li><b>DF-Arena-1B</b>: <code>Speech-Arena-2025/DF_Arena_1B_V_1</code></li>
+      <li><b>RawNet2</b></li>
+      <li><b>LCNN</b></li>
+      <li><b>AASIST</b></li>
+      <li><b>Nes2Net</b></li>
+      <li><b>TCM</b></li>
+      <li><b>SLS</b></li>
+    </ul>
+    <p class="note">Architecture descriptions are not written up yet.</p>
+  </div>
+</section>
+
+<section id="setup">
+  <h2>Experimental setup</h2>
+  <div class="grid2">
+    <div class="panel">
+      <span class="eyebrow">In-domain</span>
+      <h3>ASVspoof 2019 LA, evaluation</h3>
+      <p>71,237 trials. Converted with the ITU pipeline (P0, B1, C1) and with F0–F5.</p>
+    </div>
+    <div class="panel">
+      <span class="eyebrow">Out-of-domain</span>
+      <h3>In-the-Wild</h3>
+      <p>Same conditions as above.</p>
+    </div>
+    <div class="panel">
+      <span class="eyebrow">Out-of-domain</span>
+      <h3>Famous Figures: Donald Trump</h3>
+      <p>Real and fake clips of one speaker, same conditions.</p>
+    </div>
+  </div>
+  <p><b>Metrics:</b> EER with 95% CI, AUC, d′. FPR / FRR at a fixed threshold, where each model's threshold is its EER point on RAW ASVspoof 2019 LA (the RAW rows have FPR = FRR). Score means and spreads of real and fake clips.</p>
+  <p><b>Sub-band ablation:</b> HP100, HP300, HP500, HP1000 remove everything below 100 / 300 / 500 / 1000 Hz; LP3400 removes everything above 3400 Hz. Compared with F3, which removes both sides.</p>
+</section>
+
+<section id="results">
+  <h2>Results</h2>
+
+  <div class="sub"><h3>1 · DF-Arena-1B, ASVspoof 2019 LA eval, ITU conditions</h3></div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>P0</th><th>B1</th><th>C1</th></tr></thead>
+    <tbody>
+      <tr><td>EER</td><td class="num best">1.455%</td><td class="num">2.243%</td><td class="num">2.325%</td></tr>
+      <tr><td>95% CI</td><td class="num">[1.36, 1.55]</td><td class="num">[2.12, 2.37]</td><td class="num">[2.22, 2.49]</td></tr>
+      <tr><td>AUC</td><td class="num">0.99743</td><td class="num">0.99412</td><td class="num">0.99374</td></tr>
+      <tr><td>d′</td><td class="num">5.185</td><td class="num">4.531</td><td class="num">4.512</td></tr>
+    </tbody></table></div>
+
+  <div class="tbl"><table>
+    <caption>DF-Arena-1B per-attack EER</caption>
+    <thead><tr><th>Attack</th><th>P0</th><th>B1</th><th>C1</th><th class="l">Note</th></tr></thead>
+    <tbody>
+      <tr><td>A10</td><td class="num">8.101%</td><td class="num">12.675%</td><td class="num">13.310%</td><td class="l">dominates every condition</td></tr>
+      <tr><td>A16</td><td class="num">1.076%</td><td class="num">2.567%</td><td class="num">2.788%</td><td class="l">2.4× worse</td></tr>
+      <tr><td>A12</td><td class="num">0.367%</td><td class="num">0.856%</td><td class="num">0.896%</td><td class="l">2.3×</td></tr>
+      <tr><td>A19</td><td class="num">0.530%</td><td class="num">0.750%</td><td class="num">0.774%</td><td class="l"></td></tr>
+      <tr><td>A18</td><td class="num">0.465%</td><td class="num">0.879%</td><td class="num">0.937%</td><td class="l"></td></tr>
+      <tr><td>A13</td><td class="num">1.165%</td><td class="num">1.117%</td><td class="num">1.222%</td><td class="l">unchanged</td></tr>
+      <tr><td>A08, A09</td><td class="num">0.000%</td><td class="num">0.000%</td><td class="num">0.000%</td><td class="l">immune</td></tr>
+    </tbody></table></div>
+
+  <div class="sub"><h3>2 · DF-Arena-1B, ASVspoof 2019 LA eval, five DSP methods</h3></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Condition</th><th>n</th><th>EER %</th><th>95% CI</th><th>AUC</th><th>d′</th></tr></thead>
+    <tbody>
+      <tr><td>F1 Parks–McClellan</td><td class="num">71,237</td><td class="num">4.870</td><td class="num">[4.69, 5.09]</td><td class="num">0.9854</td><td class="num">3.730</td></tr>
+      <tr><td>F2 Kaiser FIR</td><td class="num">71,237</td><td class="num">4.079</td><td class="num">[3.92, 4.24]</td><td class="num">0.9890</td><td class="num">3.956</td></tr>
+      <tr><td>F3 Elliptic IIR</td><td class="num">71,237</td><td class="num best">3.656</td><td class="num">[3.51, 3.84]</td><td class="num">0.9900</td><td class="num">3.985</td></tr>
+      <tr><td>F4 Polyphase</td><td class="num">71,237</td><td class="num">3.805</td><td class="num">[3.64, 3.97]</td><td class="num">0.9897</td><td class="num">3.970</td></tr>
+      <tr><td>F5 FFT overlap</td><td class="num">71,237</td><td class="num">3.970</td><td class="num">[3.81, 4.13]</td><td class="num">0.9894</td><td class="num">3.986</td></tr>
+    </tbody></table></div>
+  <div class="obs">
+    <p>Telephone shaping (B1) raises the EER from 1.455% to 2.243%; the codec (C1) adds little more. A10 is the hardest attack throughout; A08 and A09 are never missed. The five DSP methods give 3.66–4.87%.</p>
+  </div>
+
+  <div class="sub"><h3>3 · EER (%) of six models, all conditions</h3></div>
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">ASVspoof 2019 LA (in-domain)</th></tr>
+      <tr><th>Cond.</th><th class="l">What it is</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RAW</td><td class="l">original</td><td class="num">4.596</td><td class="num">6.349</td><td class="num">0.228</td><td class="num">0.136</td><td class="num">0.149</td><td class="num">0.231</td></tr>
+      <tr><td>P0</td><td class="l">level only</td><td class="num">6.143</td><td class="num">6.528</td><td class="num">0.203</td><td class="num">0.148</td><td class="num">0.233</td><td class="num">0.394</td></tr>
+      <tr><td>B1</td><td class="l">phone filter</td><td class="num">35.731</td><td class="num">18.139</td><td class="num">0.244</td><td class="num">0.775</td><td class="num">3.154</td><td class="num">3.127</td></tr>
+      <tr><td>C1</td><td class="l">+ codec</td><td class="num">35.690</td><td class="num">53.651</td><td class="num">0.247</td><td class="num">0.774</td><td class="num">3.184</td><td class="num">3.111</td></tr>
+      <tr class="sep"><td>F0</td><td class="l">control</td><td class="num">4.420</td><td class="num">6.541</td><td class="num">0.204</td><td class="num">0.124</td><td class="num">0.218</td><td class="num">0.324</td></tr>
+      <tr><td>F1</td><td class="l">Parks–McClellan</td><td class="num">24.786</td><td class="num">18.246</td><td class="num">0.316</td><td class="num">1.210</td><td class="num">3.222</td><td class="num">3.532</td></tr>
+      <tr><td>F2</td><td class="l">Kaiser FIR</td><td class="num">24.460</td><td class="num">18.209</td><td class="num">0.285</td><td class="num">0.969</td><td class="num">2.814</td><td class="num">3.290</td></tr>
+      <tr><td>F3</td><td class="l">Elliptic IIR</td><td class="num">26.350</td><td class="num">18.341</td><td class="num">0.288</td><td class="num">0.856</td><td class="num">2.559</td><td class="num">3.048</td></tr>
+      <tr><td>F4</td><td class="l">Polyphase</td><td class="num">25.441</td><td class="num">18.450</td><td class="num">0.313</td><td class="num">0.938</td><td class="num">2.635</td><td class="num">3.181</td></tr>
+      <tr><td>F5</td><td class="l">FFT overlap</td><td class="num">24.160</td><td class="num">18.273</td><td class="num">0.296</td><td class="num">0.938</td><td class="num">2.746</td><td class="num">3.212</td></tr>
+    </tbody></table></div>
+
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">In-the-Wild (out-of-domain)</th></tr>
+      <tr><th>Cond.</th><th class="l">What</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RAW</td><td class="l">original</td><td class="num">48.99</td><td class="num">29.48</td><td class="num">11.22</td><td class="num">8.41</td><td class="num">7.94</td><td class="num">7.45</td></tr>
+      <tr><td>P0</td><td class="l">level only</td><td class="num">39.41</td><td class="num">27.70</td><td class="num">10.39</td><td class="num">9.14</td><td class="num">7.96</td><td class="num">6.78</td></tr>
+      <tr><td>B1</td><td class="l">phone filter</td><td class="num">41.41</td><td class="num">21.96</td><td class="num">13.12</td><td class="num">19.49</td><td class="num">22.74</td><td class="num">16.18</td></tr>
+      <tr><td>C1</td><td class="l">+ codec</td><td class="num">41.36</td><td class="num">28.23</td><td class="num">13.07</td><td class="num">19.58</td><td class="num">22.96</td><td class="num">16.38</td></tr>
+      <tr class="sep"><td>F0</td><td class="l">control</td><td class="num">51.82</td><td class="num">29.42</td><td class="num">13.83</td><td class="num">13.96</td><td class="num">11.34</td><td class="num">10.16</td></tr>
+      <tr><td>F1</td><td class="l">Parks–McClellan</td><td class="num">50.61</td><td class="num">29.99</td><td class="num">16.35</td><td class="num">22.08</td><td class="num">30.21</td><td class="num">23.30</td></tr>
+      <tr><td>F2</td><td class="l">Kaiser FIR</td><td class="num">50.76</td><td class="num">29.83</td><td class="num">16.25</td><td class="num">21.79</td><td class="num">30.04</td><td class="num">23.09</td></tr>
+      <tr><td>F3</td><td class="l">Elliptic IIR</td><td class="num">50.54</td><td class="num">30.39</td><td class="num">17.10</td><td class="num">24.11</td><td class="num">33.08</td><td class="num">25.49</td></tr>
+      <tr><td>F4</td><td class="l">Polyphase</td><td class="num">50.52</td><td class="num">29.99</td><td class="num">16.90</td><td class="num">23.48</td><td class="num">32.70</td><td class="num">25.18</td></tr>
+      <tr><td>F5</td><td class="l">FFT overlap</td><td class="num">51.21</td><td class="num">29.85</td><td class="num">16.16</td><td class="num">21.80</td><td class="num">30.01</td><td class="num">22.96</td></tr>
+    </tbody></table></div>
+
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">Famous Figures: Donald Trump (out-of-domain)</th></tr>
+      <tr><th>Cond.</th><th class="l">What</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RAW</td><td class="l">original</td><td class="num">46.07</td><td class="num">28.21</td><td class="num">58.58</td><td class="num">43.04</td><td class="num">39.76</td><td class="num">40.28</td></tr>
+      <tr><td>P0</td><td class="l">level only</td><td class="num">49.41</td><td class="num">28.98</td><td class="num">59.15</td><td class="num">39.88</td><td class="num">36.35</td><td class="num">36.64</td></tr>
+      <tr><td>B1</td><td class="l">phone filter</td><td class="num">38.34</td><td class="num">39.00</td><td class="num">55.78</td><td class="num">47.62</td><td class="num">44.53</td><td class="num">45.21</td></tr>
+      <tr><td>C1</td><td class="l">+ codec</td><td class="num">38.43</td><td class="num">33.40</td><td class="num">55.89</td><td class="num">47.86</td><td class="num">44.86</td><td class="num">45.18</td></tr>
+      <tr class="sep"><td>F0</td><td class="l">control</td><td class="num">44.89</td><td class="num">28.37</td><td class="num">58.41</td><td class="num">42.72</td><td class="num">42.81</td><td class="num">47.28</td></tr>
+      <tr><td>F1</td><td class="l">Parks–McClellan</td><td class="num">28.63</td><td class="num">42.99</td><td class="num">56.06</td><td class="num">50.53</td><td class="num">47.73</td><td class="num">49.58</td></tr>
+      <tr><td>F2</td><td class="l">Kaiser FIR</td><td class="num">28.61</td><td class="num">42.87</td><td class="num">56.21</td><td class="num">50.76</td><td class="num">47.79</td><td class="num">49.58</td></tr>
+      <tr><td>F3</td><td class="l">Elliptic IIR</td><td class="num">28.40</td><td class="num">41.90</td><td class="num">56.14</td><td class="num">50.82</td><td class="num">46.91</td><td class="num">48.27</td></tr>
+      <tr><td>F4</td><td class="l">Polyphase</td><td class="num">28.50</td><td class="num">41.37</td><td class="num">56.04</td><td class="num">51.09</td><td class="num">47.22</td><td class="num">48.99</td></tr>
+      <tr><td>F5</td><td class="l">FFT overlap</td><td class="num">28.48</td><td class="num">43.31</td><td class="num">56.06</td><td class="num">50.26</td><td class="num">47.45</td><td class="num">49.73</td></tr>
+    </tbody></table></div>
+
+  <div class="obs">
+    <p><b>ASVspoof 2019 LA:</b> RawNet2 goes from 4.42% (F0) to 24–26% under F1–F5 and about 35.7% under B1/C1. LCNN goes to about 18.3%, and the codec alone pushes it to 53.65% (C1). AASIST stays at or below 0.32%. Nes2Net reaches 0.86–1.21%; TCM and SLS reach 2.56–3.53%. Level normalisation alone (RAW → P0) moves RawNet2 from 4.60% to 6.14%, so ITU conditions should be compared against P0.</p>
+    <p><b>In-the-Wild:</b> the models that are best in-domain lose the most. Against F0, Nes2Net 13.96 → 21.79–24.11%, TCM 11.34 → 30.01–33.08%, SLS 10.16 → 22.96–25.49%, AASIST 13.83 → 16.16–17.10%. RawNet2 is near chance in every condition. B1/C1 hurt TCM and SLS less than F1–F5.</p>
+    <p><b>Famous Figures:</b> every model is already near chance on unprocessed audio (28–59%). RawNet2 is the exception that improves under F1–F5 (44.89 → about 28.5%).</p>
+    <p><b>Choice of method:</b> the five methods give close EERs; the widest spread is 2.19 points (RawNet2, ASVspoof) and 3.07 points (TCM, In-the-Wild).</p>
+  </div>
+
+  <div class="sub"><h3>4 · FPR / FRR (%) at the fixed threshold</h3></div>
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">ASVspoof 2019 LA</th></tr>
+      <tr><th>Cond.</th><th class="l">What</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RAW</td><td class="l">original</td><td class="num">4.60 / 4.60</td><td class="num">6.35 / 6.35</td><td class="num">0.23 / 0.23</td><td class="num">0.14 / 0.14</td><td class="num">0.15 / 0.15</td><td class="num">0.23 / 0.23</td></tr>
+      <tr><td>P0</td><td class="l">level only</td><td class="num">3.17 / 12.43</td><td class="num">9.43 / 2.94</td><td class="num">0.28 / 0.16</td><td class="num">0.12 / 0.23</td><td class="num">0.19 / 0.30</td><td class="num">0.20 / 0.76</td></tr>
+      <tr><td>B1</td><td class="l">phone filter</td><td class="num">34.96 / 36.66</td><td class="num">22.87 / 1.82</td><td class="num">0.14 / 0.58</td><td class="num">0.10 / 16.41</td><td class="num">0.98 / 14.33</td><td class="num">0.34 / 39.76</td></tr>
+      <tr><td>C1</td><td class="l">+ codec</td><td class="num">34.93 / 36.46</td><td class="num">12.21 / 76.61</td><td class="num">0.14 / 0.61</td><td class="num">0.09 / 16.67</td><td class="num">0.99 / 14.41</td><td class="num">0.34 / 39.69</td></tr>
+      <tr class="sep"><td>F0</td><td class="l">control</td><td class="num">2.78 / 8.27</td><td class="num">8.44 / 3.81</td><td class="num">0.26 / 0.15</td><td class="num">0.12 / 0.14</td><td class="num">0.19 / 0.24</td><td class="num">0.22 / 0.52</td></tr>
+      <tr><td>F1</td><td class="l">Parks–McClellan</td><td class="num">3.61 / 60.31</td><td class="num">18.22 / 18.29</td><td class="num">0.09 / 4.68</td><td class="num">0.09 / 15.47</td><td class="num">0.35 / 18.22</td><td class="num">0.36 / 35.23</td></tr>
+      <tr><td>F2</td><td class="l">Kaiser FIR</td><td class="num">3.60 / 59.90</td><td class="num">18.86 / 16.07</td><td class="num">0.10 / 2.56</td><td class="num">0.10 / 10.81</td><td class="num">0.35 / 15.76</td><td class="num">0.36 / 32.70</td></tr>
+      <tr><td>F3</td><td class="l">Elliptic IIR</td><td class="num">4.28 / 61.36</td><td class="num">17.52 / 20.86</td><td class="num">0.09 / 2.39</td><td class="num">0.11 / 10.89</td><td class="num">0.51 / 11.28</td><td class="num">0.39 / 31.38</td></tr>
+      <tr><td>F4</td><td class="l">Polyphase</td><td class="num">5.17 / 56.64</td><td class="num">17.57 / 21.36</td><td class="num">0.10 / 2.68</td><td class="num">0.10 / 11.54</td><td class="num">0.48 / 11.57</td><td class="num">0.39 / 32.22</td></tr>
+      <tr><td>F5</td><td class="l">FFT overlap</td><td class="num">3.32 / 60.72</td><td class="num">19.11 / 15.45</td><td class="num">0.10 / 2.58</td><td class="num">0.10 / 10.78</td><td class="num">0.36 / 15.38</td><td class="num">0.36 / 33.11</td></tr>
+    </tbody></table></div>
+
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">In-the-Wild</th></tr>
+      <tr><th>Cond.</th><th class="l">What</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RAW</td><td class="l">original</td><td class="num">5.92 / 88.21</td><td class="num">9.13 / 64.43</td><td class="num">0.29 / 77.69</td><td class="num">0.17 / 64.88</td><td class="num">0.72 / 53.04</td><td class="num">0.30 / 60.54</td></tr>
+      <tr><td>P0</td><td class="l">level only</td><td class="num">2.49 / 88.62</td><td class="num">8.99 / 63.95</td><td class="num">0.27 / 74.08</td><td class="num">0.10 / 66.24</td><td class="num">0.64 / 49.92</td><td class="num">0.25 / 59.06</td></tr>
+      <tr><td>B1</td><td class="l">phone filter</td><td class="num">17.62 / 65.47</td><td class="num">13.07 / 40.50</td><td class="num">0.32 / 82.40</td><td class="num">0.15 / 94.89</td><td class="num">1.67 / 80.56</td><td class="num">0.43 / 90.39</td></tr>
+      <tr><td>C1</td><td class="l">+ codec</td><td class="num">17.69 / 65.44</td><td class="num">26.03 / 32.37</td><td class="num">0.32 / 82.51</td><td class="num">0.15 / 94.97</td><td class="num">1.68 / 80.71</td><td class="num">0.42 / 90.45</td></tr>
+      <tr class="sep"><td>F0</td><td class="l">control</td><td class="num">18.77 / 80.15</td><td class="num">13.64 / 56.27</td><td class="num">0.29 / 82.12</td><td class="num">0.27 / 81.00</td><td class="num">1.11 / 65.59</td><td class="num">0.36 / 75.07</td></tr>
+      <tr><td>F1</td><td class="l">Parks–McClellan</td><td class="num">5.21 / 88.53</td><td class="num">7.41 / 84.33</td><td class="num">0.25 / 93.44</td><td class="num">0.56 / 94.00</td><td class="num">5.39 / 84.51</td><td class="num">2.24 / 92.14</td></tr>
+      <tr><td>F2</td><td class="l">Kaiser FIR</td><td class="num">5.23 / 88.53</td><td class="num">7.33 / 84.40</td><td class="num">0.25 / 92.80</td><td class="num">0.54 / 93.68</td><td class="num">5.32 / 84.29</td><td class="num">2.23 / 91.69</td></tr>
+      <tr><td>F3</td><td class="l">Elliptic IIR</td><td class="num">4.97 / 88.25</td><td class="num">7.69 / 84.73</td><td class="num">0.27 / 93.52</td><td class="num">0.66 / 93.44</td><td class="num">7.11 / 83.60</td><td class="num">2.76 / 91.61</td></tr>
+      <tr><td>F4</td><td class="l">Polyphase</td><td class="num">5.69 / 87.44</td><td class="num">7.26 / 85.98</td><td class="num">0.25 / 93.73</td><td class="num">0.63 / 94.24</td><td class="num">7.00 / 83.82</td><td class="num">2.67 / 92.28</td></tr>
+      <tr><td>F5</td><td class="l">FFT overlap</td><td class="num">5.13 / 88.98</td><td class="num">7.82 / 83.18</td><td class="num">0.25 / 92.87</td><td class="num">0.60 / 93.61</td><td class="num">5.12 / 84.43</td><td class="num">2.22 / 91.79</td></tr>
+    </tbody></table></div>
+  <div class="obs"><p>Errors are mostly real speech being rejected (high FRR) while fakes are still caught (low FPR). On In-the-Wild this happens even on RAW audio, and narrowband conversion pushes FRR to 84–94% for AASIST, Nes2Net, TCM and SLS.</p></div>
+
+  <div class="sub"><h3>5 · In-the-Wild score analysis (AASIST, Nes2Net, TCM, SLS)</h3></div>
+  <div class="tbl"><table>
+    <caption>RAW (original audio): where real clips sit against the threshold</caption>
+    <thead><tr><th>Model</th><th>Threshold</th><th>Real avg score</th><th>Real spread</th><th>Below threshold (spreads)</th><th>FRR %</th><th>FPR %</th></tr></thead>
+    <tbody>
+      <tr><td>AASIST</td><td class="num">+2.00</td><td class="num">−0.06</td><td class="num">2.68</td><td class="num">0.77</td><td class="num">77.69</td><td class="num">0.29</td></tr>
+      <tr><td>Nes2Net</td><td class="num">+3.13</td><td class="num">+1.56</td><td class="num">3.12</td><td class="num">0.50</td><td class="num">64.88</td><td class="num">0.17</td></tr>
+      <tr><td>TCM</td><td class="num">+0.43</td><td class="num">+0.09</td><td class="num">2.11</td><td class="num">0.16</td><td class="num">53.04</td><td class="num">0.72</td></tr>
+      <tr><td>SLS</td><td class="num">−0.86</td><td class="num">−3.98</td><td class="num">4.26</td><td class="num">0.73</td><td class="num">60.54</td><td class="num">0.30</td></tr>
+    </tbody></table></div>
+  <div class="tbl"><table>
+    <caption>RAW (original audio): how far apart real and fake are</caption>
+    <thead><tr><th>Model</th><th>Real avg</th><th>Fake avg</th><th>Gap</th><th>Real spread</th><th>Fake spread</th><th>Separation</th><th>EER %</th></tr></thead>
+    <tbody>
+      <tr><td>AASIST</td><td class="num">−0.06</td><td class="num">−5.36</td><td class="num">5.3</td><td class="num">2.68</td><td class="num">1.52</td><td class="num">2.43</td><td class="num">11.22</td></tr>
+      <tr><td>Nes2Net</td><td class="num">+1.56</td><td class="num">−3.41</td><td class="num">5.0</td><td class="num">3.12</td><td class="num">0.70</td><td class="num">2.20</td><td class="num">8.41</td></tr>
+      <tr><td>TCM</td><td class="num">+0.09</td><td class="num">−3.97</td><td class="num">4.1</td><td class="num">2.11</td><td class="num">0.80</td><td class="num">2.55</td><td class="num">7.94</td></tr>
+      <tr><td>SLS</td><td class="num">−3.98</td><td class="num">−14.26</td><td class="num">10.3</td><td class="num">4.26</td><td class="num">1.99</td><td class="num">3.09</td><td class="num">7.45</td></tr>
+    </tbody></table></div>
+  <div class="tbl"><table>
+    <caption>F5 (phone band, 300–3400 Hz): where real clips sit against the threshold</caption>
+    <thead><tr><th>Model</th><th>Threshold</th><th>Real avg score</th><th>Real spread</th><th>Below threshold (spreads)</th><th>FRR %</th><th>FPR %</th></tr></thead>
+    <tbody>
+      <tr><td>AASIST</td><td class="num">+2.00</td><td class="num">−1.83</td><td class="num">2.59</td><td class="num">1.48</td><td class="num">92.87</td><td class="num">0.25</td></tr>
+      <tr><td>Nes2Net</td><td class="num">+3.13</td><td class="num">−1.17</td><td class="num">2.28</td><td class="num">1.89</td><td class="num">93.61</td><td class="num">0.60</td></tr>
+      <tr><td>TCM</td><td class="num">+0.43</td><td class="num">−1.40</td><td class="num">1.74</td><td class="num">1.05</td><td class="num">84.43</td><td class="num">5.12</td></tr>
+      <tr><td>SLS</td><td class="num">−0.86</td><td class="num">−7.03</td><td class="num">3.53</td><td class="num">1.75</td><td class="num">91.79</td><td class="num">2.22</td></tr>
+    </tbody></table></div>
+  <div class="tbl"><table>
+    <caption>F5 (phone band, 300–3400 Hz): how far apart real and fake are</caption>
+    <thead><tr><th>Model</th><th>Real avg</th><th>Fake avg</th><th>Gap</th><th>Real spread</th><th>Fake spread</th><th>Separation</th><th>EER %</th></tr></thead>
+    <tbody>
+      <tr><td>AASIST</td><td class="num">−1.83</td><td class="num">−5.46</td><td class="num">3.6</td><td class="num">2.59</td><td class="num">1.42</td><td class="num">1.74</td><td class="num">16.16</td></tr>
+      <tr><td>Nes2Net</td><td class="num">−1.17</td><td class="num">−3.16</td><td class="num">2.0</td><td class="num">2.28</td><td class="num">1.02</td><td class="num">1.13</td><td class="num">21.80</td></tr>
+      <tr><td>TCM</td><td class="num">−1.40</td><td class="num">−2.76</td><td class="num">1.4</td><td class="num">1.74</td><td class="num">1.50</td><td class="num">0.84</td><td class="num">30.01</td></tr>
+      <tr><td>SLS</td><td class="num">−7.03</td><td class="num">−11.12</td><td class="num">4.1</td><td class="num">3.53</td><td class="num">2.98</td><td class="num">1.25</td><td class="num">22.96</td></tr>
+    </tbody></table></div>
+  <div class="obs"><p>On In-the-Wild, real clips already sit below each model's ASVspoof threshold on RAW audio (0.16–0.77 spreads). After F5 they drop to 1.05–1.89 spreads below, and real and fake move closer together: separation falls from 2.43 → 1.74 (AASIST), 2.20 → 1.13 (Nes2Net), 2.55 → 0.84 (TCM), 3.09 → 1.25 (SLS).</p></div>
+
+  <div class="sub"><h3>6 · Sub-band ablation: EER (%) removing one side at a time</h3></div>
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">ASVspoof 2019 LA</th></tr>
+      <tr><th>Cond.</th><th class="l">What is removed</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>raw</td><td class="l">nothing (control)</td><td class="num">4.42</td><td class="num">6.54</td><td class="num">0.20</td><td class="num">0.12</td><td class="num">0.22</td><td class="num">0.32</td></tr>
+      <tr><td>HP100</td><td class="l">below 100 Hz</td><td class="num">4.93</td><td class="num">6.68</td><td class="num">0.20</td><td class="pend">pending</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>HP300</td><td class="l">below 300 Hz</td><td class="num">18.64</td><td class="num">15.00</td><td class="num">0.26</td><td class="pend">pending</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>HP500</td><td class="l">below 500 Hz</td><td class="num">26.78</td><td class="num">18.15</td><td class="num">0.44</td><td class="pend">pending</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>HP1000</td><td class="l">below 1000 Hz</td><td class="num">38.99</td><td class="num">14.88</td><td class="num">0.91</td><td class="pend">pending</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>LP3400</td><td class="l">above 3400 Hz</td><td class="num">5.03</td><td class="num">13.72</td><td class="num">0.16</td><td class="pend">pending</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr class="sep"><td>F3</td><td class="l">both (300–3400 Hz kept)</td><td class="num">26.35</td><td class="num">18.34</td><td class="num">0.29</td><td class="num">0.86</td><td class="num">2.56</td><td class="num">3.05</td></tr>
+    </tbody></table></div>
+  <div class="tbl"><table>
+    <thead>
+      <tr class="group"><th colspan="2"></th><th colspan="6">In-the-Wild</th></tr>
+      <tr><th>Cond.</th><th class="l">What is removed</th><th>RawNet2</th><th>LCNN</th><th>AASIST</th><th>Nes2Net</th><th>TCM</th><th>SLS</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>raw</td><td class="l">nothing (control)</td><td class="num">51.82</td><td class="num">29.42</td><td class="num">13.83</td><td class="num">13.96</td><td class="num">11.34</td><td class="num">10.16</td></tr>
+      <tr><td>HP100</td><td class="l">below 100 Hz</td><td class="num">50.75</td><td class="pend">pending</td><td class="pend">pending</td><td class="num">14.60</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>HP300</td><td class="l">below 300 Hz</td><td class="num">44.83</td><td class="pend">pending</td><td class="pend">pending</td><td class="num">18.47</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>HP500</td><td class="l">below 500 Hz</td><td class="num">42.56</td><td class="pend">pending</td><td class="pend">pending</td><td class="num">23.49</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>HP1000</td><td class="l">below 1000 Hz</td><td class="num">39.94</td><td class="pend">pending</td><td class="pend">pending</td><td class="num">28.98</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr><td>LP3400</td><td class="l">above 3400 Hz</td><td class="num">58.24</td><td class="pend">pending</td><td class="pend">pending</td><td class="num">18.15</td><td class="pend">pending</td><td class="pend">pending</td></tr>
+      <tr class="sep"><td>F3</td><td class="l">both (300–3400 Hz kept)</td><td class="num">50.54</td><td class="num">30.39</td><td class="num">17.10</td><td class="num">24.11</td><td class="num">33.08</td><td class="num">25.49</td></tr>
+    </tbody></table></div>
+  <div class="obs"><p>For RawNet2 on ASVspoof, cutting above 3400 Hz barely matters (5.03%), but cutting the low end does: 18.64% at 300 Hz, 38.99% at 1000 Hz. LCNN is hurt by both sides. AASIST only moves at HP1000 (0.91%). On In-the-Wild, Nes2Net worsens steadily as the high-pass cutoff rises (14.60 → 28.98%).</p></div>
+</section>
+
+<section id="figures">
+  <h2>Figures available (in the Loop page)</h2>
+  <div class="panel">
+    <ul>
+      <li>Constant-Q log spectrograms of <code>p232_003.wav</code> (48 kHz, 7.2 s): original and after each of the five methods</li>
+      <li>All five methods, change from the original (log frequency axis)</li>
+      <li>Bar charts comparing the methods (removal above / below band, wobble, sharpness, time)</li>
+      <li>Frequency response of all five methods with the kept band shaded</li>
+      <li>ITU pipeline before / after: real <code>Donald_Trump_00386.wav</code> (16 kHz → 8 kHz) and fake CosyVoice2 <code>Donald_Trump_00353</code> (24 kHz → 8 kHz)</li>
+      <li>Physical recordings of Utterance 3: call, Device A, Device B</li>
+    </ul>
+  </div>
+</section>
+
+<section id="open">
+  <h2>Open items</h2>
+  <div class="panel">
+    <ul>
+      <li>Sub-band ablation: the pending cells above (Nes2Net, TCM, SLS on ASVspoof; LCNN, AASIST, TCM, SLS on In-the-Wild) are running on Great Lakes</li>
+      <li>Step-by-step analysis of each architecture: why TCM and SLS degrade, why Nes2Net is inconsistent, why AASIST is stable</li>
+      <li>Architecture descriptions for the seven systems</li>
+      <li>Polyphase timing (38 ms) to be checked against the original chart</li>
+    </ul>
+  </div>
+</section>
+
+</div>

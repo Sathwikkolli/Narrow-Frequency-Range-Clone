@@ -1,0 +1,558 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{cite}
+\usepackage{url}
+
+% Figures are in the project Loop page; export them into figures/ and replace the boxes.
+\newcommand{\figbox}[1]{\fbox{\parbox[c][3.0cm][c]{0.92\linewidth}{\centering\small\textit{#1}}}}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\begin{document}
+
+\title{Narrow Frequency Range and Distorted Anti-spoofing}
+
+\author{\IEEEauthorblockN{\todo{Authors}}
+\IEEEauthorblockA{\todo{Affiliation}\\ \todo{Email}}}
+
+\maketitle
+
+%===============================================================
+\begin{abstract}
+Anti-spoofing systems are trained and benchmarked on wideband
+speech, yet a large share of real calls reaches them through a
+telephone channel that keeps only 300--3400\,Hz. We study how this narrow
+frequency range (NFR) affects seven anti-spoofing systems: DF-Arena-1B, RawNet2, LFCC-LCNN,
+AASIST, Nes2Net, TCM and SLS. NFR versions of the ASVspoof~2019 LA
+evaluation set, In-the-Wild and a Famous Figures (Donald Trump) set are
+created in two ways. The first uses five DSP band-limiting methods:
+Parks--McClellan, Kaiser FIR, elliptic IIR, polyphase decimation and FFT
+overlap-add. The second uses the ITU-T G.191 toolkit to apply IRS handset
+shaping, P.56 level normalisation and G.711 $\mu$-law coding. In-domain,
+band-limiting raises the EER of RawNet2 from 4.42\% to 24--26\% and of LCNN
+from 6.54\% to about 18\%. SSL-based systems remain below 4\%. Out-of-domain,
+the EER of Nes2Net, TCM and SLS on In-the-Wild rises from 10--14\% to
+22--33\%, and at a fixed threshold 84--94\% of bona fide speech is
+rejected. The choice of DSP method changes the EER by at most 3 percentage
+points. A sub-band ablation shows that removing content below 300\,Hz,
+rather than above 3.4\,kHz, causes most of the degradation.
+\end{abstract}
+
+\begin{IEEEkeywords}
+anti-spoofing, deepfake detection, narrowband speech, telephony, ITU-T G.191, band-limiting
+\end{IEEEkeywords}
+
+%===============================================================
+\section{Introduction}
+
+Synthetic and converted speech is increasingly used in phone-based fraud,
+where audio passes through a telephone channel before any anti-spoofing system sees
+it. Such channels limit the signal to roughly 300--3400\,Hz at an 8\,kHz
+sampling rate and add handset colouring, level control and codec
+distortion. Anti-spoofing systems, however, are developed on
+wideband 16\,kHz audio such as ASVspoof~2019~\cite{wang2020asvspoof}, and
+their robustness to this narrow frequency range (NFR) is rarely measured
+in a controlled way.
+
+This paper measures how NFR conversion affects a broad set of anti-spoofing systems, from
+raw-waveform and spectral baselines to models built on self-supervised
+(SSL) speech representations. The contributions are:
+\begin{itemize}
+  \item \textbf{Controlled NFR data.} We convert speech to the telephone
+  band in two ways: five DSP filtering methods, and the ITU-T G.191
+  toolkit~\cite{itu_g191} used by operators to test call quality. Each
+  condition changes a single factor relative to a control, so the cause of
+  any change in performance can be identified.
+  \item \textbf{Benchmark.} We evaluate seven anti-spoofing systems on one in-domain set
+  (ASVspoof~2019 LA evaluation) and two out-of-domain sets (In-the-Wild
+  and Famous Figures -- Donald Trump).
+  \item \textbf{Analysis.} We break errors down by attack, by false
+  positive and false rejection rate at a fixed threshold, by score
+  distribution, and by which sub-band is removed.
+\end{itemize}
+
+%===============================================================
+\section{Narrow Frequency Band Data Creation}
+
+\subsection{NFR Methods}
+\label{sec:nfr}
+
+We implement five methods that keep the 300\,Hz--3.4\,kHz band, chosen to
+cover the main families of practical band-limiting.
+
+\textbf{F1 -- Parks--McClellan (equiripple FIR)}~\cite{mcclellan1973}
+chooses the filter coefficients that minimise the maximum error over the
+spectrum. The residual error is spread evenly rather than concentrated at
+a few frequencies, giving the sharpest cut for a given filter length.
+
+\textbf{F2 -- Kaiser window FIR}~\cite{kaiser1974} truncates the ideal
+infinite-length filter and tapers it with a Kaiser window to suppress
+ringing. It needs a somewhat longer filter than F1 for the same quality,
+but its closed-form design cannot fail, which suits automatically
+generated filters.
+
+\textbf{F3 -- Elliptic IIR} feeds past outputs back into the filter and is
+therefore about eight times cheaper than the FIR designs. This is why it
+is common in real-time processing on phones and embedded hardware. Its
+non-linear phase delays frequencies by different amounts, which smears
+timing near the band edges.
+
+\textbf{F4 -- Polyphase decimation} lowers the sampling rate instead of
+filtering, so content above the new Nyquist frequency can no longer be
+represented. It is the fastest method and also reduces file size. If the
+anti-aliasing stage is weak, however, high-frequency energy folds back
+into the kept band, where it cannot be removed.
+
+\textbf{F5 -- FFT overlap-add} applies the same filter as F2 block-wise in
+the frequency domain. The output is the same as F2, but it is about ten
+times faster for long filters.
+
+\textbf{F0 -- control} is the source signal scaled by the same constant
+$-6$\,dB headroom applied in F1--F5, so F0 differs from F1--F5 only in the
+filtering.
+
+Fig.~\ref{fig:freqresp} shows the magnitude response of each method and
+Table~\ref{tab:filters} compares them on the same speech. Kaiser FIR and
+polyphase decimation give the strongest stop-band rejection above 3.4\,kHz
+(161\,dB) and the flattest passband ($\le$0.02\,dB). The elliptic IIR has
+the narrowest transition (45\,Hz) and is the fastest (11\,ms per 6\,s),
+but it has the weakest rejection (65\,dB above the band, 61\,dB below) and
+1\,dB of passband ripple.
+
+\begin{table}[t]
+\centering
+\caption{The five NFR methods when keeping 300\,Hz--3.4\,kHz of the same utterance. Transition width is measured from $-3$ to $-60$\,dB (both edges averaged); time is for 6\,s of audio including filter design. Best values in bold.}
+\label{tab:filters}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+Method & \makecell{Rejection\\$>$3.4\,kHz} & \makecell{Rejection\\$<$300\,Hz} & \makecell{Passband\\ripple} & \makecell{Trans.\\width} & Time \\
+\midrule
+F1 Parks--McClellan & 122\,dB & \textbf{86\,dB} & 0.39\,dB & 74\,Hz & 199\,ms \\
+F2 Kaiser FIR       & \textbf{161\,dB} & \textbf{87\,dB} & \textbf{0.02\,dB} & 64\,Hz & 241\,ms \\
+F3 Elliptic IIR     & 65\,dB & 61\,dB & 1.00\,dB & \textbf{45\,Hz} & \textbf{11\,ms} \\
+F4 Polyphase dec.   & \textbf{161\,dB} & \textbf{86\,dB} & \textbf{0.01\,dB} & 64\,Hz & 38\,ms \\
+F5 FFT overlap-add  & 86\,dB & 74\,dB & \textbf{0.01\,dB} & 65\,Hz & \textbf{11\,ms} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\figbox{Magnitude response of F1--F5; grey band = 300\,Hz--3.4\,kHz (Loop: ``What each method keeps and removes'').}
+\caption{Magnitude response of the five NFR methods. The further a curve lies below 0\,dB outside the grey band, the more completely that method removes out-of-band content.}
+\label{fig:freqresp}
+\end{figure}
+
+\textbf{Spectral inspection.} We inspect the outputs with constant-Q
+log spectrograms~\cite{brown1991cqt}. A fixed STFT window of 2048 samples
+(43\,ms at 48\,kHz, hop 256) resolves only about 23\,Hz at every frequency.
+That is too coarse for the speaker's fundamental frequency of about
+100--140\,Hz, which therefore appears blurred. We instead use $Q=18$, 48
+bins per octave, a 50\,Hz--20\,kHz range and a 5\,ms hop. The window then
+lasts about 150\,ms at 120\,Hz and 4.5\,ms at 4\,kHz, so F0 and its
+harmonics appear as distinct lines while high-frequency timing stays
+sharp (Fig.~\ref{fig:cqt}).
+
+\begin{figure}[t]
+\centering
+\figbox{Constant-Q log spectrograms of p232\_003.wav (48\,kHz, 7.2\,s): original, F1--F5, and change from the original per method.}
+\caption{Constant-Q log spectrograms of one utterance before and after each NFR method.}
+\label{fig:cqt}
+\end{figure}
+
+\subsection{Telephony Simulation with ITU-T G.191}
+\label{sec:itu}
+
+To reproduce a real telephone path we use the ITU-T G.191 Software Tool
+Library (STL)~\cite{itu_g191}. Telephone operators use these tools to test
+call quality, so the resulting conditions follow an industry standard. The
+library is free and deterministic, and it runs on our compute cluster. We
+define three nested conditions, each adding one step:
+\begin{itemize}
+  \item \textbf{P0} -- control: active speech level normalised to
+  $-26$\,dBov with ITU-T P.56~\cite{itu_p56}, 16\,kHz;
+  \item \textbf{B1} -- narrowband telephone: resampled to 8\,kHz and
+  shaped to 300--3400\,Hz by the IRS handset response
+  (ITU-T P.48~\cite{itu_p48});
+  \item \textbf{C1} -- B1 followed by G.711 $\mu$-law
+  coding~\cite{itu_g711}, matching a landline call.
+\end{itemize}
+\textbf{RAW} denotes the unprocessed audio.
+
+\textbf{Physical recordings.} To compare the simulation with real
+capture, one utterance was recorded over a live phone call and on two
+separate devices (A and B). The recordings were time-aligned to Device~A
+and compared with constant-Q spectrograms (Fig.~\ref{fig:phys}).
+
+\begin{figure}[t]
+\centering
+\figbox{Constant-Q spectrograms (48 bins/oct, 16\,kHz) of Utterance~3: phone call, Device~A, Device~B.}
+\caption{The same utterance captured over a phone call and on two devices.}
+\label{fig:phys}
+\end{figure}
+
+%===============================================================
+\section{Anti-spoofing Systems}
+
+\subsection{Architecture}
+
+We evaluate seven publicly available anti-spoofing systems. All except DF-Arena-1B were
+trained on the ASVspoof~2019 LA training partition, so its evaluation
+partition is in-domain for them. Each model is run with its released
+checkpoint and its own input length. Shorter clips are tile-repeated to
+fill that window.
+
+\textbf{RawNet2}~\cite{tak2021rawnet2} is the official ASVspoof~2021
+baseline~\cite{yamagishi2021asvspoof}. It operates directly on the raw
+waveform with a learnable sinc-filter front end followed by residual
+blocks and a GRU (about 25M parameters, trained from scratch, 4\,s input).
+
+\textbf{LFCC-LCNN}~\cite{lavrentyeva2019stc,yamagishi2021asvspoof} is the
+second ASVspoof~2021 baseline. It computes linear-frequency cepstral
+coefficients inside the model and classifies them with a light CNN using
+max-feature-map activations.
+
+\textbf{AASIST}~\cite{jung2022aasist,tak2022ssl} uses an XLS-R
+(300M)~\cite{babu2022xlsr} SSL front end with the AASIST spectro-temporal
+graph-attention back end (0.45M parameters).
+
+\textbf{TCM}~\cite{truong2024tcm} feeds XLS-R features to a Conformer whose
+multi-head self-attention models temporal and channel dependencies jointly
+(4 encoders, 4 heads, embedding size 144).
+
+\textbf{SLS}~\cite{zhang2024sls} learns to select and weight the most
+spoof-sensitive XLS-R layers before classification. Its 23.4M-parameter
+back end is the largest in the suite.
+
+\textbf{Nes2Net-X}~\cite{liu2025nes2net} uses a nested Res2Net back end
+directly on the SSL features without a dimensionality-reduction layer
+(0.51M parameters).
+
+\textbf{DF-Arena-1B}~\cite{dfarena} is a publicly released
+1B-parameter anti-spoofing system from the Speech Arena project.
+\todo{architecture details}
+
+%===============================================================
+\section{Experimental Setup}
+
+\subsection{Pipeline}
+
+\textbf{DSP route.} Each source file is processed by F0 and F1--F5
+(Section~\ref{sec:nfr}) and kept at 16\,kHz.
+
+\textbf{ITU route.} Real and fake audio are converted to mono and resampled
+to 16\,kHz (P0). For B1 and C1 they are further downsampled to 8\,kHz,
+shaped by the IRS8 handset filter, level-normalised with P.56 and, for C1,
+coded with G.711. Fig.~\ref{fig:itu} shows a real and a fake clip before
+and after this pipeline.
+
+\begin{figure}[t]
+\centering
+\figbox{Constant-Q spectrograms before/after the ITU pipeline: real Donald\_Trump\_00386 (16\,kHz $\rightarrow$ 8\,kHz) and fake CosyVoice2 Donald\_Trump\_00353 (24\,kHz $\rightarrow$ 8\,kHz).}
+\caption{A real and a fake clip before and after the ITU-T telephone pipeline.}
+\label{fig:itu}
+\end{figure}
+
+\textbf{Sub-band ablation.} To determine which part of the removed
+spectrum matters, we remove one side at a time. HP100, HP300, HP500 and
+HP1000 high-pass at 100, 300, 500 and 1000\,Hz, and LP3400 low-passes at
+3.4\,kHz. These are compared with F3, which removes both sides.
+
+\textbf{Metrics.} We report the equal error rate (EER) with a 95\%
+confidence interval, AUC and $d'$. To measure how a deployed operating
+point behaves, we fix each model's threshold at its EER point on RAW
+ASVspoof~2019 LA. We then report the false positive rate (FPR, spoof
+accepted) and false rejection rate (FRR, bona fide rejected) under every
+condition, together with the means and spreads of the real and fake
+scores.
+
+\subsection{In-domain Dataset}
+
+\textbf{ASVspoof~2019 LA evaluation}~\cite{wang2020asvspoof}: 71{,}237
+trials covering attacks A07--A19. All seven systems, apart from DF-Arena-1B,
+were trained on its training partition. Every condition uses the same
+trial list and labels.
+
+\subsection{Out-of-domain Datasets}
+
+\textbf{In-the-Wild (ITW)}~\cite{muller2022itw}: real and deepfake
+recordings of public figures collected from online media, with
+uncontrolled recording conditions.
+
+\textbf{Famous Figures -- Donald Trump (FF)} \todo{cite}: bona fide and
+synthetic speech of a single speaker produced by several modern TTS and
+voice-cloning systems.
+
+%===============================================================
+\section{Results and Analysis}
+
+\subsection{DF-Arena-1B on ASVspoof~2019 LA}
+
+\begin{table}[t]
+\centering
+\caption{DF-Arena-1B on ASVspoof~2019 LA eval under the ITU conditions.}
+\label{tab:dfa_itu}
+\begin{tabular}{lccc}
+\toprule
+ & P0 & B1 & C1 \\
+\midrule
+EER (\%) & \textbf{1.455} & 2.243 & 2.325 \\
+95\% CI  & [1.36, 1.55] & [2.12, 2.37] & [2.22, 2.49] \\
+AUC      & 0.99743 & 0.99412 & 0.99374 \\
+$d'$     & 5.185 & 4.531 & 4.512 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{DF-Arena-1B per-attack EER (\%), ASVspoof~2019 LA eval.}
+\label{tab:dfa_attack}
+\begin{tabular}{lcccl}
+\toprule
+Attack & P0 & B1 & C1 & \\
+\midrule
+A10 & 8.101 & 12.675 & 13.310 & hardest throughout \\
+A16 & 1.076 & 2.567 & 2.788 & $2.4\times$ \\
+A12 & 0.367 & 0.856 & 0.896 & $2.3\times$ \\
+A19 & 0.530 & 0.750 & 0.774 & \\
+A18 & 0.465 & 0.879 & 0.937 & \\
+A13 & 1.165 & 1.117 & 1.222 & unchanged \\
+A08, A09 & 0.000 & 0.000 & 0.000 & unaffected \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{DF-Arena-1B on ASVspoof~2019 LA eval under the five DSP methods ($n=71{,}237$).}
+\label{tab:dfa_dsp}
+\begin{tabular}{lcccc}
+\toprule
+Cond. & EER (\%) & 95\% CI & AUC & $d'$ \\
+\midrule
+F1 Parks--McClellan & 4.870 & [4.69, 5.09] & 0.9854 & 3.730 \\
+F2 Kaiser FIR       & 4.079 & [3.92, 4.24] & 0.9890 & 3.956 \\
+F3 Elliptic IIR     & \textbf{3.656} & [3.51, 3.84] & 0.9900 & 3.985 \\
+F4 Polyphase        & 3.805 & [3.64, 3.97] & 0.9897 & 3.970 \\
+F5 FFT overlap-add  & 3.970 & [3.81, 4.13] & 0.9894 & 3.986 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Telephone shaping raises the EER of DF-Arena-1B from 1.455\% (P0) to
+2.243\% (B1), and $d'$ falls from 5.19 to 4.53
+(Table~\ref{tab:dfa_itu}). Adding G.711 changes little (2.325\%, with
+overlapping confidence intervals), so the codec is not the main source of
+degradation. Per attack (Table~\ref{tab:dfa_attack}), A10 dominates the
+error in every condition. A16 and A12 more than double, A13 is unaffected
+and A08/A09 remain perfectly detected. Under the DSP methods the EER is
+3.66--4.87\% (Table~\ref{tab:dfa_dsp}). F3 gives the lowest EER and F1 the
+highest.
+
+\subsection{Six Countermeasures across Datasets}
+
+\begin{table*}[t]
+\centering
+\caption{EER (\%) of six anti-spoofing systems on the in-domain set (ASVspoof~2019 LA eval) and the two out-of-domain sets. RN2: RawNet2; N2N: Nes2Net.}
+\label{tab:eer}
+\setlength{\tabcolsep}{3.1pt}
+\begin{tabular}{ll|cccccc|cccccc|cccccc}
+\toprule
+ & & \multicolumn{6}{c|}{ASVspoof~2019 LA} & \multicolumn{6}{c|}{In-the-Wild} & \multicolumn{6}{c}{Famous Figures -- Trump} \\
+Cond. & What & RN2 & LCNN & AASIST & N2N & TCM & SLS & RN2 & LCNN & AASIST & N2N & TCM & SLS & RN2 & LCNN & AASIST & N2N & TCM & SLS \\
+\midrule
+RAW & original     & 4.60 & 6.35 & 0.23 & 0.14 & 0.15 & 0.23 & 48.99 & 29.48 & 11.22 & 8.41 & 7.94 & 7.45 & 46.07 & 28.21 & 58.58 & 43.04 & 39.76 & 40.28 \\
+P0  & level only   & 6.14 & 6.53 & 0.20 & 0.15 & 0.23 & 0.39 & 39.41 & 27.70 & 10.39 & 9.14 & 7.96 & 6.78 & 49.41 & 28.98 & 59.15 & 39.88 & 36.35 & 36.64 \\
+B1  & phone filter & 35.73 & 18.14 & 0.24 & 0.78 & 3.15 & 3.13 & 41.41 & 21.96 & 13.12 & 19.49 & 22.74 & 16.18 & 38.34 & 39.00 & 55.78 & 47.62 & 44.53 & 45.21 \\
+C1  & + codec      & 35.69 & 53.65 & 0.25 & 0.77 & 3.18 & 3.11 & 41.36 & 28.23 & 13.07 & 19.58 & 22.96 & 16.38 & 38.43 & 33.40 & 55.89 & 47.86 & 44.86 & 45.18 \\
+\midrule
+F0  & control      & 4.42 & 6.54 & 0.20 & 0.12 & 0.22 & 0.32 & 51.82 & 29.42 & 13.83 & 13.96 & 11.34 & 10.16 & 44.89 & 28.37 & 58.41 & 42.72 & 42.81 & 47.28 \\
+F1  & Parks--McC.  & 24.79 & 18.25 & 0.32 & 1.21 & 3.22 & 3.53 & 50.61 & 29.99 & 16.35 & 22.08 & 30.21 & 23.30 & 28.63 & 42.99 & 56.06 & 50.53 & 47.73 & 49.58 \\
+F2  & Kaiser FIR   & 24.46 & 18.21 & 0.29 & 0.97 & 2.81 & 3.29 & 50.76 & 29.83 & 16.25 & 21.79 & 30.04 & 23.09 & 28.61 & 42.87 & 56.21 & 50.76 & 47.79 & 49.58 \\
+F3  & Elliptic IIR & 26.35 & 18.34 & 0.29 & 0.86 & 2.56 & 3.05 & 50.54 & 30.39 & 17.10 & 24.11 & 33.08 & 25.49 & 28.40 & 41.90 & 56.14 & 50.82 & 46.91 & 48.27 \\
+F4  & Polyphase    & 25.44 & 18.45 & 0.31 & 0.94 & 2.64 & 3.18 & 50.52 & 29.99 & 16.90 & 23.48 & 32.70 & 25.18 & 28.50 & 41.37 & 56.04 & 51.09 & 47.22 & 48.99 \\
+F5  & FFT overlap  & 24.16 & 18.27 & 0.30 & 0.94 & 2.75 & 3.21 & 51.21 & 29.85 & 16.16 & 21.80 & 30.01 & 22.96 & 28.48 & 43.31 & 56.06 & 50.26 & 47.45 & 49.73 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\textbf{In-domain.} Table~\ref{tab:eer} shows two distinct groups. The
+models without an SSL front end degrade sharply. RawNet2 rises from 4.42\%
+(F0) to 24.16--26.35\% under F1--F5 and to 35.7\% under B1/C1. LCNN rises
+from 6.54\% to about 18.3\%, and it is the only model sensitive to the
+codec: its EER rises from 18.14\% at B1 to 53.65\% at C1. The SSL-based
+models stay usable. AASIST barely moves (at most 0.32\%), Nes2Net reaches
+0.86--1.21\%, and TCM and SLS rise roughly tenfold to 2.56--3.53\%. Per-file
+level normalisation alone (RAW$\rightarrow$P0) costs RawNet2 1.5
+percentage points, whereas the constant gain of F0 is nearly free (4.60\%
+$\rightarrow$ 4.42\%). We therefore compare each ITU condition with P0 and
+each DSP method with F0.
+
+\textbf{Out-of-domain.} On In-the-Wild, the models with the lowest
+in-domain EERs degrade the most. Relative to F0, under F1--F5 Nes2Net goes
+from 13.96\% to 21.79--24.11\%, TCM from 11.34\% to 30.01--33.08\%, SLS from
+10.16\% to 22.96--25.49\% and AASIST from 13.83\% to 16.16--17.10\%. The ITU
+path degrades TCM and SLS less (22.7\% and 16.2\% at B1) than the DSP
+filters. RawNet2 is close to chance in every condition. On Famous Figures,
+every model is already near chance before processing (28--59\% EER), so
+NFR effects cannot be measured reliably on this set.
+
+\textbf{Choice of NFR method.} Within a model and dataset, the five DSP
+methods give similar EERs. The largest spread is 2.19 percentage points
+(RawNet2, ASVspoof) and 3.07 percentage points (TCM, In-the-Wild), small
+compared with the effect of band-limiting itself. The ranking is not
+consistent across models: F3 is the worst method for RawNet2 but the best
+for TCM and SLS on ASVspoof.
+
+\subsection{Error Analysis at a Fixed Threshold}
+
+\begin{table*}[t]
+\centering
+\caption{FPR / FRR (\%) with each model's threshold fixed at its EER point on RAW ASVspoof~2019 LA.}
+\label{tab:fprfrr}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{ll|cccccc|cccccc}
+\toprule
+ & & \multicolumn{6}{c|}{ASVspoof~2019 LA} & \multicolumn{6}{c}{In-the-Wild} \\
+Cond. & What & RawNet2 & LCNN & AASIST & Nes2Net & TCM & SLS & RawNet2 & LCNN & AASIST & Nes2Net & TCM & SLS \\
+\midrule
+RAW & original     & 4.60/4.60 & 6.35/6.35 & 0.23/0.23 & 0.14/0.14 & 0.15/0.15 & 0.23/0.23 & 5.92/88.21 & 9.13/64.43 & 0.29/77.69 & 0.17/64.88 & 0.72/53.04 & 0.30/60.54 \\
+P0  & level only   & 3.17/12.43 & 9.43/2.94 & 0.28/0.16 & 0.12/0.23 & 0.19/0.30 & 0.20/0.76 & 2.49/88.62 & 8.99/63.95 & 0.27/74.08 & 0.10/66.24 & 0.64/49.92 & 0.25/59.06 \\
+B1  & phone filter & 34.96/36.66 & 22.87/1.82 & 0.14/0.58 & 0.10/16.41 & 0.98/14.33 & 0.34/39.76 & 17.62/65.47 & 13.07/40.50 & 0.32/82.40 & 0.15/94.89 & 1.67/80.56 & 0.43/90.39 \\
+C1  & + codec      & 34.93/36.46 & 12.21/76.61 & 0.14/0.61 & 0.09/16.67 & 0.99/14.41 & 0.34/39.69 & 17.69/65.44 & 26.03/32.37 & 0.32/82.51 & 0.15/94.97 & 1.68/80.71 & 0.42/90.45 \\
+\midrule
+F0  & control      & 2.78/8.27 & 8.44/3.81 & 0.26/0.15 & 0.12/0.14 & 0.19/0.24 & 0.22/0.52 & 18.77/80.15 & 13.64/56.27 & 0.29/82.12 & 0.27/81.00 & 1.11/65.59 & 0.36/75.07 \\
+F1  & Parks--McC.  & 3.61/60.31 & 18.22/18.29 & 0.09/4.68 & 0.09/15.47 & 0.35/18.22 & 0.36/35.23 & 5.21/88.53 & 7.41/84.33 & 0.25/93.44 & 0.56/94.00 & 5.39/84.51 & 2.24/92.14 \\
+F2  & Kaiser FIR   & 3.60/59.90 & 18.86/16.07 & 0.10/2.56 & 0.10/10.81 & 0.35/15.76 & 0.36/32.70 & 5.23/88.53 & 7.33/84.40 & 0.25/92.80 & 0.54/93.68 & 5.32/84.29 & 2.23/91.69 \\
+F3  & Elliptic IIR & 4.28/61.36 & 17.52/20.86 & 0.09/2.39 & 0.11/10.89 & 0.51/11.28 & 0.39/31.38 & 4.97/88.25 & 7.69/84.73 & 0.27/93.52 & 0.66/93.44 & 7.11/83.60 & 2.76/91.61 \\
+F4  & Polyphase    & 5.17/56.64 & 17.57/21.36 & 0.10/2.68 & 0.10/11.54 & 0.48/11.57 & 0.39/32.22 & 5.69/87.44 & 7.26/85.98 & 0.25/93.73 & 0.63/94.24 & 7.00/83.82 & 2.67/92.28 \\
+F5  & FFT overlap  & 3.32/60.72 & 19.11/15.45 & 0.10/2.58 & 0.10/10.78 & 0.36/15.38 & 0.36/33.11 & 5.13/88.98 & 7.82/83.18 & 0.25/92.87 & 0.60/93.61 & 5.12/84.43 & 2.22/91.79 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+EER alone hides how a deployed anti-spoofing system would fail. With the threshold
+fixed (Table~\ref{tab:fprfrr}), NFR conversion shows up almost entirely as
+bona fide speech being rejected, while spoofs are still caught. On
+ASVspoof, RawNet2 rejects 57--61\% of real speech under F1--F5 while its
+FPR stays at 3--5\%. SLS rejects 40\% of real speech under B1 at an FPR of
+0.34\%. On In-the-Wild the threshold transfers poorly even without
+processing: AASIST, Nes2Net, TCM and SLS already reject 53--78\% of real
+clips on RAW, and under F1--F5 this rises to 84--94\% with FPR below
+7.2\%.
+
+\begin{table}[t]
+\centering
+\caption{In-the-Wild score analysis. Top: real-clip scores against the fixed threshold. Bottom: separation of real and fake. Sep.\ = gap / pooled spread.}
+\label{tab:scores}
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{l|ccc|ccc}
+\toprule
+ & \multicolumn{3}{c|}{RAW (original)} & \multicolumn{3}{c}{F5 (300--3400\,Hz)} \\
+Model & \makecell{Real $\mu$ / thr.} & \makecell{Below thr.\\($\sigma$)} & FRR & \makecell{Real $\mu$ / thr.} & \makecell{Below thr.\\($\sigma$)} & FRR \\
+\midrule
+AASIST  & $-$0.06 / +2.00 & 0.77 & 77.69 & $-$1.83 / +2.00 & 1.48 & 92.87 \\
+Nes2Net & +1.56 / +3.13 & 0.50 & 64.88 & $-$1.17 / +3.13 & 1.89 & 93.61 \\
+TCM     & +0.09 / +0.43 & 0.16 & 53.04 & $-$1.40 / +0.43 & 1.05 & 84.43 \\
+SLS     & $-$3.98 / $-$0.86 & 0.73 & 60.54 & $-$7.03 / $-$0.86 & 1.75 & 91.79 \\
+\midrule
+Model & Gap & Sep. & EER & Gap & Sep. & EER \\
+\midrule
+AASIST  & 5.3  & 2.43 & 11.22 & 3.6 & 1.74 & 16.16 \\
+Nes2Net & 5.0  & 2.20 & 8.41  & 2.0 & 1.13 & 21.80 \\
+TCM     & 4.1  & 2.55 & 7.94  & 1.4 & 0.84 & 30.01 \\
+SLS     & 10.3 & 3.09 & 7.45  & 4.1 & 1.25 & 22.96 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:scores} explains this behaviour. On RAW In-the-Wild audio,
+the mean real-clip score of the SSL models already sits 0.16--0.77
+standard deviations below the ASVspoof threshold. Narrowband conversion
+has two effects. First, real-clip scores move further towards the spoof
+side, to 1.05--1.89 standard deviations below the threshold. Second, the
+real and fake distributions move closer together: separation falls from
+2.43 to 1.74 (AASIST), 2.20 to 1.13 (Nes2Net), 2.55 to 0.84 (TCM) and 3.09
+to 1.25 (SLS). The first effect could be partly offset by recalibrating
+the threshold. The second cannot, and it is what drives the EER increase.
+
+\subsection{Sub-band Ablation}
+
+\begin{table}[t]
+\centering
+\caption{EER (\%) when one side of the spectrum is removed. F3 removes both sides.}
+\label{tab:subband}
+\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{llcccccc}
+\toprule
+Cond. & Removed & RN2 & LCNN & AASIST & N2N & TCM & SLS \\
+\midrule
+\multicolumn{8}{l}{\textit{ASVspoof~2019 LA}} \\
+raw    & nothing     & 4.42 & 6.54 & 0.20 & 0.12 & 0.22 & 0.32 \\
+HP100  & $<$100\,Hz  & 4.93 & 6.68 & 0.20 & 0.15 & 0.24 & 0.38 \\
+HP300  & $<$300\,Hz  & 18.64 & 15.00 & 0.26 & 0.31 & 1.47 & 2.11 \\
+HP500  & $<$500\,Hz  & 26.78 & 18.15 & 0.44 & 0.62 & 5.30 & 3.29 \\
+HP1000 & $<$1\,kHz   & 38.99 & 14.88 & 0.91 & 1.41 & 11.87 & 8.28 \\
+LP3400 & $>$3.4\,kHz & 5.03 & 13.72 & 0.16 & 0.20 & 0.41 & 0.61 \\
+F3     & both        & 26.35 & 18.34 & 0.29 & 0.86 & 2.56 & 3.05 \\
+\midrule
+\multicolumn{8}{l}{\textit{In-the-Wild}} \\
+raw    & nothing     & 51.82 & 29.42 & 13.83 & 13.96 & 11.34 & 10.16 \\
+HP100  & $<$100\,Hz  & 50.75 & 29.08 & 13.88 & 14.60 & 12.04 & 10.49 \\
+HP300  & $<$300\,Hz  & 44.83 & 30.95 & 13.84 & 18.47 & 21.65 & 17.39 \\
+HP500  & $<$500\,Hz  & 42.56 & 24.66 & 16.91 & 23.49 & 35.45 & 31.81 \\
+HP1000 & $<$1\,kHz   & 39.94 & 35.07 & 23.25 & 28.98 & 42.78 & 43.10 \\
+LP3400 & $>$3.4\,kHz & 58.24 & 30.58 & 16.52 & 18.15 & 16.24 & 13.19 \\
+F3     & both        & 50.54 & 30.39 & 17.10 & 24.11 & 33.08 & 25.49 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:subband} separates the two halves of the telephone band
+limit. On ASVspoof, removing everything above 3.4\,kHz (LP3400) has little
+effect on any SSL model (at most 0.61\%) or on RawNet2 (5.03\%). Removing
+the low end has a much larger effect, which grows steadily with the cutoff.
+For RawNet2 the EER rises from 4.93\% (HP100) to 18.64\% (HP300) and 38.99\%
+(HP1000). For TCM it rises from 0.24\% to 1.47\% and 11.87\%, and for SLS
+from 0.38\% to 2.11\% and 8.28\%. HP300 alone accounts for most of the F3
+degradation of RawNet2 (18.64\% vs.\ 26.35\%), TCM (1.47\% vs.\ 2.56\%) and
+SLS (2.11\% vs.\ 3.05\%). LCNN is the exception: it is hurt by both sides
+(15.00\% at HP300, 13.72\% at LP3400), consistent with its linear-frequency
+cepstral front end weighting the high band.
+
+The same pattern holds out-of-domain for the SSL models. On In-the-Wild,
+TCM and SLS rise from 11.34\% and 10.16\% (raw) to 21.65\% and 17.39\% at
+HP300 and to 42.78\% and 43.10\% at HP1000. At LP3400 they reach only 16.24\%
+and 13.19\%. For both TCM and SLS the HP500 condition (35.45\%, 31.81\%) is
+already worse than F3 itself (33.08\%, 25.49\%). RawNet2 is the outlier: its
+near-chance EER on In-the-Wild falls as the high-pass cutoff rises (51.82\%
+$\rightarrow$ 39.94\%) and worsens at LP3400 (58.24\%). Across models, the
+content between roughly 100\,Hz and 1\,kHz, which holds the fundamental
+frequency and the first harmonics, carries most of the evidence these anti-spoofing systems
+rely on. This is exactly the content the telephone band removes.
+
+%===============================================================
+\section{Conclusion}
+
+We built controlled narrowband versions of three anti-spoofing datasets,
+using five DSP band-limiting methods and the ITU-T G.191 telephone chain,
+and evaluated seven anti-spoofing systems on them. Narrow-band conversion
+degrades every model. Raw-waveform and cepstral baselines fail even
+in-domain, and SSL-based models, which are robust in-domain, lose most of
+their margin out-of-domain, where nearly all bona fide speech is rejected
+at a fixed operating point. The choice of filtering algorithm matters far
+less than the band limit itself. Within that limit, losing the band below
+300\,Hz is the main cause of degradation, not losing the band above
+3.4\,kHz. These results suggest that training with telephone-band
+augmentation and calibrating thresholds per channel are necessary before
+deploying anti-spoofing systems on telephony audio. \todo{future work}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

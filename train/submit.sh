@@ -5,6 +5,8 @@
 #   bash train/submit.sh tcm itu 1             # the real run: C1 telephone audio
 #   bash train/submit.sh tcm wb 1              # matched wideband baseline
 #   DRY=1 bash train/submit.sh tcm itu 1       # check paths, print, submit nothing
+#   AFTER=<jobid> bash train/submit.sh ...     # start only if that job (preflight) succeeds
+#   ACCUM=2 bash train/submit.sh ...           # batch split in 2 if it does not fit memory
 #
 # Arguments: <model> <itu|wb> <seed index 1|2|3>. Seed index k trains with the
 # repo's own default seed + k - 1, so s1 is exactly the published seed.
@@ -28,6 +30,8 @@ MODEL=${1:?usage: submit.sh <model> <itu|wb> <seed index>}
 DATA=${2:?usage: submit.sh <model> <itu|wb> <seed index>}
 K=${3:?usage: submit.sh <model> <itu|wb> <seed index>}
 SMOKE=${SMOKE:-0}
+AFTER=${AFTER:-}
+ACCUM=${ACCUM:-1}
 DRY=${DRY:-0}
 CHAIN=${CHAIN:-4}
 
@@ -50,12 +54,12 @@ case "$K" in 1|2|3) ;; *) echo "seed index must be 1, 2 or 3"; exit 1 ;; esac
 SEED=$((BASE_SEED + K - 1))
 
 RUN=${MODEL}_${DATA}_s${K}
-EXTRA=""
+EXTRA="--accum $ACCUM"
 FINAL_DIR=$FINAL_ROOT/$RUN
 TIME=""
 if [ "$SMOKE" = "1" ]; then
     RUN=${RUN}_smoke
-    EXTRA="--limit-train 2000 --limit-dev 1000 --max-epochs 2 --keep-last"
+    EXTRA="$EXTRA --limit-train 2000 --limit-dev 1000 --max-epochs 2 --keep-last"
     FINAL_DIR=""                 # a smoke test is never copied to turbo
     TIME="--time=02:00:00"
     CHAIN=1
@@ -81,7 +85,9 @@ echo "run        $RUN   (seed $SEED, env $ENV)"
 echo "audio      $DATA_ROOT/ASVspoof2019_LA_{train,dev}/$SUB"
 echo "run dir    $RUN_DIR"
 echo "final dir  ${FINAL_DIR:-<none, smoke test>}"
-echo "jobs       $CHAIN chained x 2 days on spgpu"
+DEP=singleton
+[ -n "$AFTER" ] && DEP="singleton,afterok:$AFTER"
+echo "jobs       $CHAIN chained x 2 days on spgpu, batch split $ACCUM, dependency $DEP"
 [ -f "$RUN_DIR/last.pth" ] && echo "resuming   from $RUN_DIR/last.pth"
 [ "$DRY" = "1" ] && { echo "DRY=1: nothing submitted"; exit 0; }
 
@@ -90,7 +96,7 @@ export MODEL DATA SEED RUN_DIR REPO DATA_ROOT PROTOCOLS SCR CLONE_DIR FINAL_DIR 
 export CONDA_ENV=$ENV
 for _ in $(seq 1 "$CHAIN"); do
     # shellcheck disable=SC2086  # TIME is empty or one flag
-    sbatch --job-name="$RUN" --dependency=singleton $TIME \
+    sbatch --job-name="$RUN" --dependency="$DEP" $TIME \
         --output="$LOGS/${RUN}_%j.log" --export=ALL \
         "$CLONE_DIR/train/train.sbatch"
 done
