@@ -95,6 +95,19 @@ MODELS = {
         base_seed=12345,              # README: --seed 12345
         logits=lambda out: out,       # forward returns [B, 2]
     ),
+    "sls": dict(
+        source="github.com/QiShanZhang/SLSforADD",
+        module="model", cls="Model",
+        arch={},                      # Model() reads nothing from args
+        # data_utils_SSL.py cut, and fixed by the architecture: fc1 takes 22847 =
+        # 67 x 341 inputs, i.e. 201 XLS-R frames after a 3x3 max-pool, i.e. 64600 samples
+        window=64600,
+        lr=1e-6, batch_size=5,        # README: --lr=0.000001 --batch_size=5
+        base_seed=1234,               # main.py default
+        # forward ends in LogSoftmax; cross-entropy on log-probabilities is the same
+        # loss (log_softmax is idempotent), and eval scores the same column
+        logits=lambda out: out,
+    ),
 }
 
 CONDITIONS = {

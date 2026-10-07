@@ -44,7 +44,9 @@ FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
 case "$MODEL" in
   tcm) REPO=${REPO:-$MODELS/tcm_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
   nes2net) REPO=${REPO:-$MODELS/nes2net_repo}; BASE_SEED=12345; ENV=${CONDA_ENV:-ssl_spoof} ;;
-  *)   echo "unknown model '$MODEL' (tcm, nes2net so far)"; exit 1 ;;
+  # sls trains in ssl_spoof, not its own eval env: that env's torch has no A40 kernels
+  sls) REPO=${REPO:-$MODELS/sls_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls so far)"; exit 1 ;;
 esac
 case "$DATA" in
   itu) DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019_NB}; SUB=C1/flac ;;
