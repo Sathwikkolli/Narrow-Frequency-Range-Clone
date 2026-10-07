@@ -43,7 +43,8 @@ FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
 
 case "$MODEL" in
   tcm) REPO=${REPO:-$MODELS/tcm_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
-  *)   echo "unknown model '$MODEL' (only tcm so far)"; exit 1 ;;
+  nes2net) REPO=${REPO:-$MODELS/nes2net_repo}; BASE_SEED=12345; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  *)   echo "unknown model '$MODEL' (tcm, nes2net so far)"; exit 1 ;;
 esac
 case "$DATA" in
   itu) DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019_NB}; SUB=C1/flac ;;

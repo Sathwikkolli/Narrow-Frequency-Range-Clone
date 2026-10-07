@@ -82,6 +82,19 @@ MODELS = {
         base_seed=1234,               # main.py default
         logits=_tcm_logits,
     ),
+    "nes2net": dict(
+        source="github.com/Liu-Tianchi/Nes2Net_ASVspoof_ITW",   # the speech repo, not Nes2Net
+        module="model_scripts.wav2vec2_Nes2Net_X", cls="wav2vec2_Nes2Net_no_Res_w_allT",
+        # README training command: --model_name wav2vec2_Nes2Net_X --pool_func mean
+        # --SE_ratio 1 --Nes_ratio 8 8; dilation 2 is main.py's default
+        arch=dict(n_output_logits=2, Nes_ratio=[8, 8], dilation=2, pool_func="mean", SE_ratio=[1]),
+        # data_utils_SSL.py training cut. NB eval/adapters/nes2net.py scores at 64000,
+        # taken from the repo's inference demo; main.py's own 4 s eval uses 64600.
+        window=64600,
+        lr=2.5e-7, batch_size=12,     # README: --lr=0.00000025 --batch_size=12
+        base_seed=12345,              # README: --seed 12345
+        logits=lambda out: out,       # forward returns [B, 2]
+    ),
 }
 
 CONDITIONS = {
