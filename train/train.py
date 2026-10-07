@@ -108,6 +108,15 @@ MODELS = {
         # loss (log_softmax is idempotent), and eval scores the same column
         logits=lambda out: out,
     ),
+    "aasist": dict(
+        source="github.com/TakHemlata/SSL_Anti-spoofing",        # W2V2-AASIST, Tak et al. 2022
+        module="model", cls="Model",
+        arch={},                      # AASIST settings are hardcoded in Model.__init__
+        window=64600,                 # data_utils_SSL.py: self.cut = 64600
+        lr=1e-6, batch_size=14,       # main_SSL_LA.py defaults
+        base_seed=1234,               # main_SSL_LA.py default
+        logits=lambda out: out,       # forward returns [B, 2]
+    ),
 }
 
 CONDITIONS = {

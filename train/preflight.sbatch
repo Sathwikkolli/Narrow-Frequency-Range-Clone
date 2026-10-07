@@ -51,6 +51,7 @@ case "$MODEL" in
   tcm) REPO=${REPO:-$MODELS/tcm_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   nes2net) REPO=${REPO:-$MODELS/nes2net_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   sls) REPO=${REPO:-$MODELS/sls_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  aasist) REPO=${REPO:-$MODELS/aasist_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   *)   echo "unknown model '$MODEL'"; exit 1 ;;
 esac
 
