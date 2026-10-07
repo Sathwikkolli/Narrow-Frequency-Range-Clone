@@ -47,7 +47,8 @@ case "$MODEL" in
   # sls trains in ssl_spoof, not its own eval env: that env's torch has no A40 kernels
   sls) REPO=${REPO:-$MODELS/sls_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
   aasist) REPO=${REPO:-$MODELS/aasist_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
-  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls, aasist)"; exit 1 ;;
+  rawnet2) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-RawNet2}; BASE_SEED=1234; ENV=${CONDA_ENV:-wmcompare} ;;
+  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls, aasist, rawnet2)"; exit 1 ;;
 esac
 case "$DATA" in
   itu) DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019_NB}; SUB=C1/flac ;;
@@ -75,7 +76,11 @@ LOGS=$SCR/itu_train/slurm_logs
 fail=0
 need() { [ -e "$1" ] || { echo "MISSING $2: $1"; fail=1; }; }
 need "$REPO"                                     "repo"
-need "$REPO/xlsr2_300m.pt"                       "XLS-R in the repo dir (ln -s \$MODELS/xlsr2_300m.pt)"
+if [ "$MODEL" = rawnet2 ]; then
+    need "$REPO/model_config_RawNet.yaml"        "RawNet2 config in the repo dir"
+else
+    need "$REPO/xlsr2_300m.pt"                   "XLS-R in the repo dir (ln -s \$MODELS/xlsr2_300m.pt)"
+fi
 need "$PROTOCOLS/ASVspoof2019.LA.cm.train.trn.txt" "train protocol"
 need "$PROTOCOLS/ASVspoof2019.LA.cm.dev.trl.txt"   "dev protocol"
 need "$DATA_ROOT/ASVspoof2019_LA_train/$SUB"     "train audio"

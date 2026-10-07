@@ -47,7 +47,7 @@ def report(status, name, msg):
 
 # ---------------------------------------------------------------- checks
 
-def check_env():
+def check_env(needs_fairseq=True):
     import torch
     print(f"python {sys.version.split()[0]}  torch {torch.__version__}  cuda {torch.version.cuda}  "
           f"cudnn {torch.backends.cudnn.version()}", flush=True)
@@ -67,12 +67,14 @@ def check_env():
     except Exception as e:
         report("FAIL", "env", f"CUDA kernel failed on {name}: {e}")
         return False
-    try:
-        import fairseq
-        fv = fairseq.__version__
-    except Exception as e:
-        report("FAIL", "env", f"fairseq does not import: {e}")
-        return False
+    fv = "not needed"
+    if needs_fairseq:
+        try:
+            import fairseq
+            fv = fairseq.__version__
+        except Exception as e:
+            report("FAIL", "env", f"fairseq does not import: {e}")
+            return False
     report("PASS", "env", f"{name} sm_{major}{minor}, fairseq {fv}")
     return True
 
@@ -295,7 +297,7 @@ def main():
         sys.exit("--data and --data-root must pair up")
 
     print("=== env", flush=True)
-    if not check_env():
+    if not check_env(needs_fairseq="build" not in T.MODELS[args.model]):
         sys.exit(1)
     print("=== resampler", flush=True)
     check_resampler()

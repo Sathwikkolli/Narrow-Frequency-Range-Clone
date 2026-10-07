@@ -72,6 +72,18 @@ def _tcm_logits(out):
     return out[0]                     # Model.forward returns (logits, attention)
 
 
+def _build_rawnet2(repo, device):
+    """RawNet(d_args, device) takes the repo's YAML, not a Namespace, and has no
+    XLS-R. The YAML is re-read on every build because RawNet.__init__ mutates it
+    (d_args['filts'][2][0] = ...)."""
+    import importlib
+    import yaml
+    with in_repo(repo) as r:
+        with open(os.path.join(r, "model_config_RawNet.yaml")) as fh:
+            d_args = yaml.safe_load(fh)["model"]
+        return importlib.import_module("model").RawNet(d_args, device)
+
+
 MODELS = {
     "tcm": dict(
         source="github.com/ductuantruong/tcm_add",
@@ -117,6 +129,16 @@ MODELS = {
         base_seed=1234,               # main_SSL_LA.py default
         logits=lambda out: out,       # forward returns [B, 2]
     ),
+    "rawnet2": dict(
+        source="github.com/asvspoof-challenge/2021 LA/Baseline-RawNet2",
+        build=_build_rawnet2,         # no XLS-R; architecture from the repo's YAML
+        arch=dict(config="model_config_RawNet.yaml"),
+        window=64600,                 # data_utils.py: self.cut = 64600
+        lr=1e-4, batch_size=32,       # main.py defaults; README: --lr=0.0001 --batch_size=32
+        base_seed=1234,               # main.py default
+        # forward ends in LogSoftmax, as SLS; eval scores the same column
+        logits=lambda out: out,
+    ),
 }
 
 CONDITIONS = {
@@ -159,6 +181,8 @@ def check_rate(sr, expected, where):
 
 def build_model(spec, repo, device):
     import importlib
+    if "build" in spec:
+        return spec["build"](repo, device).to(device)
     with in_repo(repo) as r:
         require_xlsr(r)
         Model = getattr(importlib.import_module(spec["module"]), spec["cls"])

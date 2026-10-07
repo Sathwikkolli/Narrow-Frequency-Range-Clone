@@ -52,6 +52,7 @@ case "$MODEL" in
   nes2net) REPO=${REPO:-$MODELS/nes2net_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   sls) REPO=${REPO:-$MODELS/sls_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   aasist) REPO=${REPO:-$MODELS/aasist_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  rawnet2) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-RawNet2}; ENV=${CONDA_ENV:-wmcompare} ;;
   *)   echo "unknown model '$MODEL'"; exit 1 ;;
 esac
 
