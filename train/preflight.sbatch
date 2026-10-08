@@ -50,9 +50,10 @@ WORK=$SCR/itu_train/preflight/$MODEL
 case "$MODEL" in
   tcm) REPO=${REPO:-$MODELS/tcm_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   nes2net) REPO=${REPO:-$MODELS/nes2net_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
-  sls) REPO=${REPO:-$MODELS/sls_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  sls) REPO=${REPO:-$MODELS/sls_repo}; ENV=${CONDA_ENV:-$SCR/envs/sls_a40} ;;
   aasist) REPO=${REPO:-$MODELS/aasist_repo}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   rawnet2) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-RawNet2}; ENV=${CONDA_ENV:-wmcompare} ;;
+  lcnn) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-LFCC-LCNN}; ENV=${CONDA_ENV:-ssl_spoof} ;;
   *)   echo "unknown model '$MODEL'"; exit 1 ;;
 esac
 

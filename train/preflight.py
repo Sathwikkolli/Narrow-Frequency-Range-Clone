@@ -165,8 +165,8 @@ def check_gpu(model_name, data, repo, root, protocols, workers, chain_hours, max
     device = "cuda"
     torch.cuda.reset_peak_memory_stats()
     model = T.build_model(spec, repo, device)
-    opt = torch.optim.Adam(model.parameters(), lr=spec["lr"], weight_decay=1e-4)
-    crit = nn.CrossEntropyLoss(weight=torch.FloatTensor(T.CLASS_WEIGHT).to(device))
+    opt = torch.optim.Adam(model.parameters(), lr=spec["lr"], weight_decay=spec.get("weight_decay", 1e-4))
+    crit = nn.CrossEntropyLoss(weight=torch.FloatTensor(spec.get("class_weight", T.CLASS_WEIGHT)).to(device))
     total_mem = torch.cuda.get_device_properties(0).total_memory
 
     model.train()

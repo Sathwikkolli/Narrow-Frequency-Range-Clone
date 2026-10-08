@@ -36,6 +36,7 @@ A finished run writes DONE.json; launching it again is then a no-op, which is wh
 lets submit.sh queue several chained jobs without knowing how many epochs it needs.
 """
 import argparse
+import contextlib
 import csv
 import hashlib
 import json
@@ -82,6 +83,66 @@ def _build_rawnet2(repo, device):
         with open(os.path.join(r, "model_config_RawNet.yaml")) as fh:
             d_args = yaml.safe_load(fh)["model"]
         return importlib.import_module("model").RawNet(d_args, device)
+
+
+@contextlib.contextmanager
+def _legacy_rfft():
+    """torch.rfft for the LCNN baseline's constructor, on torches that removed it.
+
+    sandbox/util_dsp.py builds LFCC's fixed DCT-II matrix (LinearDCT) with
+    torch.rfft(v, 1, onesided=False), which torch 1.8 removed -- the baseline pins
+    torch 1.6. It is only called while the model is constructed, never in forward.
+    This is the old call's exact semantics on torch.fft: a real input's FFT, as a
+    trailing [real, imag] axis. Removed again on exit so nothing else sees it.
+    """
+    if hasattr(torch, "rfft"):
+        yield
+        return
+
+    def rfft(x, signal_ndim, normalized=False, onesided=True):
+        if signal_ndim != 1 or normalized:
+            raise NotImplementedError("only the 1-D unnormalised form util_dsp.dct uses")
+        return torch.view_as_real(torch.fft.rfft(x) if onesided else torch.fft.fft(x))
+
+    torch.rfft = rfft
+    try:
+        yield
+    finally:
+        del torch.rfft
+
+
+def _build_lcnn(repo, device):
+    """LFCC-LCNN as a plain [B, T] -> [B, 2] module, built from the repo's own Model.
+
+    The baseline lives inside NII's project-NN framework: Model.forward(x, fileinfo)
+    reads labels from a protocol by file name and returns a training tuple. Only
+    that plumbing is bypassed. The subclass below calls the repo's own
+    _compute_embedding -- its LFCC front end and LCNN-BLSTM network, unchanged --
+    and adds no parameters, so the state_dict keys are exactly the baseline's.
+
+    TWO LOGITS FROM ONE. The baseline emits one logit z and trains sigmoid + BCE.
+    Returning [0, z] makes softmax([0, z])[1] = sigmoid(z), so unweighted
+    cross-entropy on it IS the baseline's BCE, and out[:, 1] = z is the baseline's
+    own inference score (_compute_score(..., inference=True) returns z).
+
+    --repo is the Baseline-LFCC-LCNN folder: sandbox/ and core_scripts/ are imported
+    from there, model.py from project/baseline_LA/.
+    """
+    import importlib.util
+    with in_repo(repo) as r, _legacy_rfft():
+        path = os.path.join(r, "project", "baseline_LA", "model.py")
+        ms = importlib.util.spec_from_file_location("lcnn_baseline_model", path)
+        mod = importlib.util.module_from_spec(ms)
+        ms.loader.exec_module(mod)
+
+        class LcnnTwoLogit(mod.Model):
+            def forward(self, x):
+                z = self._compute_embedding(x.unsqueeze(-1), None)[:, 0]   # one sub-model
+                return torch.stack([torch.zeros_like(z), z], dim=1)
+
+        # in/out dims 1 and no mean/std: what the baseline's config.py gives it.
+        # The protocol path is only read by forward(x, fileinfo), which is unused.
+        return LcnnTwoLogit(1, 1, None, ns(optional_argument=[""]), None)
 
 
 MODELS = {
@@ -137,6 +198,23 @@ MODELS = {
         lr=1e-4, batch_size=32,       # main.py defaults; README: --lr=0.0001 --batch_size=32
         base_seed=1234,               # main.py default
         # forward ends in LogSoftmax, as SLS; eval scores the same column
+        logits=lambda out: out,
+    ),
+    "lcnn": dict(
+        source="github.com/asvspoof-challenge/2021 LA/Baseline-LFCC-LCNN",
+        build=_build_lcnn,            # the baseline's own Model; see _build_lcnn
+        arch=dict(config="project/baseline_LA/model.py"),
+        # The baseline takes whole utterances; the 4 s window is the shared recipe's
+        window=64600,
+        # project/baseline_LA/00_train.sh: --lr 0.0003 --batch-size 64 --seed 1000.
+        # Its ReduceLROnPlateau halving is not used (shared recipe: fixed lr).
+        lr=3e-4, batch_size=64,
+        base_seed=1000,
+        # the framework's Adam has no weight decay (--l2-penalty defaults to -1), and
+        # its loss is plain BCE: unweighted, hence class weights [1, 1] here
+        weight_decay=0.0,
+        class_weight=[1.0, 1.0],
+        loss="CE on [0, z] == the baseline's unweighted BCE",
         logits=lambda out: out,
     ),
 }
@@ -329,6 +407,11 @@ def main():
 
     spec = MODELS[args.model]
     lr = args.lr if args.lr is not None else spec["lr"]
+    # Defaults are the XLS-R repos' shared values. Changing what these resolve to for
+    # an existing model would make its runs refuse to resume (the recipe check).
+    weight_decay = spec.get("weight_decay", 1e-4)
+    class_weight = spec.get("class_weight", CLASS_WEIGHT)
+    loss_name = spec.get("loss", "weighted CE")
     batch = args.batch_size or spec["batch_size"]
     if batch % args.accum:
         sys.exit(f"--batch-size {batch} is not divisible by --accum {args.accum}")
@@ -351,8 +434,8 @@ def main():
     # The recipe. On resume it must match what the run was started with exactly,
     # or the checkpoint would continue a different experiment.
     recipe = dict(model=args.model, data=args.data, seed=args.seed, lr=lr, batch_size=batch,
-                  accum=args.accum, weight_decay=1e-4, optimizer="Adam", scheduler=None,
-                  loss="weighted CE", class_weight=CLASS_WEIGHT, augmentation=None,
+                  accum=args.accum, weight_decay=weight_decay, optimizer="Adam", scheduler=None,
+                  loss=loss_name, class_weight=class_weight, augmentation=None,
                   window=spec["window"], arch=spec["arch"], max_epochs=args.max_epochs,
                   patience=args.patience, selection="min dev EER, single best epoch",
                   limit_train=args.limit_train, limit_dev=args.limit_dev,
@@ -367,13 +450,16 @@ def main():
     dv_ids = [p.stem for p in dv_paths]
 
     model = build_model(spec, args.repo, device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
-    criterion = nn.CrossEntropyLoss(weight=torch.FloatTensor(CLASS_WEIGHT).to(device))
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+    criterion = nn.CrossEntropyLoss(weight=torch.FloatTensor(class_weight).to(device))
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
     state = dict(epoch=0, best_eer=float("inf"), best_epoch=None, since_best=0, history=[])
     if last.exists():
-        ck = load_resume(last, device)
+        # To CPU, not the GPU: torch.set_rng_state only takes a CPU ByteTensor, and
+        # map_location="cuda" would move the saved RNG state there too. The model's and
+        # Adam's tensors are copied onto their parameters' device by load_state_dict.
+        ck = load_resume(last, "cpu")
         if ck["recipe"] != recipe:
             diff = {k: (ck["recipe"].get(k), v) for k, v in recipe.items() if ck["recipe"].get(k) != v}
             sys.exit(f"{last} was started with a different recipe {diff} -- refusing to resume")

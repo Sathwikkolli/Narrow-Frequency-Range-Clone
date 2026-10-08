@@ -44,11 +44,17 @@ FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
 case "$MODEL" in
   tcm) REPO=${REPO:-$MODELS/tcm_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
   nes2net) REPO=${REPO:-$MODELS/nes2net_repo}; BASE_SEED=12345; ENV=${CONDA_ENV:-ssl_spoof} ;;
-  # sls trains in ssl_spoof, not its own eval env: that env's torch has no A40 kernels
-  sls) REPO=${REPO:-$MODELS/sls_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  # sls needs the fairseq bundled with its repo (stock fairseq returns no layer_results
+  # unless a tgt_layer is given), so it cannot use ssl_spoof. sls_a40 is a clone of the
+  # SLS eval env ($SCR/envs/sls) with only the torch CUDA build swapped for one with
+  # A40 kernels.
+  sls) REPO=${REPO:-$MODELS/sls_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-$SCR/envs/sls_a40} ;;
   aasist) REPO=${REPO:-$MODELS/aasist_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
   rawnet2) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-RawNet2}; BASE_SEED=1234; ENV=${CONDA_ENV:-wmcompare} ;;
-  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls, aasist, rawnet2)"; exit 1 ;;
+  # lcnn trains in ssl_spoof, not its own torch 1.6 env (no A40 kernels); torch 1.8 still
+  # runs its old-style torch.stft, which torch 2.x would reject
+  lcnn) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-LFCC-LCNN}; BASE_SEED=1000; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls, aasist, rawnet2, lcnn)"; exit 1 ;;
 esac
 case "$DATA" in
   itu) DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019_NB}; SUB=C1/flac ;;
@@ -78,6 +84,9 @@ need() { [ -e "$1" ] || { echo "MISSING $2: $1"; fail=1; }; }
 need "$REPO"                                     "repo"
 if [ "$MODEL" = rawnet2 ]; then
     need "$REPO/model_config_RawNet.yaml"        "RawNet2 config in the repo dir"
+elif [ "$MODEL" = lcnn ]; then
+    need "$REPO/project/baseline_LA/model.py"    "LCNN model (REPO is the Baseline-LFCC-LCNN folder)"
+    need "$REPO/sandbox/util_frontend.py"        "LCNN's sandbox/ package"
 else
     need "$REPO/xlsr2_300m.pt"                   "XLS-R in the repo dir (ln -s \$MODELS/xlsr2_300m.pt)"
 fi
