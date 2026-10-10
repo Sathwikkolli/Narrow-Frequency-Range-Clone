@@ -1,0 +1,9 @@
+{
+  "run": "rawnet2_wb_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 28,
+  "best_epoch": 21,
+  "best_dev_eer": 0.007075418558580187,
+  "best_sha256": "bc18667ce93928d6be7d6f39f3b7a008f8f15152890fde490264e5932aa2e749",
+  "finished": "2026-10-07 22:36:43"
+}

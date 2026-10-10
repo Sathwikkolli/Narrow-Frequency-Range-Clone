@@ -1,0 +1,9 @@
+{
+  "run": "aasist_itu_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 24,
+  "best_epoch": 17,
+  "best_dev_eer": 0.0003980622637396584,
+  "best_sha256": "4a69aa9486d54c8fdbe342915343936f9946ca629df0e13918d73629193f3fad",
+  "finished": "2026-10-08 11:10:55"
+}

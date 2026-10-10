@@ -1,0 +1,53 @@
+{
+  "recipe": {
+    "model": "rawnet2",
+    "data": "itu",
+    "seed": 1234,
+    "lr": 0.0001,
+    "batch_size": 32,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "augmentation": null,
+    "window": 64600,
+    "arch": {
+      "config": "model_config_RawNet.yaml"
+    },
+    "max_epochs": 50,
+    "patience": 7,
+    "selection": "min dev EER, single best epoch",
+    "limit_train": 0,
+    "limit_dev": 0,
+    "condition": "C1",
+    "source_rate": 8000,
+    "resampler": "soxr:HQ",
+    "target_rate": 16000
+  },
+  "source": "github.com/asvspoof-challenge/2021 LA/Baseline-RawNet2",
+  "trainable_params": 17621410,
+  "n_train": 25380,
+  "n_dev": 24844,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019_NB",
+  "protocols": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols",
+  "protocol_sha256": {
+    "train": "65a289e4009400b42bb4f1e47ac60938d93f7f595452d1f220d35defc3de8ab8",
+    "dev": "2fedaebf1ba3ae1a9bb7d3ec916804ac237b4eee063a27fa92e6549f03d129c7"
+  },
+  "repo": "/home/ksathwik/models/asvspoof2021/LA/Baseline-RawNet2",
+  "repo_commit": "9b33f5eca887bd3bf629e3fb79428cd9bb7ac972",
+  "clone_commit": "6645e9bb1cae2358f9934e6fc8a00c64027b9929",
+  "python": "3.10.20",
+  "torch": "2.7.0+cu126",
+  "cuda": "12.6",
+  "cudnn": 90501,
+  "tf32_matmul": false,
+  "gpu": "NVIDIA A40",
+  "host": "gl1502.arc-ts.umich.edu",
+  "started": "2026-10-07 19:07:26"
+}

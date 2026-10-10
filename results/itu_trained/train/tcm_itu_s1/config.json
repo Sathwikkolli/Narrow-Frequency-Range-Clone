@@ -1,0 +1,56 @@
+{
+  "recipe": {
+    "model": "tcm",
+    "data": "itu",
+    "seed": 1234,
+    "lr": 1e-06,
+    "batch_size": 20,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "augmentation": null,
+    "window": 66800,
+    "arch": {
+      "emb_size": 144,
+      "heads": 4,
+      "kernel_size": 31,
+      "num_encoders": 4
+    },
+    "max_epochs": 50,
+    "patience": 7,
+    "selection": "min dev EER, single best epoch",
+    "limit_train": 0,
+    "limit_dev": 0,
+    "condition": "C1",
+    "source_rate": 8000,
+    "resampler": "soxr:HQ",
+    "target_rate": 16000
+  },
+  "source": "github.com/ductuantruong/tcm_add",
+  "trainable_params": 319773220,
+  "n_train": 25380,
+  "n_dev": 24844,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019_NB",
+  "protocols": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols",
+  "protocol_sha256": {
+    "train": "65a289e4009400b42bb4f1e47ac60938d93f7f595452d1f220d35defc3de8ab8",
+    "dev": "2fedaebf1ba3ae1a9bb7d3ec916804ac237b4eee063a27fa92e6549f03d129c7"
+  },
+  "repo": "/home/ksathwik/models/tcm_repo",
+  "repo_commit": "726387eb731223a21d551476349f8f8f680a3375",
+  "clone_commit": "698bb66f27e879bd2836f5d960b6d55b1c6a4a31",
+  "python": "3.7.16",
+  "torch": "1.8.1+cu111",
+  "cuda": "11.1",
+  "cudnn": 8005,
+  "tf32_matmul": true,
+  "gpu": "NVIDIA A40",
+  "host": "gl1502.arc-ts.umich.edu",
+  "started": "2026-10-06 19:40:46"
+}

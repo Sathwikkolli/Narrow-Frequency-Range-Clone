@@ -1,0 +1,9 @@
+{
+  "run": "tcm_wb_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 12,
+  "best_epoch": 5,
+  "best_dev_eer": 2.2425547183346772e-05,
+  "best_sha256": "d13981fcefd15d51fe469fd98f87df68ab8bbc4dc60de767d59df8f8c5b82aad",
+  "finished": "2026-10-07 00:25:25"
+}

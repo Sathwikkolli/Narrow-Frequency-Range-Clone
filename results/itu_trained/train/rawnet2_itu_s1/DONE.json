@@ -1,0 +1,9 @@
+{
+  "run": "rawnet2_itu_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 23,
+  "best_epoch": 16,
+  "best_dev_eer": 0.011784889081905826,
+  "best_sha256": "c26fb19db923d2b963d8986a9a7fa3086bdef5bf592df0ef8c7d18dad58c9893",
+  "finished": "2026-10-07 20:41:08"
+}

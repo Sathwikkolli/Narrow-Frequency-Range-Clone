@@ -1,0 +1,9 @@
+{
+  "run": "aasist_wb_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 20,
+  "best_epoch": 13,
+  "best_dev_eer": 2.2425547183346772e-05,
+  "best_sha256": "91bacd8637ac0c884b2b55b5b4463fa4c9af540968dc612ca92b3b14f0ebb297",
+  "finished": "2026-10-07 19:25:30"
+}

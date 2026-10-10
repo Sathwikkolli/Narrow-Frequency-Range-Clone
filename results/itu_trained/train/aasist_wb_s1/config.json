@@ -1,0 +1,51 @@
+{
+  "recipe": {
+    "model": "aasist",
+    "data": "wb",
+    "seed": 1234,
+    "lr": 1e-06,
+    "batch_size": 14,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "augmentation": null,
+    "window": 64600,
+    "arch": {},
+    "max_epochs": 50,
+    "patience": 7,
+    "selection": "min dev EER, single best epoch",
+    "limit_train": 0,
+    "limit_dev": 0,
+    "condition": "RAW",
+    "source_rate": 16000,
+    "resampler": "soxr:HQ",
+    "target_rate": 16000
+  },
+  "source": "github.com/TakHemlata/SSL_Anti-spoofing",
+  "trainable_params": 317837834,
+  "n_train": 25380,
+  "n_dev": 24844,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA",
+  "protocols": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols",
+  "protocol_sha256": {
+    "train": "65a289e4009400b42bb4f1e47ac60938d93f7f595452d1f220d35defc3de8ab8",
+    "dev": "2fedaebf1ba3ae1a9bb7d3ec916804ac237b4eee063a27fa92e6549f03d129c7"
+  },
+  "repo": "/home/ksathwik/models/aasist_repo",
+  "repo_commit": "4acaa61dcef5f7610f43aa4d0b29c4559b970cd2",
+  "clone_commit": "9e93ad33d2623a1956299f7ccf6435af708b74c2",
+  "python": "3.7.16",
+  "torch": "1.8.1+cu111",
+  "cuda": "11.1",
+  "cudnn": 8005,
+  "tf32_matmul": true,
+  "gpu": "NVIDIA A40",
+  "host": "gl1527.arc-ts.umich.edu",
+  "started": "2026-10-07 12:44:05"
+}

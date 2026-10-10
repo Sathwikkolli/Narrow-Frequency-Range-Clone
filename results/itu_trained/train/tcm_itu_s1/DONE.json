@@ -1,0 +1,9 @@
+{
+  "run": "tcm_itu_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 12,
+  "best_epoch": 5,
+  "best_dev_eer": 0.0031396470155504626,
+  "best_sha256": "25fa28874e563eb09be9b13fe386ec8ef9b1b8517c6e6637f386f3aee5dfe10a",
+  "finished": "2026-10-06 23:02:52"
+}

@@ -1,0 +1,123 @@
+
+================================================================
+runs/itu_trained/tcm_itu_s1/tcm_B1.csv   [cond B1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.570%   95% CI [0.490, 0.693]
+  EER threshold     -0.8380
+  AUC               0.99935
+  d-prime           11.492
+  score mean/sd     bonafide +4.147/0.794   spoof -3.915/0.595
+  at EER threshold  acc 99.43%  F1 0.9730  P 0.953  R 0.994
+  at thr +0.0000    acc 99.63%  F1 0.9823  FAR 0.32%  FRR 0.80%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.285%
+    A08   n=4914     0.221%
+    A09   n=4914     0.139%
+    A10   n=4914     0.757%
+    A11   n=4914     0.424%
+    A12   n=4914     0.530%
+    A13   n=4914     0.285%
+    A14   n=4914     0.302%
+    A15   n=4914     0.424%
+    A16   n=4914     0.302%
+    A17   n=4914     0.513%
+    A18   n=4914     1.019%
+    A19   n=4914     1.076%
+
+================================================================
+runs/itu_trained/tcm_itu_s1/tcm_C1.csv   [cond C1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.584%   95% CI [0.490, 0.693]
+  EER threshold     -0.9348
+  AUC               0.99933
+  d-prime           11.364
+  score mean/sd     bonafide +4.135/0.812   spoof -3.919/0.587
+  at EER threshold  acc 99.42%  F1 0.9723  P 0.951  R 0.994
+  at thr +0.0000    acc 99.64%  F1 0.9826  FAR 0.31%  FRR 0.84%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.268%
+    A08   n=4914     0.221%
+    A09   n=4914     0.146%
+    A10   n=4914     0.757%
+    A11   n=4914     0.448%
+    A12   n=4914     0.513%
+    A13   n=4914     0.285%
+    A14   n=4914     0.326%
+    A15   n=4914     0.448%
+    A16   n=4914     0.309%
+    A17   n=4914     0.513%
+    A18   n=4914     1.019%
+    A19   n=4914     1.042%
+
+================================================================
+runs/itu_trained/tcm_itu_s1/tcm_P0.csv   [cond P0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               5.929%   95% CI [5.734, 6.093]
+  EER threshold     +3.5563
+  AUC               0.97534
+  d-prime           2.642
+  score mean/sd     bonafide +4.033/0.289   spoof +0.168/2.049
+  at EER threshold  acc 94.07%  F1 0.7661  P 0.646  R 0.941
+  at thr +0.0000    acc 52.73%  F1 0.3040  FAR 52.72%  FRR 0.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.285%
+    A08   n=4914     0.448%
+    A09   n=4914     0.244%
+    A10   n=4914     1.199%
+    A11   n=4914     3.375%
+    A12   n=4914     0.913%
+    A13   n=4914     0.180%
+    A14   n=4914     0.757%
+    A15   n=4914     0.611%
+    A16   n=4914     0.832%
+    A17   n=4914     4.662%
+    A18   n=4914     6.081%
+    A19   n=4914    33.010%
+
+================================================================
+runs/itu_trained/tcm_itu_s1/tcm_RAW.csv   [cond RAW]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               10.418%   95% CI [10.173, 10.676]
+  EER threshold     +3.4675
+  AUC               0.95302
+  d-prime           1.897
+  score mean/sd     bonafide +3.842/0.291   spoof +2.015/1.330
+  at EER threshold  acc 89.58%  F1 0.6397  P 0.497  R 0.896
+  at thr +0.0000    acc 18.14%  F1 0.2014  FAR 91.29%  FRR 0.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     1.205%
+    A08   n=4914     1.076%
+    A09   n=4914     0.448%
+    A10   n=4914     4.580%
+    A11   n=4914     7.344%
+    A12   n=4914     3.171%
+    A13   n=4914     0.937%
+    A14   n=4914     5.022%
+    A15   n=4914     4.271%
+    A16   n=4914     2.910%
+    A17   n=4914    19.415%
+    A18   n=4914    16.220%
+    A19   n=4914    41.471%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             71237     0.570         [0.49, 0.69]   0.9994    11.492
+  C1             71237     0.584         [0.49, 0.69]   0.9993    11.364
+  P0             71237     5.929         [5.73, 6.09]   0.9753     2.642
+  RAW            71237    10.418       [10.17, 10.68]   0.9530     1.897
+
+wrote results/itu_trained/tcm_itu_s1.json
