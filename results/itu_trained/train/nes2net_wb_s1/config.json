@@ -1,0 +1,62 @@
+{
+  "recipe": {
+    "model": "nes2net",
+    "data": "wb",
+    "seed": 12345,
+    "lr": 2.5e-07,
+    "batch_size": 12,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "augmentation": null,
+    "window": 64600,
+    "arch": {
+      "n_output_logits": 2,
+      "Nes_ratio": [
+        8,
+        8
+      ],
+      "dilation": 2,
+      "pool_func": "mean",
+      "SE_ratio": [
+        1
+      ]
+    },
+    "max_epochs": 50,
+    "patience": 7,
+    "selection": "min dev EER, single best epoch",
+    "limit_train": 0,
+    "limit_dev": 0,
+    "condition": "RAW",
+    "source_rate": 16000,
+    "resampler": "soxr:HQ",
+    "target_rate": 16000
+  },
+  "source": "github.com/Liu-Tianchi/Nes2Net_ASVspoof_ITW",
+  "trainable_params": 317902631,
+  "n_train": 25380,
+  "n_dev": 24844,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA",
+  "protocols": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols",
+  "protocol_sha256": {
+    "train": "65a289e4009400b42bb4f1e47ac60938d93f7f595452d1f220d35defc3de8ab8",
+    "dev": "2fedaebf1ba3ae1a9bb7d3ec916804ac237b4eee063a27fa92e6549f03d129c7"
+  },
+  "repo": "/home/ksathwik/models/nes2net_repo",
+  "repo_commit": "c9fe1177f44040f002cb40def928332d2e261f1e",
+  "clone_commit": "9e93ad33d2623a1956299f7ccf6435af708b74c2",
+  "python": "3.7.16",
+  "torch": "1.8.1+cu111",
+  "cuda": "11.1",
+  "cudnn": 8005,
+  "tf32_matmul": true,
+  "gpu": "NVIDIA A40",
+  "host": "gl1518.arc-ts.umich.edu",
+  "started": "2026-10-07 10:22:39"
+}

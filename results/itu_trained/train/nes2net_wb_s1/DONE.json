@@ -1,0 +1,9 @@
+{
+  "run": "nes2net_wb_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 13,
+  "best_epoch": 6,
+  "best_dev_eer": 0.0003980622637396584,
+  "best_sha256": "089e2b53a008d100201c7da397f819bb7ee1e53b04a6315dfd64b345dc7b7784",
+  "finished": "2026-10-07 17:15:50"
+}

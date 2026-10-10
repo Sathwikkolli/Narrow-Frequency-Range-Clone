@@ -1,0 +1,9 @@
+{
+  "run": "nes2net_itu_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 21,
+  "best_epoch": 14,
+  "best_dev_eer": 0.0031396470155504626,
+  "best_sha256": "a8d392c58d2f897f70bde58351874741d66c9fc1af9a97e027119cc6d05c85cd",
+  "finished": "2026-10-08 15:20:23"
+}

@@ -1,0 +1,51 @@
+{
+  "recipe": {
+    "model": "sls",
+    "data": "wb",
+    "seed": 1234,
+    "lr": 1e-06,
+    "batch_size": 5,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "augmentation": null,
+    "window": 64600,
+    "arch": {},
+    "max_epochs": 50,
+    "patience": 7,
+    "selection": "min dev EER, single best epoch",
+    "limit_train": 0,
+    "limit_dev": 0,
+    "condition": "RAW",
+    "source_rate": 16000,
+    "resampler": "soxr:HQ",
+    "target_rate": 16000
+  },
+  "source": "github.com/QiShanZhang/SLSforADD",
+  "trainable_params": 340790021,
+  "n_train": 25380,
+  "n_dev": 24844,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA",
+  "protocols": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols",
+  "protocol_sha256": {
+    "train": "65a289e4009400b42bb4f1e47ac60938d93f7f595452d1f220d35defc3de8ab8",
+    "dev": "2fedaebf1ba3ae1a9bb7d3ec916804ac237b4eee063a27fa92e6549f03d129c7"
+  },
+  "repo": "/home/ksathwik/models/sls_repo",
+  "repo_commit": "89a09ac4404c5687d96d6c123fcf6db20e4e4b38",
+  "clone_commit": "2131347e4aa3206f2c40ac92ada9ffa6ce4e5ccd",
+  "python": "3.7.16",
+  "torch": "1.12.1+cu113",
+  "cuda": "11.3",
+  "cudnn": 8302,
+  "tf32_matmul": false,
+  "gpu": "NVIDIA A40",
+  "host": "gl1516.arc-ts.umich.edu",
+  "started": "2026-10-08 11:53:02"
+}

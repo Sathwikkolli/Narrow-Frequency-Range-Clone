@@ -1,0 +1,9 @@
+{
+  "run": "sls_itu_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 19,
+  "best_epoch": 12,
+  "best_dev_eer": 0.001171761244035573,
+  "best_sha256": "90fd0ee76fbdd2c615b5b2a3116332ccada453429e9379eff89e1fd04c229439",
+  "finished": "2026-10-09 00:04:54"
+}

@@ -1,0 +1,67 @@
+
+================================================================
+runs/itu_trained_itw/tcm_wb_s1/tcm_B1.csv   [cond B1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               25.706%   95% CI [25.238, 26.163]
+  EER threshold     -3.6014
+  AUC               0.81707
+  d-prime           1.098
+  score mean/sd     bonafide -3.005/0.869   spoof -3.773/0.473
+  at EER threshold  acc 74.29%  F1 0.7841  P 0.830  R 0.743
+  at thr +0.0000    acc 37.76%  F1 0.0190  FAR 0.06%  FRR 99.04%
+
+================================================================
+runs/itu_trained_itw/tcm_wb_s1/tcm_C1.csv   [cond C1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               25.873%   95% CI [25.410, 26.323]
+  EER threshold     -3.6098
+  AUC               0.81600
+  d-prime           1.094
+  score mean/sd     bonafide -3.021/0.860   spoof -3.778/0.467
+  at EER threshold  acc 74.13%  F1 0.7826  P 0.829  R 0.741
+  at thr +0.0000    acc 37.73%  F1 0.0181  FAR 0.07%  FRR 99.09%
+
+================================================================
+runs/itu_trained_itw/tcm_wb_s1/tcm_P0.csv   [cond P0]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               8.040%   95% CI [7.753, 8.362]
+  EER threshold     -3.5427
+  AUC               0.97166
+  d-prime           2.079
+  score mean/sd     bonafide -1.025/1.995   spoof -4.058/0.523
+  at EER threshold  acc 91.96%  F1 0.9349  P 0.951  R 0.920
+  at thr +0.0000    acc 56.24%  F1 0.4670  FAR 0.30%  FRR 69.48%
+
+================================================================
+runs/itu_trained_itw/tcm_wb_s1/tcm_RAW.csv   [cond RAW]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               8.084%   95% CI [7.770, 8.380]
+  EER threshold     -3.5062
+  AUC               0.97266
+  d-prime           2.146
+  score mean/sd     bonafide -0.725/2.120   spoof -4.046/0.542
+  at EER threshold  acc 91.92%  F1 0.9346  P 0.951  R 0.919
+  at thr +0.0000    acc 59.76%  F1 0.5302  FAR 0.33%  FRR 63.85%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             31778    25.706       [25.24, 26.16]   0.8171     1.098
+  C1             31778    25.873       [25.41, 26.32]   0.8160     1.094
+  P0             31778     8.040         [7.75, 8.36]   0.9717     2.079
+  RAW            31778     8.084         [7.77, 8.38]   0.9727     2.146
+
+wrote results/itu_trained_itw/tcm_wb_s1.json

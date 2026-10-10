@@ -1,0 +1,67 @@
+
+================================================================
+runs/itu_trained_itw/nes2net_wb_s1/nes2net_B1.csv   [cond B1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               21.971%   95% CI [21.455, 22.396]
+  EER threshold     -0.8171
+  AUC               0.83882
+  d-prime           1.152
+  score mean/sd     bonafide -0.058/0.929   spoof -0.883/0.403
+  at EER threshold  acc 78.03%  F1 0.8169  P 0.857  R 0.780
+  at thr +0.0000    acc 59.38%  F1 0.5403  FAR 4.49%  FRR 62.00%
+
+================================================================
+runs/itu_trained_itw/nes2net_wb_s1/nes2net_C1.csv   [cond C1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               21.981%   95% CI [21.474, 22.405]
+  EER threshold     -0.8192
+  AUC               0.83755
+  d-prime           1.145
+  score mean/sd     bonafide -0.073/0.919   spoof -0.885/0.400
+  at EER threshold  acc 78.02%  F1 0.8168  P 0.857  R 0.780
+  at thr +0.0000    acc 59.08%  F1 0.5350  FAR 4.43%  FRR 62.53%
+
+================================================================
+runs/itu_trained_itw/nes2net_wb_s1/nes2net_P0.csv   [cond P0]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               11.637%   95% CI [11.298, 12.002]
+  EER threshold     -0.9449
+  AUC               0.92311
+  d-prime           1.867
+  score mean/sd     bonafide +1.163/1.654   spoof -1.065/0.337
+  at EER threshold  acc 88.36%  F1 0.9051  P 0.928  R 0.884
+  at thr +0.0000    acc 78.92%  F1 0.8010  FAR 1.85%  FRR 32.46%
+
+================================================================
+runs/itu_trained_itw/nes2net_wb_s1/nes2net_RAW.csv   [cond RAW]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               10.502%   95% CI [10.190, 10.825]
+  EER threshold     -0.9093
+  AUC               0.93285
+  d-prime           1.990
+  score mean/sd     bonafide +1.252/1.590   spoof -1.037/0.342
+  at EER threshold  acc 89.50%  F1 0.9146  P 0.935  R 0.895
+  at thr +0.0000    acc 81.21%  F1 0.8267  FAR 2.15%  FRR 28.64%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             31778    21.971       [21.46, 22.40]   0.8388     1.152
+  C1             31778    21.981       [21.47, 22.41]   0.8376     1.145
+  P0             31778    11.637       [11.30, 12.00]   0.9231     1.867
+  RAW            31778    10.502       [10.19, 10.83]   0.9329     1.990
+
+wrote results/itu_trained_itw/nes2net_wb_s1.json

@@ -1,0 +1,123 @@
+
+================================================================
+runs/itu_trained/nes2net_itu_s1/nes2net_B1.csv   [cond B1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.841%   95% CI [0.734, 0.922]
+  EER threshold     +3.2874
+  AUC               0.99903
+  d-prime           12.061
+  score mean/sd     bonafide +8.351/0.865   spoof -1.829/0.822
+  at EER threshold  acc 99.16%  F1 0.9606  P 0.932  R 0.992
+  at thr +0.0000    acc 98.71%  F1 0.9410  FAR 1.39%  FRR 0.38%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.180%
+    A08   n=4914     0.367%
+    A09   n=4914     0.180%
+    A10   n=4914     0.693%
+    A11   n=4914     0.343%
+    A12   n=4914     0.367%
+    A13   n=4914     0.139%
+    A14   n=4914     0.261%
+    A15   n=4914     0.367%
+    A16   n=4914     0.367%
+    A17   n=4914     0.856%
+    A18   n=4914     1.810%
+    A19   n=4914     1.973%
+
+================================================================
+runs/itu_trained/nes2net_itu_s1/nes2net_C1.csv   [cond C1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.814%   95% CI [0.720, 0.884]
+  EER threshold     +3.1144
+  AUC               0.99905
+  d-prime           12.140
+  score mean/sd     bonafide +8.354/0.869   spoof -1.833/0.808
+  at EER threshold  acc 99.19%  F1 0.9618  P 0.934  R 0.992
+  at thr +0.0000    acc 98.75%  F1 0.9425  FAR 1.35%  FRR 0.39%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.204%
+    A08   n=4914     0.367%
+    A09   n=4914     0.204%
+    A10   n=4914     0.652%
+    A11   n=4914     0.350%
+    A12   n=4914     0.367%
+    A13   n=4914     0.139%
+    A14   n=4914     0.261%
+    A15   n=4914     0.384%
+    A16   n=4914     0.367%
+    A17   n=4914     0.856%
+    A18   n=4914     1.810%
+    A19   n=4914     1.996%
+
+================================================================
+runs/itu_trained/nes2net_itu_s1/nes2net_P0.csv   [cond P0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               12.277%   95% CI [12.022, 12.538]
+  EER threshold     +7.1420
+  AUC               0.92724
+  d-prime           2.281
+  score mean/sd     bonafide +7.762/0.863   spoof +2.660/3.044
+  at EER threshold  acc 87.72%  F1 0.5961  P 0.451  R 0.877
+  at thr +0.0000    acc 33.32%  F1 0.2361  FAR 74.34%  FRR 0.19%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.896%
+    A08   n=4914     3.725%
+    A09   n=4914     7.303%
+    A10   n=4914     2.886%
+    A11   n=4914    21.778%
+    A12   n=4914     2.974%
+    A13   n=4914     0.489%
+    A14   n=4914     2.869%
+    A15   n=4914     3.399%
+    A16   n=4914     2.543%
+    A17   n=4914    19.758%
+    A18   n=4914    14.427%
+    A19   n=4914    51.446%
+
+================================================================
+runs/itu_trained/nes2net_itu_s1/nes2net_RAW.csv   [cond RAW]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               29.814%   95% CI [29.245, 30.469]
+  EER threshold     +4.6653
+  AUC               0.74227
+  d-prime           0.660
+  score mean/sd     bonafide +5.295/3.356   spoof +3.400/2.281
+  at EER threshold  acc 70.19%  F1 0.3271  P 0.213  R 0.702
+  at thr +0.0000    acc 14.35%  F1 0.1808  FAR 94.54%  FRR 8.46%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914    19.676%
+    A08   n=4914    22.382%
+    A09   n=4914    23.547%
+    A10   n=4914    26.579%
+    A11   n=4914    37.403%
+    A12   n=4914    27.387%
+    A13   n=4914    18.861%
+    A14   n=4914    27.516%
+    A15   n=4914    28.535%
+    A16   n=4914    23.890%
+    A17   n=4914    40.680%
+    A18   n=4914    40.313%
+    A19   n=4914    49.328%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             71237     0.841         [0.73, 0.92]   0.9990    12.061
+  C1             71237     0.814         [0.72, 0.88]   0.9991    12.140
+  P0             71237    12.277       [12.02, 12.54]   0.9272     2.281
+  RAW            71237    29.814       [29.25, 30.47]   0.7423     0.660
+
+wrote results/itu_trained/nes2net_itu_s1.json

@@ -1,0 +1,67 @@
+
+================================================================
+runs/itu_trained_itw/aasist_itu_s1/aasist_B1.csv   [cond B1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               16.140%   95% CI [15.700, 16.546]
+  EER threshold     -3.1265
+  AUC               0.91631
+  d-prime           1.322
+  score mean/sd     bonafide -0.890/2.453   spoof -3.271/0.685
+  at EER threshold  acc 83.86%  F1 0.8672  P 0.898  R 0.839
+  at thr +0.0000    acc 56.56%  F1 0.4768  FAR 1.11%  FRR 68.49%
+
+================================================================
+runs/itu_trained_itw/aasist_itu_s1/aasist_C1.csv   [cond C1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               16.081%   95% CI [15.668, 16.512]
+  EER threshold     -3.1343
+  AUC               0.91610
+  d-prime           1.312
+  score mean/sd     bonafide -0.927/2.443   spoof -3.278/0.675
+  at EER threshold  acc 83.92%  F1 0.8677  P 0.898  R 0.839
+  at thr +0.0000    acc 56.21%  F1 0.4703  FAR 1.08%  FRR 69.06%
+
+================================================================
+runs/itu_trained_itw/aasist_itu_s1/aasist_P0.csv   [cond P0]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               11.577%   95% CI [11.215, 11.933]
+  EER threshold     -2.7843
+  AUC               0.94449
+  d-prime           1.414
+  score mean/sd     bonafide -1.535/1.481   spoof -3.085/0.462
+  at EER threshold  acc 88.42%  F1 0.9056  P 0.928  R 0.884
+  at thr +0.0000    acc 45.36%  F1 0.2346  FAR 0.51%  FRR 86.67%
+
+================================================================
+runs/itu_trained_itw/aasist_itu_s1/aasist_RAW.csv   [cond RAW]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               11.656%   95% CI [11.275, 12.053]
+  EER threshold     -2.8028
+  AUC               0.94292
+  d-prime           1.335
+  score mean/sd     bonafide -1.591/1.537   spoof -3.117/0.499
+  at EER threshold  acc 88.34%  F1 0.9050  P 0.928  R 0.883
+  at thr +0.0000    acc 45.49%  F1 0.2380  FAR 0.55%  FRR 86.45%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  B1             31778    16.140       [15.70, 16.55]   0.9163     1.322
+  C1             31778    16.081       [15.67, 16.51]   0.9161     1.312
+  P0             31778    11.577       [11.22, 11.93]   0.9445     1.414
+  RAW            31778    11.656       [11.27, 12.05]   0.9429     1.335
+
+wrote results/itu_trained_itw/aasist_itu_s1.json

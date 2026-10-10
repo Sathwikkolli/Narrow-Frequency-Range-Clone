@@ -1,0 +1,9 @@
+{
+  "run": "sls_wb_s1",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 10,
+  "best_epoch": 3,
+  "best_dev_eer": 6.727664155004032e-05,
+  "best_sha256": "8bdac0eb695c00a623084107abf48e703f7a8eb1224ea87667505bbe07b240ec",
+  "finished": "2026-10-08 18:22:56"
+}
