@@ -64,6 +64,7 @@ BATCH=${BATCH:-32}
 WORKERS=${WORKERS:-8}
 LIMIT=${LIMIT:-0}
 PRECISION=${PRECISION:-fp32}
+WINDOW=${WINDOW:-0}              # 0 = the adapter's own; WINDOW=64600 for a train/train.py Nes2Net
 SAVE_EMB=${SAVE_EMB:-0}          # 1 to write .npz embeddings for the probe
 
 SHARD=${SLURM_ARRAY_TASK_ID:-0}
@@ -151,6 +152,7 @@ for COND in $CONDITIONS; do
         --shard "$SHARD" --nshards "$NSHARDS" \
         --batch-size "$BATCH" --workers "$WORKERS" \
         --precision "$PRECISION" \
+        --window "$WINDOW" \
         --limit "$LIMIT" \
         "${EMB_ARGS[@]}" || { echo "FAILED: $ADAPTER / $COND"; fail=1; }
 done

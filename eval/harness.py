@@ -302,10 +302,17 @@ def main():
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--precision", choices=["fp32", "tf32", "fp16", "bf16"], default="fp32")
     ap.add_argument("--keep-failed", action="store_true")
+    ap.add_argument("--window", type=int, default=0,
+                    help="samples per clip, overriding the adapter's own window; for a "
+                         "checkpoint trained at a different length than the released one "
+                         "(train/train.py trains Nes2Net at 64600, its adapter scores at 64000)")
     args = ap.parse_args()
 
     from adapters import get_adapter
     ad = get_adapter(args.adapter)
+    if args.window:
+        print(f"window {args.window} from --window (adapter default {ad.window})", flush=True)
+        ad.window = args.window       # instance attribute; every use below reads ad.window
 
     if args.audio_dir:
         rows = rows_from_dir(args.audio_dir, args.cond)
