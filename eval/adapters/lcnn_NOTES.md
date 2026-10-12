@@ -1,4 +1,20 @@
-# LCNN — why it has no adapter
+# LCNN — why it had no adapter, and the two routes it has now
+
+> **Update.** LCNN now has an adapter: `adapters/lcnn.py`, built on `adapters/_lcnn.py`.
+> It does not reimplement the framework's call convention, which is what this note
+> warned against. It subclasses the baseline's own `Model`, calls its own
+> `_compute_embedding` (LFCC front end + LCNN-BLSTM, unchanged) and skips only
+> `forward(x, fileinfo)`'s file plumbing; the state_dict keys are the baseline's.
+>
+> The two routes are **not interchangeable** and their numbers must not be mixed:
+>
+> | Route | Clip length | Audio path | Used for |
+> |---|---|---|---|
+> | `ADAPTER=lcnn` in `run_suite.sbatch` | 4 s window (64600) | harness, resampled on load | `train/train.py` LCNN runs, and the released checkpoint when it is compared with them |
+> | `eval/run_lcnn.sh` (below) | whole utterance | the baseline's own I/O; B1/C1 from 16 kHz copies | the original suite results in `results/lcnn.txt` |
+>
+> The rest of this note is the original reasoning, kept because the second route
+> and its sample-rate caveat still apply.
 
 **Official source:** `asvspoof-challenge/2021` → `LA/Baseline-LFCC-LCNN`
 (Xin Wang, NII). Pretrained LA and DF models ship with the repo, pulled by

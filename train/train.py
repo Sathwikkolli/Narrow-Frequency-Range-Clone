@@ -36,7 +36,6 @@ A finished run writes DONE.json; launching it again is then a no-op, which is wh
 lets submit.sh queue several chained jobs without knowing how many epochs it needs.
 """
 import argparse
-import contextlib
 import csv
 import hashlib
 import json
@@ -61,6 +60,7 @@ sys.path.insert(0, str(EVAL))
 from harness import RESAMPLER, TARGET_SR, Clips, read_labels   # noqa: E402
 from compute_metrics import eer                                 # noqa: E402
 from adapters._common import in_repo, ns, require_xlsr          # noqa: E402
+from adapters._lcnn import build_lcnn                           # noqa: E402
 
 
 # ---------------------------------------------------------------- per-model spec
@@ -85,64 +85,11 @@ def _build_rawnet2(repo, device):
         return importlib.import_module("model").RawNet(d_args, device)
 
 
-@contextlib.contextmanager
-def _legacy_rfft():
-    """torch.rfft for the LCNN baseline's constructor, on torches that removed it.
-
-    sandbox/util_dsp.py builds LFCC's fixed DCT-II matrix (LinearDCT) with
-    torch.rfft(v, 1, onesided=False), which torch 1.8 removed -- the baseline pins
-    torch 1.6. It is only called while the model is constructed, never in forward.
-    This is the old call's exact semantics on torch.fft: a real input's FFT, as a
-    trailing [real, imag] axis. Removed again on exit so nothing else sees it.
-    """
-    if hasattr(torch, "rfft"):
-        yield
-        return
-
-    def rfft(x, signal_ndim, normalized=False, onesided=True):
-        if signal_ndim != 1 or normalized:
-            raise NotImplementedError("only the 1-D unnormalised form util_dsp.dct uses")
-        return torch.view_as_real(torch.fft.rfft(x) if onesided else torch.fft.fft(x))
-
-    torch.rfft = rfft
-    try:
-        yield
-    finally:
-        del torch.rfft
-
-
 def _build_lcnn(repo, device):
-    """LFCC-LCNN as a plain [B, T] -> [B, 2] module, built from the repo's own Model.
-
-    The baseline lives inside NII's project-NN framework: Model.forward(x, fileinfo)
-    reads labels from a protocol by file name and returns a training tuple. Only
-    that plumbing is bypassed. The subclass below calls the repo's own
-    _compute_embedding -- its LFCC front end and LCNN-BLSTM network, unchanged --
-    and adds no parameters, so the state_dict keys are exactly the baseline's.
-
-    TWO LOGITS FROM ONE. The baseline emits one logit z and trains sigmoid + BCE.
-    Returning [0, z] makes softmax([0, z])[1] = sigmoid(z), so unweighted
-    cross-entropy on it IS the baseline's BCE, and out[:, 1] = z is the baseline's
-    own inference score (_compute_score(..., inference=True) returns z).
-
-    --repo is the Baseline-LFCC-LCNN folder: sandbox/ and core_scripts/ are imported
-    from there, model.py from project/baseline_LA/.
-    """
-    import importlib.util
-    with in_repo(repo) as r, _legacy_rfft():
-        path = os.path.join(r, "project", "baseline_LA", "model.py")
-        ms = importlib.util.spec_from_file_location("lcnn_baseline_model", path)
-        mod = importlib.util.module_from_spec(ms)
-        ms.loader.exec_module(mod)
-
-        class LcnnTwoLogit(mod.Model):
-            def forward(self, x):
-                z = self._compute_embedding(x.unsqueeze(-1), None)[:, 0]   # one sub-model
-                return torch.stack([torch.zeros_like(z), z], dim=1)
-
-        # in/out dims 1 and no mean/std: what the baseline's config.py gives it.
-        # The protocol path is only read by forward(x, fileinfo), which is unused.
-        return LcnnTwoLogit(1, 1, None, ns(optional_argument=[""]), None)
+    """The baseline's own LFCC-LCNN as a [B, T] -> [B, 2] module. Built by the same
+    function the eval adapter uses (eval/adapters/_lcnn.py, which explains the two
+    logits), so the trained network and the scored network are one definition."""
+    return build_lcnn(repo)
 
 
 MODELS = {

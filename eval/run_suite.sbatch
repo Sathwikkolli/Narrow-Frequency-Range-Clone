@@ -42,8 +42,10 @@
 # TCM is fp32 only -- harness.py refuses fp16/bf16 for it (its SSLModel flips
 # XLS-R into train() mode on a dtype change, silently, during scoring).
 #
-# LCNN is NOT run here: it is a project-NN-Pytorch-scripts project, not an
-# importable module. See eval/adapters/lcnn_NOTES.md and eval/lcnn_to_csv.py.
+# LCNN has two routes. ADAPTER=lcnn here scores it on the harness's 4 s windows
+# like the other detectors (eval/adapters/lcnn.py; needs CONDA_ENV=ssl_spoof, the
+# baseline's own torch 1.6 env has no A40 kernels). eval/run_lcnn.sh instead drives
+# the baseline's own tool on whole utterances -- see eval/adapters/lcnn_NOTES.md.
 
 set -u
 
@@ -86,6 +88,9 @@ case "$ADAPTER" in
   nes2net)
     REPO=${REPO:-$MODELS/nes2net_repo}
     CKPT=${CKPT:-$(ls "$MODELS"/nes2net_ckpt/*.pth 2>/dev/null | head -1)} ;;
+  lcnn)
+    REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-LFCC-LCNN}
+    CKPT=${CKPT:-$REPO/project/baseline_LA/__pretrained/trained_network.pt} ;;
   *) echo "unknown ADAPTER '$ADAPTER'"; exit 1 ;;
 esac
 

@@ -31,10 +31,11 @@ REGISTRY = {
     "tcm": ("tcm", "TcmAdapter"),
     "sls": ("sls", "SlsAdapter"),
     "nes2net": ("nes2net", "Nes2NetAdapter"),
-    # LCNN is not a plain nn.Module: the official LFCC-LCNN baseline is a
-    # project-NN-Pytorch-scripts project whose model.py expects that framework's
-    # data plumbing and computes LFCC inside forward(). It needs its own approach
-    # rather than this adapter shape -- see adapters/lcnn_NOTES.md.
+    # LCNN is a project-NN-Pytorch-scripts project, not a plain nn.Module. Its adapter
+    # subclasses the baseline's own Model and bypasses only the framework's file
+    # plumbing (adapters/_lcnn.py). eval/run_lcnn.sh, the baseline's own tool on whole
+    # utterances, remains the other route -- see adapters/lcnn_NOTES.md.
+    "lcnn": ("lcnn", "LcnnAdapter"),
 }
 
 
