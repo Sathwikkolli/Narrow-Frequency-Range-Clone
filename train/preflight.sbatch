@@ -134,7 +134,11 @@ for s in 1 2 3 4; do
     [ "${STAGE[$s]}" = FAIL ] && fail=1
 done
 if [ $fail -eq 0 ]; then
-    echo "PREFLIGHT PASSED -- safe to: bash train/submit.sh $MODEL itu 1 && bash train/submit.sh $MODEL wb 1"
+    if [ "$RECIPE" = official ]; then
+        echo "PREFLIGHT PASSED -- safe to: RECIPE=official bash train/submit.sh $MODEL wb 1"
+    else
+        echo "PREFLIGHT PASSED -- safe to: bash train/submit.sh $MODEL itu 1 && bash train/submit.sh $MODEL wb 1"
+    fi
     rm -rf "$WORK"
 else
     echo "PREFLIGHT FAILED -- fix the FAIL lines above; work dir kept: $WORK"
