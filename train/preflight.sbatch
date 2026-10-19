@@ -46,7 +46,11 @@ MODELS=${MODELS:-$HOME/models}
 PROTOCOLS=${PROTOCOLS:-$T/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols}
 ITU_ROOT=$T/AsvSpoofData_2019_NB
 WB_ROOT=$T/AsvSpoofData_2019/train/LA
-FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
+if [ "$RECIPE" = official ]; then
+    FINAL_ROOT=${FINAL_ROOT:-$T/official_ckpt}
+else
+    FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
+fi
 WORK=$SCR/itu_train/preflight/$MODEL
 
 case "$MODEL" in
