@@ -15,6 +15,7 @@
 #   mkdir -p /scratch/hafiz_root/hafiz1/$USER/itu_train/slurm_logs
 #   MODEL=tcm sbatch train/preflight.sbatch
 #   MODEL=tcm ACCUM=2 sbatch train/preflight.sbatch      # if memory FAILs
+#   MODEL=aasist RECIPE=official sbatch train/preflight.sbatch   # stage 2 with the authors' recipe
 #   MODEL=tcm SAMPLE=0 sbatch --time=3:00:00 train/preflight.sbatch   # decode ALL ~100k files
 #
 # Same partition, CPUs, memory and conda env as train.sbatch, so what passes here
@@ -35,6 +36,7 @@
 
 set -u
 MODEL=${MODEL:-tcm}
+RECIPE=${RECIPE:-shared}     # shared | official (train/official.py)
 ACCUM=${ACCUM:-1}
 SAMPLE=${SAMPLE:-300}
 CLONE_DIR=${CLONE_DIR:-${SLURM_SUBMIT_DIR:-$HOME/Narrow-Frequency-Range-Clone}}
@@ -82,8 +84,13 @@ python "$CLONE_DIR/train/preflight.py" --model "$MODEL" \
 
 echo; echo "################ 2. stop + resume with the real trainer"
 RUN=$WORK/run
-ARGS=(--model "$MODEL" --data itu --seed 1 --run-dir "$RUN" --repo "$REPO"
-      --data-root "$ITU_ROOT" --protocols "$PROTOCOLS" --workers "$W" --accum "$ACCUM"
+if [ "$RECIPE" = official ]; then     # the authors' recipe trains on wideband only
+    ARGS=(--recipe official --data wb --data-root "$WB_ROOT")
+else
+    ARGS=(--data itu --data-root "$ITU_ROOT")
+fi
+ARGS+=(--model "$MODEL" --seed 1 --run-dir "$RUN" --repo "$REPO"
+      --protocols "$PROTOCOLS" --workers "$W" --accum "$ACCUM"
       --limit-train 60 --limit-dev 40 --max-epochs 2)
 python "$CLONE_DIR/train/train.py" "${ARGS[@]}" --stop-after-epoch 1
 r1=$?

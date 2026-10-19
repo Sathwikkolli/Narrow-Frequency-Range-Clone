@@ -154,7 +154,8 @@ MODELS = {
         # The baseline takes whole utterances; the 4 s window is the shared recipe's
         window=64600,
         # project/baseline_LA/00_train.sh: --lr 0.0003 --batch-size 64 --seed 1000.
-        # Its ReduceLROnPlateau halving is not used (shared recipe: fixed lr).
+        # Its StepLR halving (--lr-scheduler-type 1: x0.5 every 10 epochs) is not
+        # used (shared recipe: fixed lr).
         lr=3e-4, batch_size=64,
         base_seed=1000,
         # the framework's Adam has no weight decay (--l2-penalty defaults to -1), and
@@ -335,14 +336,19 @@ def main():
     ap.add_argument("--data-root", required=True,
                     help="itu: AsvSpoofData_2019_NB root; wb: the folder holding ASVspoof2019_LA_<subset>")
     ap.add_argument("--protocols", required=True, help="folder holding the 2019 LA train/dev protocols")
-    ap.add_argument("--max-epochs", type=int, default=50)
-    ap.add_argument("--patience", type=int, default=7)
+    ap.add_argument("--recipe", choices=["shared", "official"], default="shared",
+                    help="shared: this file's one recipe for every model (default); "
+                         "official: each repo's own training recipe, see train/official.py")
+    ap.add_argument("--max-epochs", type=int,
+                    help="default: 50 (shared), the repo's own cap (official)")
+    ap.add_argument("--patience", type=int, help="shared recipe only; default 7")
     ap.add_argument("--lr", type=float, help="default: the model's published value")
     ap.add_argument("--batch-size", type=int, help="default: the model's published value")
     ap.add_argument("--accum", type=int, default=1,
                     help="gradient accumulation; only if the published batch does not fit the GPU. "
                          "Effective batch stays --batch-size, which is split into --accum steps")
-    ap.add_argument("--dev-batch-size", type=int, default=32)
+    ap.add_argument("--dev-batch-size", type=int,
+                    help="default: 32 (shared), the repo's dev batch (official)")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--limit-train", type=int, default=0, help="smoke test only")
     ap.add_argument("--limit-dev", type=int, default=0, help="smoke test only")
@@ -351,6 +357,18 @@ def main():
                     help="exit cleanly after this epoch as if the job hit its time limit "
                          "(preflight's resume test); not part of the recipe")
     args = ap.parse_args()
+
+    if args.recipe == "official":
+        if args.patience is not None:
+            sys.exit("--patience is part of the shared recipe; the official one sets its own")
+        import official
+        return official.run(args)
+    if args.max_epochs is None:
+        args.max_epochs = 50
+    if args.patience is None:
+        args.patience = 7
+    if args.dev_batch_size is None:
+        args.dev_batch_size = 32
 
     spec = MODELS[args.model]
     lr = args.lr if args.lr is not None else spec["lr"]

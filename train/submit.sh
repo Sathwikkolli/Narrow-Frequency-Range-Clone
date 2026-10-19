@@ -6,12 +6,16 @@
 #   bash train/submit.sh tcm wb 1              # matched wideband baseline
 #   DRY=1 bash train/submit.sh tcm itu 1       # check paths, print, submit nothing
 #   AFTER=<jobid> bash train/submit.sh ...     # start only if that job (preflight) succeeds
+#   RECIPE=official bash train/submit.sh aasist wb 1   # the authors' own recipe (train/official.py)
 #   ACCUM=2 bash train/submit.sh ...           # batch split in 2 if it does not fit memory
 #
 # Arguments: <model> <itu|wb> <seed index 1|2|3>. Seed index k trains with the
 # repo's own default seed + k - 1, so s1 is exactly the published seed.
 #
-# Run name <model>_<data>_s<k>, e.g. tcm_itu_s1:
+# Run name <model>_<data>_s<k>, e.g. tcm_itu_s1; with RECIPE=official
+# <model>_wb_official_s<k>, final copy under $T/official_ckpt instead of itu_ckpt.
+# Official runs are up to 100 epochs, so CHAIN defaults to 30 slots for them.
+#
 #   checkpoints/logs  $SCR/itu_train/runs/<run>/      (scratch)
 #   slurm logs        $SCR/itu_train/slurm_logs/
 #   final best.pth    $FINAL_ROOT/<run>/               (turbo, copied on finish)
@@ -33,13 +37,22 @@ SMOKE=${SMOKE:-0}
 AFTER=${AFTER:-}
 ACCUM=${ACCUM:-1}
 DRY=${DRY:-0}
-CHAIN=${CHAIN:-10}
+RECIPE=${RECIPE:-shared}
+case "$RECIPE" in
+  shared)   CHAIN=${CHAIN:-10} ;;
+  official) CHAIN=${CHAIN:-30} ;;
+  *)        echo "RECIPE must be shared or official, not '$RECIPE'"; exit 1 ;;
+esac
 
 T=/nfs/turbo/umd-hafiz/issf_server_data
 SCR=${SCR:-/scratch/hafiz_root/hafiz1/$USER}
 MODELS=${MODELS:-$HOME/models}
 PROTOCOLS=${PROTOCOLS:-$T/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols}
-FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
+if [ "$RECIPE" = official ]; then
+    FINAL_ROOT=${FINAL_ROOT:-$T/official_ckpt}
+else
+    FINAL_ROOT=${FINAL_ROOT:-$T/itu_ckpt}
+fi
 
 case "$MODEL" in
   tcm) REPO=${REPO:-$MODELS/tcm_repo}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
@@ -66,6 +79,11 @@ SEED=$((BASE_SEED + K - 1))
 
 RUN=${MODEL}_${DATA}_s${K}
 EXTRA="--accum $ACCUM"
+if [ "$RECIPE" = official ]; then
+    [ "$DATA" = wb ] || { echo "RECIPE=official trains on wideband only (wb)"; exit 1; }
+    RUN=${MODEL}_wb_official_s${K}
+    EXTRA="$EXTRA --recipe official"
+fi
 FINAL_DIR=$FINAL_ROOT/$RUN
 TIME=""
 if [ "$SMOKE" = "1" ]; then
@@ -99,7 +117,7 @@ if [ -f "$RUN_DIR/DONE.json" ]; then
     echo "$RUN already finished:"; cat "$RUN_DIR/DONE.json"; exit 0
 fi
 
-echo "run        $RUN   (seed $SEED, env $ENV)"
+echo "run        $RUN   (seed $SEED, env $ENV, recipe $RECIPE)"
 echo "audio      $DATA_ROOT/ASVspoof2019_LA_{train,dev}/$SUB"
 echo "run dir    $RUN_DIR"
 echo "final dir  ${FINAL_DIR:-<none, smoke test>}"
