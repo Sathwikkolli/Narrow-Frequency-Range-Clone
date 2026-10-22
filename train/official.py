@@ -45,6 +45,30 @@ DELIBERATE DEPARTURES, all of them about reproducibility, none about the recipe:
   - After training, the final model is scored once on the clean dev set and
     written to dev_scores_best.csv. This is reporting only; it selects nothing.
 
+NARROWBAND (--data itu). The same recipe trained on ITU telephone audio (C1: IRS8
+handset + G.711, 8 kHz). Everything above is unchanged except the data path, which
+cannot be the repo's: its librosa.load(sr=16000) would upsample with librosa's own
+resampler and its RawBoost (maxF 8000) would then put energy back into the 4-8 kHz
+band the telephone channel removed. So per clip:
+
+    soundfile, native 8 kHz      (a file at any other rate is a hard error)
+    -> the repo's own process_Rawboost_feature at fs=8000, every parameter at its
+       default except maxF = 4000 (Nyquist at 8 kHz; with 8000 the notch filters
+       would be designed above Nyquist). Noise drawn at 8 kHz cannot exceed 4 kHz.
+    -> harness.resample to 16 kHz (soxr HQ, the resampler every eval goes through;
+       preflight verifies < -60 dB above 4.2 kHz)
+    -> the repo's own pad() to the repo's own training cut
+
+The RawBoost function and pad() are imported from the repo's data module, so the
+augmentation is still the authors' code, only run at the audio's true rate. Dev
+passes (augmented or clean) take the same path, from the C1 dev set.
+
+Measured (Welch, Hann): energy above 4.2 kHz after this path is about -112 dB with
+any RawBoost algo, against about -20 dB for the repo's own 16 kHz path. The repos'
+pad() tile-repeats short clips and each seam is a small click (about -50 dB above
+4.2 kHz, with or without RawBoost); eval's harness pads identically, so train and
+test see the same thing.
+
 LFCC-LCNN is not here yet: its recipe (whole utterances in length-sorted batches,
 StepLR) does not fit a fixed-window Dataset and is added separately.
 """
@@ -58,11 +82,13 @@ from argparse import Namespace
 from pathlib import Path
 
 import numpy as np
+import soundfile as sf
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
 import train as T
+import harness                         # eval/harness.py; train puts eval/ on sys.path
 
 # ---------------------------------------------------------------- per-model recipe
 
@@ -74,6 +100,10 @@ RAWBOOST = dict(nBands=5, minF=20, maxF=8000, minBW=100, maxBW=1000,
                 minBiasLinNonLin=5, maxBiasLinNonLin=20, N_f=5,
                 P=10, g_sd=2, SNRmin=10, SNRmax=40,
                 LnL_ratio=1.0, ISD_ratio=1.0, SSI_ratio=1.0)
+
+# --data itu: RawBoost runs on the 8 kHz audio itself, so its filters stop at Nyquist
+NB_RATE = 8000
+RAWBOOST_NB = dict(RAWBOOST, maxF=NB_RATE // 2)
 
 # dev:     (name, RawBoost algo) per dev pass, in the order main.py runs them
 # stop:    None = run every epoch; else stop after `patience` epochs in a row
@@ -155,20 +185,60 @@ class Seeder:
         torch.manual_seed(s)
 
 
-def repo_dataset(off, repo):
-    """The Dataset class from the repo's own data_utils module."""
+class NarrowbandSet(torch.utils.data.Dataset):
+    """--data itu: the repo's RawBoost and pad() around an 8 kHz read and the
+    harness resampler (see NARROWBAND in the module docstring)."""
+
+    def __init__(self, mod, ids, labels, flac_dir, algo, cut):
+        self.paths = [Path(flac_dir) / f"{u}.flac" for u in ids]
+        self.y = [labels[u] for u in ids]
+        self.algo = algo
+        self.cut = int(cut)
+        self.pad = mod.pad
+        self.rawboost = getattr(mod, "process_Rawboost_feature", None)
+        if algo and self.rawboost is None:
+            sys.exit(f"{mod.__name__} has no process_Rawboost_feature but algo {algo} was asked for")
+        self.args = Namespace(**RAWBOOST_NB)
+
+    def __len__(self):
+        return len(self.paths)
+
+    def __getitem__(self, i):
+        x, sr = sf.read(str(self.paths[i]), dtype="float32")
+        if sr != NB_RATE:
+            raise RuntimeError(f"{self.paths[i]}: {sr} Hz, narrowband training needs {NB_RATE} Hz")
+        if x.ndim > 1:
+            x = x.mean(axis=1)
+        if self.algo:
+            x = self.rawboost(x, sr, self.args, self.algo)
+        x = np.asarray(harness.resample(np.asarray(x, dtype="float32"), sr), dtype="float32")
+        x = self.pad(x, self.cut)
+        return torch.from_numpy(np.ascontiguousarray(x, dtype="float32")), self.y[i], i
+
+
+def repo_module(off, repo):
+    """The repo's own data module (data_utils.py / data_utils_SSL.py)."""
     import importlib
     with T.in_repo(repo):
-        mod = importlib.import_module(off["dataset"][0])
-    return getattr(mod, off["dataset"][1])
+        return importlib.import_module(off["dataset"][0])
 
 
-def make_set(cls, off, ids, labels, base_dir, algo):
+def repo_dataset(off, repo):
+    """The Dataset class from the repo's own data_utils module."""
+    return getattr(repo_module(off, repo), off["dataset"][1])
+
+
+def make_set(cls, off, ids, labels, base_dir, algo, nb=None):
+    """nb: None for wideband (the repo's Dataset as is), else (module, cut) for
+    the narrowband path."""
+    if algo and not off["rawboost"]:
+        sys.exit("a model without RawBoost was given a RawBoost algo")
+    if nb is not None:
+        mod, cut = nb
+        return NarrowbandSet(mod, ids, labels, base_dir, algo, cut)
     if off["rawboost"]:
         ds = cls(Namespace(**RAWBOOST), list_IDs=ids, labels=labels, base_dir=base_dir, algo=algo)
     else:
-        if algo:
-            sys.exit("a model without RawBoost was given a RawBoost algo")
         ds = cls(list_IDs=ids, labels=labels, base_dir=base_dir)
     return Indexed(ds)
 
@@ -282,8 +352,7 @@ def run(args):
     if args.model not in OFFICIAL:
         sys.exit(f"--recipe official: no official recipe for {args.model} yet "
                  f"(have {', '.join(sorted(OFFICIAL))})")
-    if args.data != "wb":
-        sys.exit("--recipe official trains on the original 16 kHz ASVspoof2019 LA only (--data wb)")
+    narrow = args.data == "itu"
     spec, off = T.MODELS[args.model], OFFICIAL[args.model]
     lr = args.lr if args.lr is not None else spec["lr"]
     batch = args.batch_size or spec["batch_size"]
@@ -315,21 +384,33 @@ def run(args):
                   dev=off["dev"], max_epochs=max_epochs, stop=off["stop"], select=sel,
                   average=off["average"], limit_train=args.limit_train,
                   limit_dev=args.limit_dev)
+    if narrow:
+        # only for itu runs, so a wideband run's recipe (and its resume check) is
+        # exactly what it was before narrowband existed
+        recipe.update(rawboost=RAWBOOST_NB if off["rawboost"] else None,
+                      condition="C1", source_rate=NB_RATE, rawboost_rate=NB_RATE,
+                      resampler=harness.RESAMPLER, target_rate=harness.TARGET_SR,
+                      window=spec["window"], loader="soundfile 8k -> repo RawBoost -> "
+                                                    "harness.resample -> repo pad")
 
     T.seed_everything(args.seed)
-    flac_dir = T.CONDITIONS["wb"][1]
+    flac_dir = T.CONDITIONS[args.data][1]
     tr_ids, _, tr_y = T.trials(args.protocols, "train", flac_dir(args.data_root, "train"),
                                args.limit_train, args.seed)
     dv_ids, _, dv_y = T.trials(args.protocols, "dev", flac_dir(args.data_root, "dev"),
                                args.limit_dev, args.seed)
-    base = {s: str(Path(args.data_root) / f"ASVspoof2019_LA_{s}") + "/" for s in ("train", "dev")}
+    if narrow:
+        base = {s: flac_dir(args.data_root, s) for s in ("train", "dev")}
+    else:
+        base = {s: str(Path(args.data_root) / f"ASVspoof2019_LA_{s}") + "/" for s in ("train", "dev")}
     tr_lab = dict(zip(tr_ids, tr_y.tolist()))
     dv_lab = dict(zip(dv_ids, dv_y.tolist()))
 
     model = T.build_model(spec, args.repo, device)
     cls = repo_dataset(off, args.repo)
-    train_set = make_set(cls, off, tr_ids, tr_lab, base["train"], off["algo"])
-    dev_sets = [(name, make_set(cls, off, dv_ids, dv_lab, base["dev"], algo))
+    nb = (repo_module(off, args.repo), spec["window"]) if narrow else None
+    train_set = make_set(cls, off, tr_ids, tr_lab, base["train"], off["algo"], nb)
+    dev_sets = [(name, make_set(cls, off, dv_ids, dv_lab, base["dev"], algo, nb))
                 for name, algo in off["dev"]]
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
@@ -368,7 +449,7 @@ def run(args):
                  f"{socket.gethostname()}  {torch.cuda.get_device_name(0)}  "
                  f"from epoch {state['epoch']}\n")
 
-    print(f"{args.model} / official ({off['where']}) / seed {args.seed}: lr {lr}, batch {batch} "
+    print(f"{args.model} / official ({off['where']}) / {args.data} / seed {args.seed}: lr {lr}, batch {batch} "
           f"({args.accum} x {micro}), RawBoost algo {off['algo']}, dev {off['dev'] or 'none'}, "
           f"<= {max_epochs} epochs, keep {off['average']} by {sel['key']}, "
           f"{n_params / 1e6:.1f}M trainable", flush=True)
@@ -436,7 +517,7 @@ def run(args):
     model.load_state_dict(final)
 
     # reporting only: the final model on the clean dev set
-    clean = make_set(cls, off, dv_ids, dv_lab, base["dev"], 0)
+    clean = make_set(cls, off, dv_ids, dv_lab, base["dev"], 0, nb)
     m, scores = dev_pass(model, spec, loader(clean, dev_batch, args.workers,
                                              Seeder(args.seed, 0, 99)),
                          dv_y, criterion, device)
@@ -446,7 +527,7 @@ def run(args):
         for u, lab, s in zip(dv_ids, dv_y, scores):
             w.writerow([u, "bonafide" if lab else "spoof", f"{s:.6f}"])
 
-    summary = dict(run=run_dir.name, recipe="official", stop_reason=state["stop"],
+    summary = dict(run=run_dir.name, recipe="official", data=args.data, stop_reason=state["stop"],
                    epochs=state["epoch"], final_from_epochs=epochs,
                    averaged=len(epochs) > 1, selected_by=sel["key"],
                    final_clean_dev_eer=m["eer"], final_clean_dev_loss=m["loss"],

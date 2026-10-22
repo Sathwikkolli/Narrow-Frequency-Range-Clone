@@ -7,13 +7,16 @@
 #   DRY=1 bash train/submit.sh tcm itu 1       # check paths, print, submit nothing
 #   AFTER=<jobid> bash train/submit.sh ...     # start only if that job (preflight) succeeds
 #   RECIPE=official bash train/submit.sh aasist wb 1   # the authors' own recipe (train/official.py)
+#   RECIPE=official bash train/submit.sh aasist itu 1  # ... trained on C1 telephone audio
 #   ACCUM=2 bash train/submit.sh ...           # batch split in 2 if it does not fit memory
 #
 # Arguments: <model> <itu|wb> <seed index 1|2|3>. Seed index k trains with the
 # repo's own default seed + k - 1, so s1 is exactly the published seed.
 #
 # Run name <model>_<data>_s<k>, e.g. tcm_itu_s1; with RECIPE=official
-# <model>_wb_official_s<k>, final copy under $T/official_ckpt instead of itu_ckpt.
+# <model>_<data>_official_s<k>, final copy under $T/official_ckpt instead of itu_ckpt.
+# RECIPE=official with itu: the authors' recipe on C1, RawBoost run at 8 kHz
+# (train/official.py, NARROWBAND).
 # Official runs are up to 100 epochs, so CHAIN defaults to 30 slots for them.
 #
 #   checkpoints/logs  $SCR/itu_train/runs/<run>/      (scratch)
@@ -80,8 +83,7 @@ SEED=$((BASE_SEED + K - 1))
 RUN=${MODEL}_${DATA}_s${K}
 EXTRA="--accum $ACCUM"
 if [ "$RECIPE" = official ]; then
-    [ "$DATA" = wb ] || { echo "RECIPE=official trains on wideband only (wb)"; exit 1; }
-    RUN=${MODEL}_wb_official_s${K}
+    RUN=${MODEL}_${DATA}_official_s${K}
     EXTRA="$EXTRA --recipe official"
 fi
 FINAL_DIR=$FINAL_ROOT/$RUN

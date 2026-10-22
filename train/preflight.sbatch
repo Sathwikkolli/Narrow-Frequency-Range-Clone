@@ -16,6 +16,7 @@
 #   MODEL=tcm sbatch train/preflight.sbatch
 #   MODEL=tcm ACCUM=2 sbatch train/preflight.sbatch      # if memory FAILs
 #   MODEL=aasist RECIPE=official sbatch train/preflight.sbatch   # stage 2 with the authors' recipe
+#   MODEL=aasist RECIPE=official DATA=itu sbatch train/preflight.sbatch   # ... on C1, RawBoost at 8 kHz
 #   MODEL=tcm SAMPLE=0 sbatch --time=3:00:00 train/preflight.sbatch   # decode ALL ~100k files
 #
 # Same partition, CPUs, memory and conda env as train.sbatch, so what passes here
@@ -37,6 +38,7 @@
 set -u
 MODEL=${MODEL:-tcm}
 RECIPE=${RECIPE:-shared}     # shared | official (train/official.py)
+DATA=${DATA:-wb}             # official only: wb | itu, what stage 2 trains on
 ACCUM=${ACCUM:-1}
 SAMPLE=${SAMPLE:-300}
 CLONE_DIR=${CLONE_DIR:-${SLURM_SUBMIT_DIR:-$HOME/Narrow-Frequency-Range-Clone}}
@@ -88,8 +90,10 @@ python "$CLONE_DIR/train/preflight.py" --model "$MODEL" \
 
 echo; echo "################ 2. stop + resume with the real trainer"
 RUN=$WORK/run
-if [ "$RECIPE" = official ]; then     # the authors' recipe trains on wideband only
+if [ "$RECIPE" = official ] && [ "$DATA" = wb ]; then
     ARGS=(--recipe official --data wb --data-root "$WB_ROOT")
+elif [ "$RECIPE" = official ]; then   # C1 through the 8 kHz RawBoost path
+    ARGS=(--recipe official --data itu --data-root "$ITU_ROOT")
 else
     ARGS=(--data itu --data-root "$ITU_ROOT")
 fi
@@ -135,7 +139,7 @@ for s in 1 2 3 4; do
 done
 if [ $fail -eq 0 ]; then
     if [ "$RECIPE" = official ]; then
-        echo "PREFLIGHT PASSED -- safe to: RECIPE=official bash train/submit.sh $MODEL wb 1"
+        echo "PREFLIGHT PASSED -- safe to: RECIPE=official bash train/submit.sh $MODEL $DATA 1"
     else
         echo "PREFLIGHT PASSED -- safe to: bash train/submit.sh $MODEL itu 1 && bash train/submit.sh $MODEL wb 1"
     fi
