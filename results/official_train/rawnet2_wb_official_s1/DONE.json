@@ -1,0 +1,15 @@
+{
+  "run": "rawnet2_wb_official_s1",
+  "recipe": "official",
+  "stop_reason": "reached 100 epochs",
+  "epochs": 100,
+  "final_from_epochs": [
+    58
+  ],
+  "averaged": false,
+  "selected_by": "dev.acc",
+  "final_clean_dev_eer": 0.007451055275136443,
+  "final_clean_dev_loss": 0.06868158985010991,
+  "best_sha256": "729102eb1e91ba9f8807e1c5615e62f6f3859a8c4be5b267dd217b6f41ccf1a1",
+  "finished": "2026-10-19 21:54:43"
+}

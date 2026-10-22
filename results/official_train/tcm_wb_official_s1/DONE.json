@@ -1,0 +1,19 @@
+{
+  "run": "tcm_wb_official_s1",
+  "recipe": "official",
+  "stop_reason": "no dev_aug.loss improvement for 7 epoch(s)",
+  "epochs": 21,
+  "final_from_epochs": [
+    14,
+    16,
+    13,
+    8,
+    15
+  ],
+  "averaged": true,
+  "selected_by": "dev_aug.loss",
+  "final_clean_dev_eer": 0.00044291335810635194,
+  "final_clean_dev_loss": 0.0017457525195097535,
+  "best_sha256": "620b16c55ab46aed09e726e26ed0b8bd0ed602ca432798831d53a2469372de7a",
+  "finished": "2026-10-19 21:36:19"
+}

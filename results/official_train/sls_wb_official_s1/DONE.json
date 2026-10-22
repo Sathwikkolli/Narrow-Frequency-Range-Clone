@@ -1,0 +1,15 @@
+{
+  "run": "sls_wb_official_s1",
+  "recipe": "official",
+  "stop_reason": "no train_loss improvement for 1 epoch(s)",
+  "epochs": 5,
+  "final_from_epochs": [
+    4
+  ],
+  "averaged": false,
+  "selected_by": "train_loss",
+  "final_clean_dev_eer": 0.0003083600750062158,
+  "final_clean_dev_loss": 0.009612570783645831,
+  "best_sha256": "b35981f122c78c677970f1695edffc3855b4582cd416db39be8fe7b7ae6eebeb",
+  "finished": "2026-10-19 17:26:56"
+}

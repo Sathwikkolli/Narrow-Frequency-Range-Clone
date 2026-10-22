@@ -1,0 +1,15 @@
+{
+  "run": "aasist_wb_official_s1",
+  "recipe": "official",
+  "stop_reason": "reached 100 epochs",
+  "epochs": 100,
+  "final_from_epochs": [
+    45
+  ],
+  "averaged": false,
+  "selected_by": "dev_aug.loss",
+  "final_clean_dev_eer": 0.001171761244035573,
+  "final_clean_dev_loss": 0.0038304997601210787,
+  "best_sha256": "a744865f7616e76f699b45b3126f2e9d6629bbf0e0ed61586bc289a791b5e9b7",
+  "finished": "2026-10-21 00:07:42"
+}
