@@ -1,0 +1,20 @@
+{
+  "run": "tcm_itu_official_s1",
+  "recipe": "official",
+  "data": "itu",
+  "stop_reason": "no dev_aug.loss improvement for 7 epoch(s)",
+  "epochs": 25,
+  "final_from_epochs": [
+    18,
+    23,
+    19,
+    21,
+    15
+  ],
+  "averaged": true,
+  "selected_by": "dev_aug.loss",
+  "final_clean_dev_eer": 0.0019678857715148897,
+  "final_clean_dev_loss": 0.006519033431633392,
+  "best_sha256": "013f843b61dd428b7fd266d77d9542cd541e25c5db06eb154abf8aeae63ac07d",
+  "finished": "2026-10-22 20:54:44"
+}

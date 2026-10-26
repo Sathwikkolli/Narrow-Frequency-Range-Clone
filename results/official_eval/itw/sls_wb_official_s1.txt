@@ -1,0 +1,287 @@
+
+================================================================
+runs/official_eval/itw/sls_wb_official_s1//sls_RAW.csv   [cond RAW]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               8.862%   95% CI [8.547, 9.183]
+  EER threshold     -13.3338
+  AUC               0.97123
+  d-prime           2.404
+  score mean/sd     bonafide -7.644/4.482   spoof -15.897/1.867
+  at EER threshold  acc 91.14%  F1 0.9282  P 0.946  R 0.911
+  at thr +0.0000    acc 37.18%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    2Pac  n=101      1.011%
+    AdamDriver n=137     26.120%
+    AlanWatts n=292     13.699%
+    AlecGuinness n=1717     4.033%
+    AlexandriaOcasioCortez n=100      4.832%
+    ArnoldSchwarzenegger n=108      6.482%
+    AynRand n=1104     9.328%
+    BarackObama n=334     12.277%
+    BernieSanders n=1254     1.999%
+    BillBurr n=57       1.964%
+    BillClinton n=703     15.219%
+    BillieEilish n=5       19.856%
+    BobRoss n=48      10.506%
+    BorisJohnson n=86       4.652%
+    CalvinCoolidge n=15       0.288%
+    ChristopherHitchens n=541      4.252%
+    DaveChappelle n=9        1.483%
+    DonaldTrump n=155     17.526%
+    DwightEisenhower n=63       4.763%
+    FDR   n=163      6.136%
+    FrankSinatra n=38       8.133%
+    GeorgeCarlin n=84       1.347%
+    GeorgeWBush n=175      6.366%
+    GilbertGottfried n=127      7.087%
+    HarryTruman n=16       0.819%
+    JFK   n=273     10.624%
+    JeffGoldblum n=4       20.931%
+    JerrySeinfeld n=43       4.652%
+    JimmyCarter n=11       7.436%
+    JohnCleese n=70       2.761%
+    KamalaHarris n=4       54.885%
+    KanyeWest n=79       1.262%
+    LouisCK n=57       3.741%
+    LouisFarrakhan n=108      7.606%
+    LyndonJohnson n=12       0.804%
+    MalcolmX n=46       6.522%
+    MarkZuckerberg n=261      9.578%
+    MartinLutherKing n=283      4.890%
+    MiltonFriedman n=300     12.416%
+    MitchHedberg n=28       0.626%
+    MrRogers n=96       7.330%
+    NelsonMandela n=284     12.720%
+    NickOfferman n=11      46.206%
+    NormMacDonald n=93       5.376%
+    OrsonWelles n=176     13.069%
+    QueenElizabethII n=359     15.020%
+    RichardNixon n=126      6.373%
+    RobertKardashian n=40       9.999%
+    RonaldReagan n=916      4.051%
+    ScarlettJohansson n=42       7.143%
+    TheNotoriousBIG n=315      3.213%
+    TuckerCarlson n=67       2.985%
+    WilliamFBuckley n=22       4.544%
+    WinstonChurchill n=257      8.603%
+
+================================================================
+runs/official_eval/itw/sls_wb_official_s1//sls_P0.csv   [cond P0]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    16000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               8.377%   95% CI [8.031, 8.666]
+  EER threshold     -13.5639
+  AUC               0.97438
+  d-prime           2.440
+  score mean/sd     bonafide -7.640/4.587   spoof -16.151/1.817
+  at EER threshold  acc 91.62%  F1 0.9322  P 0.949  R 0.916
+  at thr +0.0000    acc 37.18%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    2Pac  n=101      1.802%
+    AdamDriver n=137     26.138%
+    AlanWatts n=292     12.672%
+    AlecGuinness n=1717     1.624%
+    AlexandriaOcasioCortez n=100      4.001%
+    ArnoldSchwarzenegger n=108      7.408%
+    AynRand n=1104     9.133%
+    BarackObama n=334     12.277%
+    BernieSanders n=1254     1.904%
+    BillBurr n=57       1.754%
+    BillClinton n=703     14.226%
+    BillieEilish n=5       20.001%
+    BobRoss n=48       4.588%
+    BorisJohnson n=86       4.652%
+    CalvinCoolidge n=15       0.346%
+    ChristopherHitchens n=541      3.877%
+    DaveChappelle n=9        1.615%
+    DonaldTrump n=155     21.936%
+    DwightEisenhower n=63       6.651%
+    FDR   n=163      5.634%
+    FrankSinatra n=38       5.782%
+    GeorgeCarlin n=84       1.437%
+    GeorgeWBush n=175      6.286%
+    GilbertGottfried n=127      8.611%
+    HarryTruman n=16       4.813%
+    JFK   n=273     10.293%
+    JeffGoldblum n=4       21.211%
+    JerrySeinfeld n=43       4.652%
+    JimmyCarter n=11       9.091%
+    JohnCleese n=70       2.769%
+    KamalaHarris n=4       49.548%
+    KanyeWest n=79       1.502%
+    LouisCK n=57       3.508%
+    LouisFarrakhan n=108      9.223%
+    LyndonJohnson n=12       1.212%
+    MalcolmX n=46       8.696%
+    MarkZuckerberg n=261      9.963%
+    MartinLutherKing n=283      6.361%
+    MiltonFriedman n=300      9.999%
+    MitchHedberg n=28       0.458%
+    MrRogers n=96       6.251%
+    NelsonMandela n=284     16.164%
+    NickOfferman n=11      45.454%
+    NormMacDonald n=93       5.376%
+    OrsonWelles n=176      3.410%
+    QueenElizabethII n=359     13.650%
+    RichardNixon n=126      6.511%
+    RobertKardashian n=40      12.123%
+    RonaldReagan n=916      3.832%
+    ScarlettJohansson n=42       7.143%
+    TheNotoriousBIG n=315      3.175%
+    TuckerCarlson n=67       2.985%
+    WilliamFBuckley n=22       4.484%
+    WinstonChurchill n=257      7.393%
+
+================================================================
+runs/official_eval/itw/sls_wb_official_s1//sls_B1.csv   [cond B1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               17.952%   95% CI [17.512, 18.393]
+  EER threshold     -12.6397
+  AUC               0.90086
+  d-prime           1.558
+  score mean/sd     bonafide -10.270/2.914   spoof -14.027/1.774
+  at EER threshold  acc 82.05%  F1 0.8517  P 0.885  R 0.820
+  at thr +0.0000    acc 37.18%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    2Pac  n=101      0.991%
+    AdamDriver n=137     24.089%
+    AlanWatts n=292     27.396%
+    AlecGuinness n=1717    21.493%
+    AlexandriaOcasioCortez n=100      6.969%
+    ArnoldSchwarzenegger n=108      9.258%
+    AynRand n=1104    21.195%
+    BarackObama n=334     15.304%
+    BernieSanders n=1254     9.011%
+    BillBurr n=57       2.022%
+    BillClinton n=703     22.758%
+    BillieEilish n=5       20.001%
+    BobRoss n=48      20.833%
+    BorisJohnson n=86       4.835%
+    CalvinCoolidge n=15       0.832%
+    ChristopherHitchens n=541     29.582%
+    DaveChappelle n=9        8.521%
+    DonaldTrump n=155     32.902%
+    DwightEisenhower n=63      14.178%
+    FDR   n=163      9.202%
+    FrankSinatra n=38      15.789%
+    GeorgeCarlin n=84       4.763%
+    GeorgeWBush n=175      4.698%
+    GilbertGottfried n=127     15.749%
+    HarryTruman n=16       6.879%
+    JFK   n=273     16.913%
+    JeffGoldblum n=4       29.043%
+    JerrySeinfeld n=43       4.848%
+    JimmyCarter n=11       9.567%
+    JohnCleese n=70       9.909%
+    KamalaHarris n=4       74.183%
+    KanyeWest n=79       3.634%
+    LouisCK n=57      10.525%
+    LouisFarrakhan n=108     15.740%
+    LyndonJohnson n=12      17.741%
+    MalcolmX n=46      13.179%
+    MarkZuckerberg n=261     17.624%
+    MartinLutherKing n=283      9.534%
+    MiltonFriedman n=300     18.256%
+    MitchHedberg n=28       3.572%
+    MrRogers n=96      24.815%
+    NelsonMandela n=284     14.788%
+    NickOfferman n=11      65.290%
+    NormMacDonald n=93      14.052%
+    OrsonWelles n=176     17.613%
+    QueenElizabethII n=359     20.893%
+    RichardNixon n=126     12.698%
+    RobertKardashian n=40      30.015%
+    RonaldReagan n=916     17.248%
+    ScarlettJohansson n=42      11.906%
+    TheNotoriousBIG n=315      4.763%
+    TuckerCarlson n=67      12.294%
+    WilliamFBuckley n=22      13.976%
+    WinstonChurchill n=257     11.285%
+
+================================================================
+runs/official_eval/itw/sls_wb_official_s1//sls_C1.csv   [cond C1]
+================================================================
+  trials            31778  (19963 bonafide / 11815 spoof)
+  source rate(s)    8000 Hz
+  duration          median 3.27 s, mean 4.29 s, 61.5% under the 4.04 s window
+  EER               18.028%   95% CI [17.597, 18.485]
+  EER threshold     -12.6541
+  AUC               0.90103
+  d-prime           1.557
+  score mean/sd     bonafide -10.292/2.908   spoof -14.041/1.769
+  at EER threshold  acc 81.97%  F1 0.8510  P 0.885  R 0.820
+  at thr +0.0000    acc 37.18%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    2Pac  n=101      1.001%
+    AdamDriver n=137     24.089%
+    AlanWatts n=292     27.055%
+    AlecGuinness n=1717    21.547%
+    AlexandriaOcasioCortez n=100      6.208%
+    ArnoldSchwarzenegger n=108     10.177%
+    AynRand n=1104    21.285%
+    BarackObama n=334     15.269%
+    BernieSanders n=1254     9.001%
+    BillBurr n=57       1.959%
+    BillClinton n=703     22.902%
+    BillieEilish n=5       20.001%
+    BobRoss n=48      19.163%
+    BorisJohnson n=86       5.650%
+    CalvinCoolidge n=15       0.864%
+    ChristopherHitchens n=541     29.760%
+    DaveChappelle n=9        8.426%
+    DonaldTrump n=155     32.902%
+    DwightEisenhower n=63      14.286%
+    FDR   n=163      9.210%
+    FrankSinatra n=38      15.789%
+    GeorgeCarlin n=84       4.763%
+    GeorgeWBush n=175      5.116%
+    GilbertGottfried n=127     15.749%
+    HarryTruman n=16       6.634%
+    JFK   n=273     16.933%
+    JeffGoldblum n=4       29.476%
+    JerrySeinfeld n=43       4.930%
+    JimmyCarter n=11       9.252%
+    JohnCleese n=70       9.999%
+    KamalaHarris n=4       74.240%
+    KanyeWest n=79       3.589%
+    LouisCK n=57      10.525%
+    LouisFarrakhan n=108     15.853%
+    LyndonJohnson n=12      18.269%
+    MalcolmX n=46      12.991%
+    MarkZuckerberg n=261     18.081%
+    MartinLutherKing n=283      9.542%
+    MiltonFriedman n=300     17.635%
+    MitchHedberg n=28       3.572%
+    MrRogers n=96      24.763%
+    NelsonMandela n=284     15.062%
+    NickOfferman n=11      65.042%
+    NormMacDonald n=93      13.980%
+    OrsonWelles n=176     17.613%
+    QueenElizabethII n=359     21.170%
+    RichardNixon n=126     12.698%
+    RobertKardashian n=40      30.171%
+    RonaldReagan n=916     17.141%
+    ScarlettJohansson n=42      11.906%
+    TheNotoriousBIG n=315      4.813%
+    TuckerCarlson n=67      13.201%
+    WilliamFBuckley n=22      13.929%
+    WinstonChurchill n=257     11.285%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  RAW            31778     8.862         [8.55, 9.18]   0.9712     2.404
+  P0             31778     8.377         [8.03, 8.67]   0.9744     2.440
+  B1             31778    17.952       [17.51, 18.39]   0.9009     1.558
+  C1             31778    18.028       [17.60, 18.48]   0.9010     1.557
+
+wrote results/official_eval/itw/sls_wb_official_s1.json

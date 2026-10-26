@@ -1,0 +1,82 @@
+[
+  {
+    "name": "runs/official_eval/itw/aasist_wb_official_s1//aasist_RAW.csv",
+    "cond": "RAW",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.095289421273622,
+    "eer_ci": [
+      0.09159837282764907,
+      0.09843314660263683
+    ],
+    "eer_threshold": -3.738211,
+    "auc": 0.9646187045695985,
+    "dprime": 1.643007888340107,
+    "bonafide_mean": -1.3120479508590894,
+    "bonafide_sd": 2.3859976949190247,
+    "spoof_mean": -4.167578622513754,
+    "spoof_sd": 0.5898442726622869,
+    "pct_under_window": 61.523695638492036
+  },
+  {
+    "name": "runs/official_eval/itw/aasist_wb_official_s1//aasist_P0.csv",
+    "cond": "P0",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.09361651047667129,
+    "eer_ci": [
+      0.0903123818102847,
+      0.09749175627895099
+    ],
+    "eer_threshold": -3.741183,
+    "auc": 0.9659440850041472,
+    "dprime": 1.7339021555568093,
+    "bonafide_mean": -1.0716694411661574,
+    "bonafide_sd": 2.473525991253154,
+    "spoof_mean": -4.183616114938638,
+    "spoof_sd": 0.5689438784676827,
+    "pct_under_window": 61.523695638492036
+  },
+  {
+    "name": "runs/official_eval/itw/aasist_wb_official_s1//aasist_B1.csv",
+    "cond": "B1",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.14956618326214116,
+    "eer_ci": [
+      0.14575830288149028,
+      0.15378771389364018
+    ],
+    "eer_threshold": -3.672299,
+    "auc": 0.9239329746912872,
+    "dprime": 1.3624642708378856,
+    "bonafide_mean": -1.6633036594199269,
+    "bonafide_sd": 2.2890593944131075,
+    "spoof_mean": -3.9514667588658483,
+    "spoof_sd": 0.6331505207007416,
+    "pct_under_window": 61.523695638492036
+  },
+  {
+    "name": "runs/official_eval/itw/aasist_wb_official_s1//aasist_C1.csv",
+    "cond": "C1",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.14956618326214116,
+    "eer_ci": [
+      0.14575599258755653,
+      0.15353615111570457
+    ],
+    "eer_threshold": -3.678706,
+    "auc": 0.9238238286322714,
+    "dprime": 1.3599487110251969,
+    "bonafide_mean": -1.6741234933627211,
+    "bonafide_sd": 2.287365194217492,
+    "spoof_mean": -3.9555221347439695,
+    "spoof_sd": 0.6293609089132934,
+    "pct_under_window": 61.523695638492036
+  }
+]

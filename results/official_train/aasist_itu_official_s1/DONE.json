@@ -1,0 +1,16 @@
+{
+  "run": "aasist_itu_official_s1",
+  "recipe": "official",
+  "data": "itu",
+  "stop_reason": "reached 100 epochs",
+  "epochs": 100,
+  "final_from_epochs": [
+    96
+  ],
+  "averaged": false,
+  "selected_by": "dev_aug.loss",
+  "final_clean_dev_eer": 2.2425547183346772e-05,
+  "final_clean_dev_loss": 0.0013969851080874594,
+  "best_sha256": "ddda6a4a0400d9845e2641a39eb91fb36c62050fcff5df78f7922f5bfc3fcd4d",
+  "finished": "2026-10-23 22:14:40"
+}

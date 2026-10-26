@@ -1,0 +1,18 @@
+{
+  "run": "nes2net_itu_official_s1",
+  "recipe": "official",
+  "data": "itu",
+  "stop_reason": "reached 100 epochs",
+  "epochs": 100,
+  "final_from_epochs": [
+    71,
+    52,
+    37
+  ],
+  "averaged": true,
+  "selected_by": "dev.eer",
+  "final_clean_dev_eer": 0.0020575879602482768,
+  "final_clean_dev_loss": 0.007779318650270249,
+  "best_sha256": "0f9479369545fbfcf36744ffa3749568de8a1fca711bc209c6837cc07fb06e32",
+  "finished": "2026-10-26 03:20:16"
+}

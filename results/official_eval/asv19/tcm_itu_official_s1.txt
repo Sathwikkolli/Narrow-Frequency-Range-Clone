@@ -1,0 +1,123 @@
+
+================================================================
+runs/official_eval/asv19/tcm_itu_official_s1//tcm_RAW.csv   [cond RAW]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               5.767%   95% CI [5.575, 5.969]
+  EER threshold     +3.4513
+  AUC               0.98129
+  d-prime           2.336
+  score mean/sd     bonafide +3.956/0.340   spoof +1.317/1.560
+  at EER threshold  acc 94.23%  F1 0.7713  P 0.653  R 0.942
+  at thr +0.0000    acc 27.46%  F1 0.2215  FAR 80.89%  FRR 0.04%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.716%
+    A08   n=4914     0.873%
+    A09   n=4914     0.244%
+    A10   n=4914     2.747%
+    A11   n=4914     3.399%
+    A12   n=4914     1.647%
+    A13   n=4914     0.652%
+    A14   n=4914     1.548%
+    A15   n=4914     1.623%
+    A16   n=4914     1.786%
+    A17   n=4914     7.694%
+    A18   n=4914     6.692%
+    A19   n=4914    24.728%
+
+================================================================
+runs/official_eval/asv19/tcm_itu_official_s1//tcm_P0.csv   [cond P0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               3.481%   95% CI [3.342, 3.647]
+  EER threshold     +3.3126
+  AUC               0.99018
+  d-prime           3.376
+  score mean/sd     bonafide +4.151/0.460   spoof -0.902/2.066
+  at EER threshold  acc 96.52%  F1 0.8513  P 0.761  R 0.965
+  at thr +0.0000    acc 70.89%  F1 0.4147  FAR 32.45%  FRR 0.10%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.227%
+    A08   n=4914     0.547%
+    A09   n=4914     0.081%
+    A10   n=4914     1.117%
+    A11   n=4914     1.565%
+    A12   n=4914     0.733%
+    A13   n=4914     0.261%
+    A14   n=4914     0.407%
+    A15   n=4914     0.431%
+    A16   n=4914     0.733%
+    A17   n=4914     2.119%
+    A18   n=4914     3.171%
+    A19   n=4914    18.844%
+
+================================================================
+runs/official_eval/asv19/tcm_itu_official_s1//tcm_B1.csv   [cond B1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.408%   95% CI [0.313, 0.530]
+  EER threshold     +0.9189
+  AUC               0.99957
+  d-prime           11.908
+  score mean/sd     bonafide +4.630/0.555   spoof -3.999/0.861
+  at EER threshold  acc 99.59%  F1 0.9805  P 0.966  R 0.996
+  at thr +0.0000    acc 99.15%  F1 0.9606  FAR 0.91%  FRR 0.24%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.105%
+    A08   n=4914     0.204%
+    A09   n=4914     0.081%
+    A10   n=4914     0.407%
+    A11   n=4914     0.244%
+    A12   n=4914     0.244%
+    A13   n=4914     0.105%
+    A14   n=4914     0.105%
+    A15   n=4914     0.105%
+    A16   n=4914     0.204%
+    A17   n=4914     0.570%
+    A18   n=4914     0.710%
+    A19   n=4914     0.774%
+
+================================================================
+runs/official_eval/asv19/tcm_itu_official_s1//tcm_C1.csv   [cond C1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.420%   95% CI [0.313, 0.530]
+  EER threshold     +0.9746
+  AUC               0.99956
+  d-prime           11.816
+  score mean/sd     bonafide +4.631/0.556   spoof -3.994/0.870
+  at EER threshold  acc 99.58%  F1 0.9801  P 0.965  R 0.996
+  at thr +0.0000    acc 99.12%  F1 0.9591  FAR 0.95%  FRR 0.24%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.122%
+    A08   n=4914     0.204%
+    A09   n=4914     0.081%
+    A10   n=4914     0.407%
+    A11   n=4914     0.244%
+    A12   n=4914     0.227%
+    A13   n=4914     0.105%
+    A14   n=4914     0.105%
+    A15   n=4914     0.122%
+    A16   n=4914     0.204%
+    A17   n=4914     0.570%
+    A18   n=4914     0.733%
+    A19   n=4914     0.757%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  RAW            71237     5.767         [5.58, 5.97]   0.9813     2.336
+  P0             71237     3.481         [3.34, 3.65]   0.9902     3.376
+  B1             71237     0.408         [0.31, 0.53]   0.9996    11.908
+  C1             71237     0.420         [0.31, 0.53]   0.9996    11.816
+
+wrote results/official_eval/asv19/tcm_itu_official_s1.json

@@ -1,0 +1,123 @@
+
+================================================================
+runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_RAW.csv   [cond RAW]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               4.854%   95% CI [4.674, 5.041]
+  EER threshold     -0.0080
+  AUC               0.98887
+  d-prime           4.110
+  score mean/sd     bonafide -0.134/1.000   spoof -11.408/3.748
+  at EER threshold  acc 95.15%  F1 0.8019  P 0.693  R 0.951
+  at thr +0.0000    acc 89.68%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.587%
+    A08   n=4914     4.866%
+    A09   n=4914     0.424%
+    A10   n=4914     0.628%
+    A11   n=4914     0.302%
+    A12   n=4914     0.611%
+    A13   n=4914     0.424%
+    A14   n=4914     0.424%
+    A15   n=4914     0.635%
+    A16   n=4914     1.182%
+    A17   n=4914     9.381%
+    A18   n=4914    15.748%
+    A19   n=4914     1.973%
+
+================================================================
+runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_P0.csv   [cond P0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               10.673%   95% CI [10.361, 10.987]
+  EER threshold     -3.6574
+  AUC               0.96261
+  d-prime           2.945
+  score mean/sd     bonafide -0.908/2.288   spoof -10.488/3.990
+  at EER threshold  acc 89.33%  F1 0.6335  P 0.491  R 0.893
+  at thr +0.0000    acc 89.68%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     3.114%
+    A08   n=4914     7.572%
+    A09   n=4914     0.261%
+    A10   n=4914     4.499%
+    A11   n=4914     2.078%
+    A12   n=4914     4.760%
+    A13   n=4914     3.789%
+    A14   n=4914     0.832%
+    A15   n=4914     2.828%
+    A16   n=4914     8.183%
+    A17   n=4914    17.663%
+    A18   n=4914    23.605%
+    A19   n=4914    24.273%
+
+================================================================
+runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_B1.csv   [cond B1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               28.811%   95% CI [28.375, 29.287]
+  EER threshold     -5.4605
+  AUC               0.79517
+  d-prime           1.194
+  score mean/sd     bonafide -3.170/3.454   spoof -7.971/4.519
+  at EER threshold  acc 71.19%  F1 0.3379  P 0.221  R 0.712
+  at thr +0.0000    acc 89.68%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914    20.637%
+    A08   n=4914     8.648%
+    A09   n=4914     2.136%
+    A10   n=4914    36.768%
+    A11   n=4914    16.016%
+    A12   n=4914    32.887%
+    A13   n=4914    45.219%
+    A14   n=4914     5.151%
+    A15   n=4914    13.327%
+    A16   n=4914    40.581%
+    A17   n=4914    37.094%
+    A18   n=4914    26.334%
+    A19   n=4914    52.808%
+
+================================================================
+runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_C1.csv   [cond C1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               28.825%   95% CI [28.375, 29.271]
+  EER threshold     -5.4430
+  AUC               0.79541
+  d-prime           1.196
+  score mean/sd     bonafide -3.157/3.446   spoof -7.963/4.519
+  at EER threshold  acc 71.17%  F1 0.3377  P 0.221  R 0.712
+  at thr +0.0000    acc 89.68%  F1 0.0000  FAR 0.00%  FRR 100.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914    20.712%
+    A08   n=4914     8.607%
+    A09   n=4914     2.078%
+    A10   n=4914    36.751%
+    A11   n=4914    15.853%
+    A12   n=4914    32.928%
+    A13   n=4914    45.277%
+    A14   n=4914     5.192%
+    A15   n=4914    13.327%
+    A16   n=4914    40.541%
+    A17   n=4914    37.101%
+    A18   n=4914    26.032%
+    A19   n=4914    52.750%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  RAW            71237     4.854         [4.67, 5.04]   0.9889     4.110
+  P0             71237    10.673       [10.36, 10.99]   0.9626     2.945
+  B1             71237    28.811       [28.37, 29.29]   0.7952     1.194
+  C1             71237    28.825       [28.38, 29.27]   0.7954     1.196
+
+wrote results/official_eval/asv19/rawnet2_wb_official_s1.json

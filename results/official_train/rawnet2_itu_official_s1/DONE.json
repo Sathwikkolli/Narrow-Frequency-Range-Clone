@@ -1,0 +1,16 @@
+{
+  "run": "rawnet2_itu_official_s1",
+  "recipe": "official",
+  "data": "itu",
+  "stop_reason": "reached 100 epochs",
+  "epochs": 100,
+  "final_from_epochs": [
+    90
+  ],
+  "averaged": false,
+  "selected_by": "dev.acc",
+  "final_clean_dev_eer": 0.007383778633586403,
+  "final_clean_dev_loss": 0.06522813642699724,
+  "best_sha256": "b1c09a3e142888267a76c57b1feea6dfda4e2183c6a7f7e24d786f22476bf5e7",
+  "finished": "2026-10-22 19:24:15"
+}

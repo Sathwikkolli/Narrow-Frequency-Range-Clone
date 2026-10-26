@@ -1,0 +1,82 @@
+{
+  "recipe": {
+    "recipe": "official",
+    "where": "Nes2Net_ASVspoof_ITW/main.py",
+    "model": "nes2net",
+    "data": "wb",
+    "seed": 12345,
+    "lr": 2.5e-07,
+    "batch_size": 12,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "rawboost_algo": 4,
+    "rawboost": {
+      "nBands": 5,
+      "minF": 20,
+      "maxF": 8000,
+      "minBW": 100,
+      "maxBW": 1000,
+      "minCoeff": 10,
+      "maxCoeff": 100,
+      "minG": 0,
+      "maxG": 0,
+      "minBiasLinNonLin": 5,
+      "maxBiasLinNonLin": 20,
+      "N_f": 5,
+      "P": 10,
+      "g_sd": 2,
+      "SNRmin": 10,
+      "SNRmax": 40,
+      "LnL_ratio": 1.0,
+      "ISD_ratio": 1.0,
+      "SSI_ratio": 1.0
+    },
+    "dev": [
+      [
+        "dev_aug",
+        4
+      ],
+      [
+        "dev",
+        0
+      ]
+    ],
+    "max_epochs": 100,
+    "stop": null,
+    "select": {
+      "key": "dev.eer",
+      "mode": "min",
+      "eligible": "new_min_dev_loss"
+    },
+    "average": 3,
+    "limit_train": 0,
+    "limit_dev": 0
+  },
+  "source": "github.com/Liu-Tianchi/Nes2Net_ASVspoof_ITW",
+  "trainable_params": 317902631,
+  "n_train": 25380,
+  "n_dev": 24844,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA",
+  "protocols": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols",
+  "protocol_sha256": {
+    "train": "65a289e4009400b42bb4f1e47ac60938d93f7f595452d1f220d35defc3de8ab8",
+    "dev": "2fedaebf1ba3ae1a9bb7d3ec916804ac237b4eee063a27fa92e6549f03d129c7"
+  },
+  "repo": "/home/ksathwik/models/nes2net_repo",
+  "repo_commit": "c9fe1177f44040f002cb40def928332d2e261f1e",
+  "clone_commit": "a13a62fd65eb300382c62bbeabb99943131ceb52",
+  "python": "3.7.16",
+  "torch": "1.8.1+cu111",
+  "cuda": "11.1",
+  "cudnn": 8005,
+  "gpu": "NVIDIA A40",
+  "host": "gl1525.arc-ts.umich.edu",
+  "started": "2026-10-19 14:58:34"
+}

@@ -1,0 +1,18 @@
+{
+  "run": "nes2net_wb_official_s1",
+  "recipe": "official",
+  "data": "wb",
+  "stop_reason": "reached 100 epochs",
+  "epochs": 100,
+  "final_from_epochs": [
+    65,
+    54,
+    69
+  ],
+  "averaged": true,
+  "selected_by": "dev.eer",
+  "final_clean_dev_eer": 4.4851094366693545e-05,
+  "final_clean_dev_loss": 0.0008216949324601237,
+  "best_sha256": "0b4f9ce946676a2bcff460f3c39580ef6d8c9930eaa2780091a32210c327740f",
+  "finished": "2026-10-23 19:32:22"
+}

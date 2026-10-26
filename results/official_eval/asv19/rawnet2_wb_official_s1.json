@@ -1,0 +1,82 @@
+[
+  {
+    "name": "runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_RAW.csv",
+    "cond": "RAW",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.04854051735555685,
+    "eer_ci": [
+      0.04674101389051974,
+      0.05040819745919627
+    ],
+    "eer_threshold": -0.007968,
+    "auc": 0.9888657731046477,
+    "dprime": 4.1096340555878355,
+    "bonafide_mean": -0.13447915105370498,
+    "bonafide_sd": 0.999717894320832,
+    "spoof_mean": -11.407738683134529,
+    "spoof_sd": 3.7482969719534927,
+    "pct_under_window": 78.47747659222033
+  },
+  {
+    "name": "runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_P0.csv",
+    "cond": "P0",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.10672907268629697,
+    "eer_ci": [
+      0.10360775556057415,
+      0.10987367493145878
+    ],
+    "eer_threshold": -3.657378,
+    "auc": 0.9626102062199955,
+    "dprime": 2.945342596158004,
+    "bonafide_mean": -0.9083435544527532,
+    "bonafide_sd": 2.2877682186724457,
+    "spoof_mean": -10.487795197692622,
+    "spoof_sd": 3.990169516822465,
+    "pct_under_window": 78.47747659222033
+  },
+  {
+    "name": "runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_B1.csv",
+    "cond": "B1",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.28810632881908316,
+    "eer_ci": [
+      0.283746832859812,
+      0.2928681188374359
+    ],
+    "eer_threshold": -5.460527,
+    "auc": 0.7951736941226039,
+    "dprime": 1.1938802522787786,
+    "bonafide_mean": -3.1697905014276,
+    "bonafide_sd": 3.4537645570511697,
+    "spoof_mean": -7.971433292132368,
+    "spoof_sd": 4.518916004581721,
+    "pct_under_window": 78.47747659222033
+  },
+  {
+    "name": "runs/official_eval/asv19/rawnet2_wb_official_s1//rawnet2_C1.csv",
+    "cond": "C1",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.28825257909345137,
+    "eer_ci": [
+      0.28375485546398843,
+      0.29271136374166756
+    ],
+    "eer_threshold": -5.44296,
+    "auc": 0.7954071654589355,
+    "dprime": 1.196017133624023,
+    "bonafide_mean": -3.157317900339905,
+    "bonafide_sd": 3.445503129627998,
+    "spoof_mean": -7.963182197614351,
+    "spoof_sd": 4.518718445460283,
+    "pct_under_window": 78.47747659222033
+  }
+]

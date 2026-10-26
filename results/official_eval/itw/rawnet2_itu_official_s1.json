@@ -1,0 +1,82 @@
+[
+  {
+    "name": "runs/official_eval/itw/rawnet2_itu_official_s1//rawnet2_RAW.csv",
+    "cond": "RAW",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.5649524726965793,
+    "eer_ci": [
+      0.5594449510477159,
+      0.5708069053330549
+    ],
+    "eer_threshold": -11.205126,
+    "auc": 0.4118816361262835,
+    "dprime": -0.20992425519142374,
+    "bonafide_mean": -10.77873184381105,
+    "bonafide_sd": 2.327007424898019,
+    "spoof_mean": -10.297004840626323,
+    "spoof_sd": 2.261909005079134,
+    "pct_under_window": 61.523695638492036
+  },
+  {
+    "name": "runs/official_eval/itw/rawnet2_itu_official_s1//rawnet2_P0.csv",
+    "cond": "P0",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.5850930421024982,
+    "eer_ci": [
+      0.5793600619885679,
+      0.5908533788460832
+    ],
+    "eer_threshold": -11.03509,
+    "auc": 0.3814292772564496,
+    "dprime": -0.4317192181972824,
+    "bonafide_mean": -10.943600080098182,
+    "bonafide_sd": 1.7893686625104963,
+    "spoof_mean": -10.047232041726618,
+    "spoof_sd": 2.3279563192333055,
+    "pct_under_window": 61.523695638492036
+  },
+  {
+    "name": "runs/official_eval/itw/rawnet2_itu_official_s1//rawnet2_B1.csv",
+    "cond": "B1",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.3375307246887487,
+    "eer_ci": [
+      0.332117298932776,
+      0.3429447766031144
+    ],
+    "eer_threshold": -11.221101,
+    "auc": 0.7120288933172157,
+    "dprime": 0.6724757502408445,
+    "bonafide_mean": -8.148905789410408,
+    "bonafide_sd": 4.34954533451761,
+    "spoof_mean": -10.66036042132882,
+    "spoof_sd": 2.9957996106479117,
+    "pct_under_window": 61.523695638492036
+  },
+  {
+    "name": "runs/official_eval/itw/rawnet2_itu_official_s1//rawnet2_C1.csv",
+    "cond": "C1",
+    "n": 31778,
+    "n_bonafide": 19963,
+    "n_spoof": 11815,
+    "eer": 0.33853948043406323,
+    "eer_ci": [
+      0.33305868925646176,
+      0.3437280738833622
+    ],
+    "eer_threshold": -11.22123,
+    "auc": 0.7115497398498691,
+    "dprime": 0.6709627852828789,
+    "bonafide_mean": -8.16693500520964,
+    "bonafide_sd": 4.340471221910659,
+    "spoof_mean": -10.666340760981804,
+    "spoof_sd": 2.985197185171458,
+    "pct_under_window": 61.523695638492036
+  }
+]
