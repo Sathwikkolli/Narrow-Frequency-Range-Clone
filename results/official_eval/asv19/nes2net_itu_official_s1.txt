@@ -1,0 +1,123 @@
+
+================================================================
+runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_RAW.csv   [cond RAW]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               5.561%   95% CI [5.357, 5.806]
+  EER threshold     +2.9748
+  AUC               0.98143
+  d-prime           2.591
+  score mean/sd     bonafide +3.588/0.404   spoof +1.026/1.339
+  at EER threshold  acc 94.44%  F1 0.7781  P 0.662  R 0.944
+  at thr +0.0000    acc 31.32%  F1 0.2311  FAR 76.58%  FRR 0.03%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.856%
+    A08   n=4914     0.350%
+    A09   n=4914     0.302%
+    A10   n=4914     5.348%
+    A11   n=4914     6.879%
+    A12   n=4914     2.339%
+    A13   n=4914     0.285%
+    A14   n=4914     1.630%
+    A15   n=4914     1.949%
+    A16   n=4914     1.932%
+    A17   n=4914     4.010%
+    A18   n=4914     4.051%
+    A19   n=4914    24.199%
+
+================================================================
+runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_P0.csv   [cond P0]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               3.633%   95% CI [3.426, 3.805]
+  EER threshold     +2.7109
+  AUC               0.99002
+  d-prime           3.601
+  score mean/sd     bonafide +3.931/0.596   spoof -0.438/1.608
+  at EER threshold  acc 96.36%  F1 0.8455  P 0.753  R 0.964
+  at thr +0.0000    acc 66.31%  F1 0.3800  FAR 37.57%  FRR 0.00%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.384%
+    A08   n=4914     0.587%
+    A09   n=4914     0.024%
+    A10   n=4914     2.642%
+    A11   n=4914     3.423%
+    A12   n=4914     1.402%
+    A13   n=4914     0.058%
+    A14   n=4914     0.547%
+    A15   n=4914     0.978%
+    A16   n=4914     1.083%
+    A17   n=4914     2.445%
+    A18   n=4914     3.399%
+    A19   n=4914    17.809%
+
+================================================================
+runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_B1.csv   [cond B1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.547%   95% CI [0.449, 0.639]
+  EER threshold     +1.3686
+  AUC               0.99958
+  d-prime           11.258
+  score mean/sd     bonafide +4.590/0.505   spoof -2.574/0.745
+  at EER threshold  acc 99.45%  F1 0.9740  P 0.954  R 0.995
+  at thr +0.0000    acc 98.45%  F1 0.9300  FAR 1.71%  FRR 0.15%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.081%
+    A08   n=4914     0.309%
+    A09   n=4914     0.058%
+    A10   n=4914     0.302%
+    A11   n=4914     0.146%
+    A12   n=4914     0.221%
+    A13   n=4914     0.058%
+    A14   n=4914     0.081%
+    A15   n=4914     0.139%
+    A16   n=4914     0.163%
+    A17   n=4914     0.635%
+    A18   n=4914     1.280%
+    A19   n=4914     0.995%
+
+================================================================
+runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_C1.csv   [cond C1]
+================================================================
+  trials            71237  (7355 bonafide / 63882 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.82 s, mean 3.11 s, 78.5% under the 4.04 s window
+  EER               0.544%   95% CI [0.448, 0.638]
+  EER threshold     +1.3825
+  AUC               0.99957
+  d-prime           11.244
+  score mean/sd     bonafide +4.590/0.504   spoof -2.572/0.747
+  at EER threshold  acc 99.46%  F1 0.9742  P 0.955  R 0.995
+  at thr +0.0000    acc 98.43%  F1 0.9294  FAR 1.73%  FRR 0.15%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=4914     0.081%
+    A08   n=4914     0.302%
+    A09   n=4914     0.058%
+    A10   n=4914     0.302%
+    A11   n=4914     0.146%
+    A12   n=4914     0.221%
+    A13   n=4914     0.058%
+    A14   n=4914     0.081%
+    A15   n=4914     0.139%
+    A16   n=4914     0.163%
+    A17   n=4914     0.652%
+    A18   n=4914     1.239%
+    A19   n=4914     1.002%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI      AUC   d-prime
+  RAW            71237     5.561         [5.36, 5.81]   0.9814     2.591
+  P0             71237     3.633         [3.43, 3.80]   0.9900     3.601
+  B1             71237     0.547         [0.45, 0.64]   0.9996    11.258
+  C1             71237     0.544         [0.45, 0.64]   0.9996    11.244
+
+wrote results/official_eval/asv19/nes2net_itu_official_s1.json

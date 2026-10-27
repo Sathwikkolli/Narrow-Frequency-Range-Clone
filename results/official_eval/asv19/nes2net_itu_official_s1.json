@@ -1,0 +1,82 @@
+[
+  {
+    "name": "runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_RAW.csv",
+    "cond": "RAW",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.05560547339033976,
+    "eer_ci": [
+      0.053565384329124346,
+      0.05805795891817961
+    ],
+    "eer_threshold": 2.974771,
+    "auc": 0.9814288308719099,
+    "dprime": 2.5913558902183347,
+    "bonafide_mean": 3.588298156764106,
+    "bonafide_sd": 0.40362962960472315,
+    "spoof_mean": 1.0258323436179204,
+    "spoof_sd": 1.3389126019904733,
+    "pct_under_window": 78.47747659222033
+  },
+  {
+    "name": "runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_P0.csv",
+    "cond": "P0",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.036332878232684766,
+    "eer_ci": [
+      0.03426435501162269,
+      0.038046285457779445
+    ],
+    "eer_threshold": 2.71085,
+    "auc": 0.9900190093857405,
+    "dprime": 3.601320399643264,
+    "bonafide_mean": 3.930586249490143,
+    "bonafide_sd": 0.5962435835343047,
+    "spoof_mean": -0.4377200432359663,
+    "spoof_sd": 1.6084198099202605,
+    "pct_under_window": 78.47747659222033
+  },
+  {
+    "name": "runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_B1.csv",
+    "cond": "B1",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.005466491360441045,
+    "eer_ci": [
+      0.004489701025286445,
+      0.0063884931792686905
+    ],
+    "eer_threshold": 1.368592,
+    "auc": 0.9995805063001633,
+    "dprime": 11.257704782875605,
+    "bonafide_mean": 4.589528774439157,
+    "bonafide_sd": 0.5049500353367634,
+    "spoof_mean": -2.57430112618578,
+    "spoof_sd": 0.7448908421592716,
+    "pct_under_window": 78.47747659222033
+  },
+  {
+    "name": "runs/official_eval/asv19/nes2net_itu_official_s1//nes2net_C1.csv",
+    "cond": "C1",
+    "n": 71237,
+    "n_bonafide": 7355,
+    "n_spoof": 63882,
+    "eer": 0.005435183636825619,
+    "eer_ci": [
+      0.004481287074564813,
+      0.006380666248364848
+    ],
+    "eer_threshold": 1.382517,
+    "auc": 0.9995743660702088,
+    "dprime": 11.243771048908076,
+    "bonafide_mean": 4.589767999592114,
+    "bonafide_sd": 0.5039401967596695,
+    "spoof_mean": -2.5718454565605335,
+    "spoof_sd": 0.7465838795994989,
+    "pct_under_window": 78.47747659222033
+  }
+]
