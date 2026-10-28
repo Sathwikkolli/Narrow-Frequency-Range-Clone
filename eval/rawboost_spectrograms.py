@@ -189,6 +189,61 @@ def plot_clip(path, title, rows, col_names):
     plt.close(fig)
 
 
+PANEL_NOTE = {
+    "clean": "The phone clip as the model gets it without RawBoost. Speech stops near 3.5 kHz; "
+             "above the dashed line there is nothing.",
+    "ours": "RawBoost run on the 8 kHz audio, then upsampled (train/official.py). The damage "
+            "stays below the dashed line; above it stays empty.",
+    "repo": "RawBoost run after upsampling to 16 kHz (the authors' data path). Its noise and "
+            "clicks spill above the dashed line, into a band real phone audio never has.",
+}
+
+
+def plot_single(path, x, title, note, vmin, vmax):
+    """One condition of one clip as its own large, labelled image."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    f, t, s = stft_db(x)
+    fig, ax = plt.subplots(figsize=(11, 4.6))
+    im = ax.pcolormesh(t, f / 1000, s, shading="auto", cmap="magma", vmin=vmin, vmax=vmax)
+    ax.axhline(4.0, color="white", ls="--", lw=1.2)
+    ax.text(0.005, 4.12, "phone-band limit, 4 kHz", color="white", fontsize=9,
+            transform=ax.get_yaxis_transform())
+    ax.text(0.995, 0.96, f"energy above 4.2 kHz: {high_band_db(x):.0f} dB of the clip",
+            transform=ax.transAxes, ha="right", va="top", color="white", fontsize=10,
+            bbox=dict(facecolor="black", alpha=0.6, lw=0))
+    ax.set_xlabel("time (s)")
+    ax.set_ylabel("frequency (kHz)")
+    ax.set_title(title, fontsize=12)
+    fig.colorbar(im, ax=ax, label="loudness (dB)", pad=0.01)
+    fig.text(0.01, -0.02, note, fontsize=9, ha="left", va="top", wrap=True)
+    fig.savefig(path, dpi=140, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_psd_single(path, curves, algo):
+    """Average spectrum for one algo: no RawBoost vs ours vs repo."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 4.6))
+    for label, (f, p), style in curves:
+        ax.plot(f / 1000, 10 * np.log10(p + 1e-30), lw=1.5, label=label, **style)
+    ax.axvline(4.0, color="grey", ls="--", lw=1)
+    ax.text(4.05, 0.97, "phone-band limit", transform=ax.get_xaxis_transform(), va="top",
+            fontsize=9, color="grey")
+    ax.set_xlabel("frequency (kHz)")
+    ax.set_ylabel("average loudness (dB)")
+    ax.set_title(f"Average spectrum over the clips: algo {algo} ({ALGOS[algo]})", fontsize=12)
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=9)
+    fig.savefig(path, dpi=140, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_psd(path, psd, algos, col_names):
     """psd[(algo, col)] = (f, mean PSD over clips)."""
     import matplotlib
@@ -232,6 +287,11 @@ def main():
                     help="crop/tile to this many 16 kHz samples, as training does; 0 = whole clip")
     ap.add_argument("--min-sec", type=float, default=3.0, help="shortest clip to pick")
     ap.add_argument("--no-repo-path", action="store_true", help="only the 'ours' column")
+    ap.add_argument("--panels", action="store_true",
+                    help="also write every panel as its own image in <out>/panels/, plus one "
+                         "average-spectrum image per algo")
+    ap.add_argument("--model", default="",
+                    help="name shown in the --panels titles, e.g. 'W2V2-AASIST'")
     args = ap.parse_args()
 
     bad = [a for a in args.algos if a not in ALGOS]
@@ -300,12 +360,39 @@ def main():
         plot_clip(png, title, rows, cols)
         print(f"  {png.name}", flush=True)
 
+        if args.panels:
+            pdir = out / "panels"
+            pdir.mkdir(exist_ok=True)
+            top = max(stft_db(x)[2].max() for _, xs in rows for x in xs)
+            who = f"{args.model}, " if args.model else ""
+            clip = f"{u} ({lab}{'' if lab == 'bonafide' else ', attack ' + att})"
+            for a, (_, xs) in zip(conds, rows):
+                if a == 0:
+                    shots = [("clean", xs[0], "no RawBoost")]
+                else:
+                    shots = [("ours", xs[0], f"{who}RawBoost algo {a}, our 8 kHz path")]
+                    if want_repo:
+                        shots.append(("repo", xs[1], f"{who}RawBoost algo {a}, authors' 16 kHz path"))
+                for tag, x, what in shots:
+                    name = f"{ci}_{u}_{'clean' if a == 0 else f'algo{a}_{tag}'}.png"
+                    plot_single(pdir / name, x, f"{clip}: {what}", PANEL_NOTE[tag],
+                                top - 90, top)
+            print(f"  panels/{ci}_{u}_*.png", flush=True)
+
     with open(out / "band_energy.csv", "w", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(["utt", "label", "attack", "algo", "path", "energy_above_4.2kHz_db"])
         w.writerows(rows_csv)
     psd = {k: (f, s / len(clips)) for k, (f, s) in psd_sum.items()}
     plot_psd(out / "psd_summary.png", psd, args.algos, cols)
+    if args.panels:
+        for a in args.algos:
+            curves = [("no RawBoost", psd[(0, 0)], dict(color="tab:blue")),
+                      (f"algo {a}, our 8 kHz path", psd[(a, 0)], dict(color="tab:green"))]
+            if want_repo:
+                curves.append((f"algo {a}, authors' 16 kHz path", psd[(a, 1)],
+                               dict(color="tab:red")))
+            plot_psd_single(out / "panels" / f"psd_algo{a}.png", curves, a)
 
     print("\nenergy above 4.2 kHz, mean over clips (dB re whole clip):")
     print(f"  {'':<26}" + "".join(f"{c.split(':')[0]:>10}" for c in cols))

@@ -14,6 +14,9 @@
 # SUBMIT (from the Clone repo root):
 #   mkdir -p logs && sbatch eval/rawboost_spectrograms.sbatch
 #   N=3 ALGOS="3 4 5" sbatch eval/rawboost_spectrograms.sbatch
+#   # one model, every panel as its own image (W2V2-AASIST = algo 5):
+#   ALGOS=5 MODEL=W2V2-AASIST OUT=$PWD/runs/rawboost_spec_aasist EXTRA=--panels \
+#       sbatch eval/rawboost_spectrograms.sbatch
 #
 # CPU only, a few minutes. Needs the env the official runs trained in (ssl_spoof:
 # librosa, soxr, torch for the harness import) plus matplotlib.
@@ -27,6 +30,8 @@ N=${N:-5}
 ALGOS=${ALGOS:-1 2 3 4 5}
 SEED=${SEED:-1234}
 SUBSET=${SUBSET:-train}
+MODEL=${MODEL:-}
+EXTRA=${EXTRA:-}
 
 eval "$(conda shell.bash hook)"
 conda activate "${CONDA_ENV:-ssl_spoof}"
@@ -36,7 +41,7 @@ echo "repo     $REPO"
 echo "out      $OUT"
 echo "python   $(which python)"
 
-# shellcheck disable=SC2086  # ALGOS is a list
+# shellcheck disable=SC2086  # ALGOS and EXTRA are lists
 python "$CLONE_DIR/eval/rawboost_spectrograms.py" \
     --repo "$REPO" --out "$OUT" --n "$N" --algos $ALGOS \
-    --seed "$SEED" --subset "$SUBSET"
+    --seed "$SEED" --subset "$SUBSET" --model "$MODEL" $EXTRA
