@@ -36,6 +36,9 @@ REGISTRY = {
     # plumbing (adapters/_lcnn.py). eval/run_lcnn.sh, the baseline's own tool on whole
     # utterances, remains the other route -- see adapters/lcnn_NOTES.md.
     "lcnn": ("lcnn", "LcnnAdapter"),
+    # ECAPA-TDNN, trained in this repo (train/train.py); no external repo
+    "ecapa": ("ecapa", "EcapaAdapter"),
+    "ecapa4k": ("ecapa", "Ecapa4kAdapter"),
 }
 
 

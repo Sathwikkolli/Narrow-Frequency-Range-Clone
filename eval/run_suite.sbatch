@@ -91,6 +91,10 @@ case "$ADAPTER" in
   lcnn)
     REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-LFCC-LCNN}
     CKPT=${CKPT:-$REPO/project/baseline_LA/__pretrained/trained_network.pt} ;;
+  ecapa|ecapa4k)
+    # trained by train/train.py; pass CKPT=<run>/best.pth. No external repo.
+    REPO=${REPO:-$CLONE_DIR}
+    CKPT=${CKPT:-} ;;
   *) echo "unknown ADAPTER '$ADAPTER'"; exit 1 ;;
 esac
 

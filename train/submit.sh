@@ -9,8 +9,10 @@
 #   RECIPE=official bash train/submit.sh aasist wb 1   # the authors' own recipe (train/official.py)
 #   RECIPE=official bash train/submit.sh aasist itu 1  # ... trained on C1 telephone audio
 #   ACCUM=2 bash train/submit.sh ...           # batch split in 2 if it does not fit memory
+#   bash train/submit.sh ecapa wb 1            # ECAPA-TDNN (Mel 20-8000 Hz); ecapa4k = Mel 20-4000 Hz
+#   bash train/submit.sh ecapa mix 1           # each clip wideband or C1 (p 0.5), dev pooled
 #
-# Arguments: <model> <itu|wb> <seed index 1|2|3>. Seed index k trains with the
+# Arguments: <model> <itu|wb|mix> <seed index 1|2|3>. Seed index k trains with the
 # repo's own default seed + k - 1, so s1 is exactly the published seed.
 #
 # Run name <model>_<data>_s<k>, e.g. tcm_itu_s1; with RECIPE=official
@@ -70,18 +72,24 @@ case "$MODEL" in
   # lcnn trains in ssl_spoof, not its own torch 1.6 env (no A40 kernels); torch 1.8 still
   # runs its old-style torch.stft, which torch 2.x would reject
   lcnn) REPO=${REPO:-$MODELS/asvspoof2021/LA/Baseline-LFCC-LCNN}; BASE_SEED=1000; ENV=${CONDA_ENV:-ssl_spoof} ;;
-  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls, aasist, rawnet2, lcnn)"; exit 1 ;;
+  # ECAPA-TDNN: built from eval/adapters/_ecapa.py, so REPO is just this clone
+  ecapa|ecapa4k) REPO=${REPO:-$CLONE_DIR}; BASE_SEED=1234; ENV=${CONDA_ENV:-ssl_spoof} ;;
+  *)   echo "unknown model '$MODEL' (tcm, nes2net, sls, aasist, rawnet2, lcnn, ecapa, ecapa4k)"; exit 1 ;;
 esac
 case "$DATA" in
   itu) DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019_NB}; SUB=C1/flac ;;
   wb)  DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019/train/LA}; SUB=flac ;;
-  *)   echo "data must be itu or wb, not '$DATA'"; exit 1 ;;
+  # mix: wideband from DATA_ROOT, C1 from DATA_ROOT_NB (train.py --data-root-nb)
+  mix) DATA_ROOT=${DATA_ROOT:-$T/AsvSpoofData_2019/train/LA}; SUB=flac
+       DATA_ROOT_NB=${DATA_ROOT_NB:-$T/AsvSpoofData_2019_NB} ;;
+  *)   echo "data must be itu, wb or mix, not '$DATA'"; exit 1 ;;
 esac
 case "$K" in 1|2|3) ;; *) echo "seed index must be 1, 2 or 3"; exit 1 ;; esac
 SEED=$((BASE_SEED + K - 1))
 
 RUN=${MODEL}_${DATA}_s${K}
 EXTRA="--accum $ACCUM"
+[ "$DATA" = mix ] && EXTRA="$EXTRA --data-root-nb $DATA_ROOT_NB"
 if [ "$RECIPE" = official ]; then
     RUN=${MODEL}_${DATA}_official_s${K}
     EXTRA="$EXTRA --recipe official"
@@ -104,6 +112,8 @@ need() { [ -e "$1" ] || { echo "MISSING $2: $1"; fail=1; }; }
 need "$REPO"                                     "repo"
 if [ "$MODEL" = rawnet2 ]; then
     need "$REPO/model_config_RawNet.yaml"        "RawNet2 config in the repo dir"
+elif [ "$MODEL" = ecapa ] || [ "$MODEL" = ecapa4k ]; then
+    need "$REPO/eval/adapters/_ecapa.py"         "ECAPA model in this clone"
 elif [ "$MODEL" = lcnn ]; then
     need "$REPO/project/baseline_LA/model.py"    "LCNN model (REPO is the Baseline-LFCC-LCNN folder)"
     need "$REPO/sandbox/util_frontend.py"        "LCNN's sandbox/ package"
@@ -114,6 +124,10 @@ need "$PROTOCOLS/ASVspoof2019.LA.cm.train.trn.txt" "train protocol"
 need "$PROTOCOLS/ASVspoof2019.LA.cm.dev.trl.txt"   "dev protocol"
 need "$DATA_ROOT/ASVspoof2019_LA_train/$SUB"     "train audio"
 need "$DATA_ROOT/ASVspoof2019_LA_dev/$SUB"       "dev audio"
+if [ "$DATA" = mix ]; then
+    need "$DATA_ROOT_NB/ASVspoof2019_LA_train/C1/flac" "train audio (C1, for mix)"
+    need "$DATA_ROOT_NB/ASVspoof2019_LA_dev/C1/flac"   "dev audio (C1, for mix)"
+fi
 [ "$fail" = 0 ] || exit 1
 if [ -f "$RUN_DIR/DONE.json" ]; then
     echo "$RUN already finished:"; cat "$RUN_DIR/DONE.json"; exit 0

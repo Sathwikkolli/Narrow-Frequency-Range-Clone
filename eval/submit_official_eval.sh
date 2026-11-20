@@ -90,6 +90,8 @@ for run in $RUNS; do
       nes2net)          env=ssl_spoof;           part=gpu,spgpu; win=64600 ;;
       # the SLS eval env's torch has no A40 kernels
       sls)              env=$SCR/envs/sls;       part=gpu;       win=0 ;;
+      # shared-recipe runs: CKPT_ROOT=$T/itu_ckpt bash eval/submit_official_eval.sh ecapa_wb_s1 ...
+      ecapa|ecapa4k)    env=ssl_spoof;           part=gpu,spgpu; win=0 ;;
       *) echo "unknown model in run name '$run'"; exit 1 ;;
     esac
     for ts in $TESTSETS; do

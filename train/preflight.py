@@ -278,8 +278,8 @@ def check_storage(model, opt, scratch, final_root):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--model", required=True, choices=sorted(T.MODELS))
-    ap.add_argument("--data", nargs="+", required=True, choices=sorted(T.CONDITIONS),
-                    help="data trees to scan; the GPU checks use the first")
+    ap.add_argument("--data", nargs="+", required=True, choices=sorted(c for c in T.CONDITIONS if c != "mix"),
+                    help="data trees to scan (mix: scan wb and itu); the GPU checks use the first")
     ap.add_argument("--data-root", nargs="+", required=True, help="one per --data, same order")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--protocols", required=True)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train one XLS-R detector on ITU telephone audio (C1) or on the wideband original.
+"""Train one detector on ITU telephone audio (C1), on the wideband original, or on both.
 
     python train/train.py --model tcm --data itu --seed 1234 --run-dir $SCR/itu_train/runs/tcm_itu_s1
     python train/train.py ... --limit-train 2000 --limit-dev 1000 --max-epochs 2   # smoke test
@@ -12,8 +12,10 @@ attribute to the recipe rather than the data is shared and fixed:
 
     data        itu  C1 train (8 kHz IRS8 + G.711), resampled to 16 kHz on load
                 wb   original ASVspoof2019 LA train, 16 kHz, untouched
+                mix  each utterance wideband or C1 with p = 0.5, redrawn every epoch;
+                     dev = wideband dev + C1 dev pooled (needs --data-root-nb)
                 Same 25,380 utterances and labels either way, so an epoch is the
-                same number of steps for both and the only difference is the audio.
+                same number of steps for all three and the only difference is the audio.
     selection   dev EER every epoch on the matching dev set (C1 dev or original dev);
                 the single best epoch is kept. No checkpoint averaging.
     stopping    patience 7 epochs on dev EER, hard cap 50 epochs
@@ -61,6 +63,7 @@ from harness import RESAMPLER, TARGET_SR, Clips, read_labels   # noqa: E402
 from compute_metrics import eer                                 # noqa: E402
 from adapters._common import in_repo, ns, require_xlsr          # noqa: E402
 from adapters._lcnn import build_lcnn                           # noqa: E402
+from adapters._ecapa import build_ecapa                         # noqa: E402
 
 
 # ---------------------------------------------------------------- per-model spec
@@ -90,6 +93,12 @@ def _build_lcnn(repo, device):
     function the eval adapter uses (eval/adapters/_lcnn.py, which explains the two
     logits), so the trained network and the scored network are one definition."""
     return build_lcnn(repo)
+
+
+def _ecapa_builder(variant):
+    """ECAPA-TDNN with its log-Mel front end, from eval/adapters/_ecapa.py (the same
+    builder the eval adapter uses). No external repo: --repo is accepted and ignored."""
+    return lambda repo, device: build_ecapa(variant)
 
 
 MODELS = {
@@ -165,13 +174,42 @@ MODELS = {
         loss="CE on [0, z] == the baseline's unweighted BCE",
         logits=lambda out: out,
     ),
+    # ECAPA-TDNN (Desplanques et al. 2020), C=512, 80 log-Mel, trained from scratch.
+    # Not from a repo, so lr/batch are not "published" values: 1e-3 / 64 is the usual
+    # Adam setting for ECAPA trained from scratch (SpeechBrain's peak lr). The shared
+    # recipe keeps it constant (no scheduler), as for every other model here.
+    "ecapa": dict(
+        source="eval/adapters/_ecapa.py (Mel 20-8000 Hz)",
+        build=_ecapa_builder("ecapa"),
+        arch=dict(variant="ecapa", channels=512, n_mels=80, f_min=20, f_max=8000),
+        window=64600,                 # 4 s, as the other from-scratch models
+        lr=1e-3, batch_size=64,
+        base_seed=1234,
+        logits=lambda out: out,       # forward returns [B, 2], index 1 = bonafide
+    ),
+    "ecapa4k": dict(
+        source="eval/adapters/_ecapa.py (Mel 20-4000 Hz)",
+        build=_ecapa_builder("ecapa4k"),
+        arch=dict(variant="ecapa4k", channels=512, n_mels=80, f_min=20, f_max=4000),
+        window=64600,
+        lr=1e-3, batch_size=64,
+        base_seed=1234,
+        logits=lambda out: out,
+    ),
 }
 
+WB_DIR = lambda root, subset: Path(root) / f"ASVspoof2019_LA_{subset}" / "flac"          # noqa: E731
+C1_DIR = lambda root, subset: Path(root) / f"ASVspoof2019_LA_{subset}" / "C1" / "flac"    # noqa: E731
 CONDITIONS = {
     # cond: (expected source rate, path of a subset's flac folder under its root)
-    "itu": (8000, lambda root, subset: Path(root) / f"ASVspoof2019_LA_{subset}" / "C1" / "flac"),
-    "wb": (16000, lambda root, subset: Path(root) / f"ASVspoof2019_LA_{subset}" / "flac"),
+    "itu": (8000, C1_DIR),
+    "wb": (16000, WB_DIR),
+    # mix: each training utterance is the wideband or the C1 copy with p = 0.5, redrawn
+    # every epoch from (seed, epoch); dev is the wideband AND the C1 dev set, pooled.
+    # Wideband audio comes from --data-root, C1 from --data-root-nb.
+    "mix": ((16000, 8000), None),
 }
+MIX_P_NB = 0.5
 
 PROTOCOL = {"train": "ASVspoof2019.LA.cm.train.trn.txt", "dev": "ASVspoof2019.LA.cm.dev.trl.txt"}
 CLASS_WEIGHT = [0.1, 0.9]             # [spoof, bonafide]; label 1 = bonafide, as in the repos
@@ -197,9 +235,12 @@ def trials(protocols, subset, flac_dir, limit, seed):
 
 
 def check_rate(sr, expected, where):
-    bad = (sr != expected).nonzero()
+    """expected: one rate for the whole condition, or one per clip in the batch (mix)."""
+    sr = np.asarray(sr)
+    bad = np.nonzero(sr != np.asarray(expected))[0]
     if len(bad):
-        sys.exit(f"{where}: got a {int(sr[bad[0]])} Hz file, this condition must be {expected} Hz "
+        want = expected if np.ndim(expected) == 0 else int(np.asarray(expected)[bad[0]])
+        sys.exit(f"{where}: got a {int(sr[bad[0]])} Hz file, this clip must be {want} Hz "
                  f"-- wrong data tree?")
 
 
@@ -273,6 +314,10 @@ def set_rng_state(s):
         torch.cuda.set_rng_state_all(s["cuda"])
 
 
+def gpu_name():
+    return torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"
+
+
 def seed_everything(seed):
     random.seed(seed)
     np.random.seed(seed)
@@ -285,13 +330,14 @@ def seed_everything(seed):
 
 # ---------------------------------------------------------------- epochs
 
-def train_epoch(model, spec, loader, labels, optimizer, criterion, device, accum, expected_sr, epoch):
+def train_epoch(model, spec, loader, labels, optimizer, criterion, device, accum, rates, epoch):
+    """rates: expected source rate per training clip, indexed like labels."""
     model.train()
     total, n, t0 = 0.0, 0, time.time()
     optimizer.zero_grad()
     steps = len(loader)
     for step, (x, idx, sr, _) in enumerate(loader, 1):
-        check_rate(sr, expected_sr, "train")
+        check_rate(sr, rates[idx.numpy()], "train")
         y = torch.from_numpy(labels[idx.numpy()]).to(device)
         out = spec["logits"](model(x.to(device, non_blocking=True)))
         loss = criterion(out, y)
@@ -308,13 +354,13 @@ def train_epoch(model, spec, loader, labels, optimizer, criterion, device, accum
     return total / max(n, 1)
 
 
-def dev_epoch(model, spec, loader, labels, criterion, device, expected_sr):
+def dev_epoch(model, spec, loader, labels, criterion, device, rates):
     model.eval()
     scores = np.empty(len(labels), dtype=np.float64)
     total, n = 0.0, 0
     with torch.no_grad():
         for x, idx, sr, _ in loader:
-            check_rate(sr, expected_sr, "dev")
+            check_rate(sr, rates[idx.numpy()], "dev")
             y = torch.from_numpy(labels[idx.numpy()]).to(device)
             out = spec["logits"](model(x.to(device, non_blocking=True)))
             total += criterion(out, y).item() * len(y)
@@ -334,7 +380,12 @@ def main():
     ap.add_argument("--run-dir", required=True, help="checkpoints and logs (scratch)")
     ap.add_argument("--repo", required=True, help="clone of the model's official repo")
     ap.add_argument("--data-root", required=True,
-                    help="itu: AsvSpoofData_2019_NB root; wb: the folder holding ASVspoof2019_LA_<subset>")
+                    help="itu: AsvSpoofData_2019_NB root; wb and mix: the folder holding "
+                         "ASVspoof2019_LA_<subset>")
+    ap.add_argument("--data-root-nb",
+                    help="mix only: AsvSpoofData_2019_NB root, for the C1 copies")
+    ap.add_argument("--allow-cpu", action="store_true",
+                    help="local smoke tests of the small from-scratch models only")
     ap.add_argument("--protocols", required=True, help="folder holding the 2019 LA train/dev protocols")
     ap.add_argument("--recipe", choices=["shared", "official"], default="shared",
                     help="shared: this file's one recipe for every model (default); "
@@ -358,6 +409,10 @@ def main():
                          "(preflight's resume test); not part of the recipe")
     args = ap.parse_args()
 
+    if (args.data == "mix") != bool(args.data_root_nb):
+        sys.exit("--data-root-nb is required with --data mix, and only allowed with it")
+    if args.recipe == "official" and (args.data == "mix" or args.model.startswith("ecapa")):
+        sys.exit("--data mix and the ecapa models have no official recipe; use --recipe shared")
     if args.recipe == "official":
         if args.patience is not None:
             sys.exit("--patience is part of the shared recipe; the official one sets its own")
@@ -393,8 +448,8 @@ def main():
         return
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    if device == "cpu":
-        sys.exit("no CUDA device -- refusing to train an XLS-R model on CPU")
+    if device == "cpu" and not args.allow_cpu:
+        sys.exit("no CUDA device -- refusing to train on CPU (--allow-cpu for a local smoke test)")
 
     # The recipe. On resume it must match what the run was started with exactly,
     # or the checkpoint would continue a different experiment.
@@ -404,15 +459,46 @@ def main():
                   window=spec["window"], arch=spec["arch"], max_epochs=args.max_epochs,
                   patience=args.patience, selection="min dev EER, single best epoch",
                   limit_train=args.limit_train, limit_dev=args.limit_dev,
-                  condition="C1" if args.data == "itu" else "RAW", source_rate=expected_sr,
+                  condition={"itu": "C1", "wb": "RAW"}.get(args.data, "RAW+C1"),
+                  source_rate=expected_sr,
                   resampler=RESAMPLER, target_rate=TARGET_SR)
+    if args.data == "mix":
+        recipe.update(mix_p_c1=MIX_P_NB, mix_dev="RAW dev + C1 dev, pooled EER")
 
     seed_everything(args.seed)
-    _, tr_paths, tr_y = trials(args.protocols, "train", flac_dir(args.data_root, "train"),
-                               args.limit_train, args.seed)
-    _, dv_paths, dv_y = trials(args.protocols, "dev", flac_dir(args.data_root, "dev"),
-                               args.limit_dev, args.seed)
-    dv_ids = [p.stem for p in dv_paths]
+    if args.data == "mix":
+        # Same ids and labels in both trees (trials() sorts the protocol), so index i
+        # is one utterance with a wideband and a C1 copy.
+        _, tr_wb, tr_y = trials(args.protocols, "train", WB_DIR(args.data_root, "train"),
+                                args.limit_train, args.seed)
+        _, tr_nb, tr_y2 = trials(args.protocols, "train", C1_DIR(args.data_root_nb, "train"),
+                                 args.limit_train, args.seed)
+        _, dv_wb, dv_y1 = trials(args.protocols, "dev", WB_DIR(args.data_root, "dev"),
+                                 args.limit_dev, args.seed)
+        _, dv_nb, dv_y2 = trials(args.protocols, "dev", C1_DIR(args.data_root_nb, "dev"),
+                                 args.limit_dev, args.seed)
+        assert [p.stem for p in tr_wb] == [p.stem for p in tr_nb] and (tr_y == tr_y2).all()
+        tr_paths = tr_wb                                  # length / logging only
+        dv_paths = dv_wb + dv_nb
+        dv_y = np.concatenate([dv_y1, dv_y2])
+        dv_rates = np.array([16000] * len(dv_wb) + [8000] * len(dv_nb))
+        dv_ids = [f"{p.stem}@RAW" for p in dv_wb] + [f"{p.stem}@C1" for p in dv_nb]
+    else:
+        _, tr_paths, tr_y = trials(args.protocols, "train", flac_dir(args.data_root, "train"),
+                                   args.limit_train, args.seed)
+        _, dv_paths, dv_y = trials(args.protocols, "dev", flac_dir(args.data_root, "dev"),
+                                   args.limit_dev, args.seed)
+        dv_rates = np.full(len(dv_paths), expected_sr)
+        dv_ids = [p.stem for p in dv_paths]
+
+    def epoch_train_set(epoch):
+        """(paths, expected rates) for this epoch's training clips."""
+        if args.data != "mix":
+            return tr_paths, np.full(len(tr_paths), expected_sr)
+        # A function of (seed, epoch) alone, like the shuffle, so resuming is exact.
+        nb = np.random.RandomState(args.seed * 1000 + epoch + 500_000).rand(len(tr_wb)) < MIX_P_NB
+        return ([n if c else w for w, n, c in zip(tr_wb, tr_nb, nb)],
+                np.where(nb, 8000, 16000))
 
     model = build_model(spec, args.repo, device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -441,17 +527,17 @@ def main():
         write_json(dict(
             recipe=recipe, source=spec["source"], trainable_params=n_params,
             n_train=len(tr_paths), n_dev=len(dv_paths),
-            data_root=args.data_root, protocols=args.protocols,
+            data_root=args.data_root, data_root_nb=args.data_root_nb, protocols=args.protocols,
             protocol_sha256={k: sha256(Path(args.protocols) / v) for k, v in PROTOCOL.items()},
             repo=args.repo, repo_commit=git_head(args.repo), clone_commit=git_head(HERE.parent),
             python=platform.python_version(), torch=torch.__version__,
             cuda=torch.version.cuda, cudnn=torch.backends.cudnn.version(),
             tf32_matmul=getattr(torch.backends.cuda.matmul, "allow_tf32", None),
-            gpu=torch.cuda.get_device_name(0), host=socket.gethostname(),
+            gpu=gpu_name(), host=socket.gethostname(),
             started=time.strftime("%Y-%m-%d %H:%M:%S")), cfg_path)
     with open(run / "starts.log", "a") as fh:
         fh.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')}  job {os.environ.get('SLURM_JOB_ID', '-')}  "
-                 f"{socket.gethostname()}  {torch.cuda.get_device_name(0)}  "
+                 f"{socket.gethostname()}  {gpu_name()}  "
                  f"from epoch {state['epoch']}\n")
 
     print(f"{args.model} / {args.data} / seed {args.seed}: lr {lr}, batch {batch} "
@@ -472,13 +558,14 @@ def main():
         # Shuffle order is a function of (seed, epoch) alone, so a resumed run
         # visits the data in exactly the order an uninterrupted one would.
         order = np.random.RandomState(args.seed * 1000 + epoch).permutation(len(tr_paths)).tolist()
-        train_loader = DataLoader(Clips(tr_paths, spec["window"]), batch_size=micro,
+        ep_paths, ep_rates = epoch_train_set(epoch)
+        train_loader = DataLoader(Clips(ep_paths, spec["window"]), batch_size=micro,
                                   sampler=order, drop_last=True,
                                   num_workers=args.workers, pin_memory=True)
         tr_loss = train_epoch(model, spec, train_loader, tr_y, optimizer, criterion,
-                              device, args.accum, expected_sr, epoch)
+                              device, args.accum, ep_rates, epoch)
         dv_eer, dv_loss, dv_scores = dev_epoch(model, spec, dev_loader, dv_y, criterion,
-                                               device, expected_sr)
+                                               device, dv_rates)
 
         improved = dv_eer < state["best_eer"]
         if improved:
