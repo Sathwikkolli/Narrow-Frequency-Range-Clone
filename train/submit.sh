@@ -11,6 +11,7 @@
 #   ACCUM=2 bash train/submit.sh ...           # batch split in 2 if it does not fit memory
 #   bash train/submit.sh ecapa wb 1            # ECAPA-TDNN (Mel 20-8000 Hz); ecapa4k = Mel 20-4000 Hz
 #   bash train/submit.sh ecapa mix 1           # each clip wideband or C1 (p 0.5), dev pooled
+#   SUBSET=p40 bash train/submit.sh ecapa wb 1 # on the fixed 40% train/dev cut -> ecapa_wb_s1_p40
 #
 # Arguments: <model> <itu|wb|mix> <seed index 1|2|3>. Seed index k trains with the
 # repo's own default seed + k - 1, so s1 is exactly the published seed.
@@ -52,7 +53,14 @@ esac
 T=/nfs/turbo/umd-hafiz/issf_server_data
 SCR=${SCR:-/scratch/hafiz_root/hafiz1/$USER}
 MODELS=${MODELS:-$HOME/models}
-PROTOCOLS=${PROTOCOLS:-$T/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols}
+# SUBSET=p40: train and select on the fixed 40% cut of train/dev made by
+# eval/make_subset_protocols.sh; the run is named <model>_<data>_s<k>_p40
+SUBSET=${SUBSET:-}
+if [ -n "$SUBSET" ]; then
+    PROTOCOLS=${PROTOCOLS:-$HOME/asvspoof_protocols_$SUBSET}
+else
+    PROTOCOLS=${PROTOCOLS:-$T/AsvSpoofData_2019/train/LA/ASVspoof2019_LA_cm_protocols}
+fi
 if [ "$RECIPE" = official ]; then
     FINAL_ROOT=${FINAL_ROOT:-$T/official_ckpt}
 else
@@ -94,6 +102,7 @@ if [ "$RECIPE" = official ]; then
     RUN=${MODEL}_${DATA}_official_s${K}
     EXTRA="$EXTRA --recipe official"
 fi
+[ -n "$SUBSET" ] && RUN=${RUN}_${SUBSET}
 FINAL_DIR=$FINAL_ROOT/$RUN
 TIME=""
 if [ "$SMOKE" = "1" ]; then
@@ -135,6 +144,8 @@ fi
 
 echo "run        $RUN   (seed $SEED, env $ENV, recipe $RECIPE)"
 echo "audio      $DATA_ROOT/ASVspoof2019_LA_{train,dev}/$SUB"
+[ "$DATA" = mix ] && echo "audio C1   $DATA_ROOT_NB/ASVspoof2019_LA_{train,dev}/C1/flac"
+echo "protocols  $PROTOCOLS   ($(grep -c . "$PROTOCOLS/ASVspoof2019.LA.cm.train.trn.txt") train, $(grep -c . "$PROTOCOLS/ASVspoof2019.LA.cm.dev.trl.txt") dev trials)"
 echo "run dir    $RUN_DIR"
 echo "final dir  ${FINAL_DIR:-<none, smoke test>}"
 DEP=singleton

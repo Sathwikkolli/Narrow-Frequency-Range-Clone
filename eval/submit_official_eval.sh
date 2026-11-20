@@ -6,6 +6,9 @@
 #   bash eval/submit_official_eval.sh tcm_itu_official_s1   # just these runs
 #   DRY=1 bash eval/submit_official_eval.sh                 # check paths, submit nothing
 #   ITW_NB=/path/to/itw/nb bash eval/submit_official_eval.sh
+#   SUBSET=p40 bash eval/submit_official_eval.sh <runs>   # score on the fixed 40% eval cuts
+#                                                         # (eval/make_subset_protocols.sh)
+#                                                         # -> runs/official_eval_p40/
 #
 # A run is scored only once its best.pth is on turbo ($CKPT_ROOT/<run>/best.pth,
 # written when training finishes), so this can be re-run as runs complete: runs
@@ -33,15 +36,26 @@ CKPT_ROOT=${CKPT_ROOT:-$T/official_ckpt}
 DRY=${DRY:-0}
 CONDS=${CONDS:-"RAW P0 B1 C1"}
 TESTSETS=${TESTSETS:-"asv19 itw"}
+SUBSET=${SUBSET:-}
+EVAL_NAME=official_eval${SUBSET:+_$SUBSET}
+SUBSET_PROTOCOLS=${SUBSET_PROTOCOLS:-$HOME/asvspoof_protocols_$SUBSET}
 
 # ASVspoof2019 LA eval: the same defaults run_suite.sbatch uses
 ASV_RAW=${ASV_RAW:-$T/AsvSpoofData_2019/train/LA}
 ASV_NB=${ASV_NB:-$T/AsvSpoofData_2019_NB}
-ASV_LABELS=${ASV_LABELS:-$HOME/asvspoof_protocols/ASVspoof2019.LA.cm.eval.trl.txt}
+if [ -n "$SUBSET" ]; then
+    ASV_LABELS=${ASV_LABELS:-$SUBSET_PROTOCOLS/ASVspoof2019.LA.cm.eval.trl.txt}
+else
+    ASV_LABELS=${ASV_LABELS:-$HOME/asvspoof_protocols/ASVspoof2019.LA.cm.eval.trl.txt}
+fi
 # In-the-Wild
 ITW_RAW=${ITW_RAW:-$T/ITW_16k}
 ITW_NB=${ITW_NB:-$T/ITW_NB}
-ITW_LABELS=${ITW_LABELS:-$ITW_RAW/protocol/ITW.cm.eval.trl.txt}
+if [ -n "$SUBSET" ]; then
+    ITW_LABELS=${ITW_LABELS:-$SUBSET_PROTOCOLS/ITW.cm.eval.trl.txt}
+else
+    ITW_LABELS=${ITW_LABELS:-$ITW_RAW/protocol/ITW.cm.eval.trl.txt}
+fi
 
 if [ $# -gt 0 ]; then
     RUNS="$*"
@@ -97,8 +111,8 @@ for run in $RUNS; do
     for ts in $TESTSETS; do
         if [ "$ts" = asv19 ]; then raw=$ASV_RAW; nb=$ASV_NB; labels=$ASV_LABELS
         else raw=$ITW_RAW; nb=$ITW_NB; labels=$ITW_LABELS; fi
-        out=$CLONE_DIR/runs/official_eval/$ts/$run
-        echo "queue $run on $ts [$CONDS] -> $out"
+        out=$CLONE_DIR/runs/$EVAL_NAME/$ts/$run
+        echo "queue $run on $ts [$CONDS] -> $out   ($(grep -c . "$labels") trials)"
         n=$((n + 1))
         [ "$DRY" = 1 ] && continue
         ADAPTER=$model CONDA_ENV=$env CKPT=$ckpt WINDOW=$win \
@@ -110,4 +124,4 @@ for run in $RUNS; do
 done
 echo
 [ "$DRY" = 1 ] && echo "DRY=1: $n scoring arrays would be queued, nothing submitted" \
-               || echo "$n scoring arrays queued (20 shards each). When squeue is empty: bash eval/finish_official_eval.sh"
+               || echo "$n scoring arrays queued (20 shards each). When squeue is empty: ${SUBSET:+SUBSET=$SUBSET }bash eval/finish_official_eval.sh"
