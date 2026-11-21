@@ -1,0 +1,127 @@
+
+================================================================
+runs/official_eval_p40/asv19/ecapa_wb_s1_p40//ecapa_RAW.csv   [cond RAW]
+================================================================
+  trials            28500  (2942 bonafide / 25558 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.83 s, mean 3.12 s, 78.5% under the 4.04 s window
+  EER               12.309%   95% CI [11.898, 12.782]
+  EER threshold     +0.9252
+  minDCF            0.2544   (C_miss 1, C_fa 10, pi_spoof 0.05; threshold -0.6073)
+  AUC               0.94126
+  d-prime           2.417
+  score mean/sd     bonafide +3.703/2.595   spoof -4.057/3.726
+  at EER threshold  acc 87.69%  F1 0.5952  P 0.450  R 0.877
+  at thr +0.0000    acc 85.07%  F1 0.5641  FAR 15.91%  FRR 6.42%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=1966     1.282%
+    A08   n=1966     3.157%
+    A09   n=1966     1.282%
+    A10   n=1966     1.995%
+    A11   n=1966     1.282%
+    A12   n=1966     1.731%
+    A13   n=1966     0.552%
+    A14   n=1966     4.218%
+    A15   n=1966     4.626%
+    A16   n=1966     3.709%
+    A17   n=1966    43.787%
+    A18   n=1966    24.673%
+    A19   n=1966    18.808%
+
+================================================================
+runs/official_eval_p40/asv19/ecapa_wb_s1_p40//ecapa_P0.csv   [cond P0]
+================================================================
+  trials            28500  (2942 bonafide / 25558 spoof)
+  source rate(s)    16000 Hz
+  duration          median 2.83 s, mean 3.12 s, 78.5% under the 4.04 s window
+  EER               12.537%   95% CI [12.101, 12.951]
+  EER threshold     +0.7373
+  minDCF            0.2621   (C_miss 1, C_fa 10, pi_spoof 0.05; threshold -0.7347)
+  AUC               0.93902
+  d-prime           2.355
+  score mean/sd     bonafide +3.382/2.503   spoof -3.768/3.489
+  at EER threshold  acc 87.47%  F1 0.5903  P 0.445  R 0.875
+  at thr +0.0000    acc 85.26%  F1 0.5645  FAR 15.58%  FRR 7.44%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=1966     1.366%
+    A08   n=1966     5.500%
+    A09   n=1966     2.343%
+    A10   n=1966     2.079%
+    A11   n=1966     1.630%
+    A12   n=1966     2.444%
+    A13   n=1966     0.654%
+    A14   n=1966     4.626%
+    A15   n=1966     5.033%
+    A16   n=1966     4.626%
+    A17   n=1966    45.171%
+    A18   n=1966    25.692%
+    A19   n=1966    17.340%
+
+================================================================
+runs/official_eval_p40/asv19/ecapa_wb_s1_p40//ecapa_B1.csv   [cond B1]
+================================================================
+  trials            28500  (2942 bonafide / 25558 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.83 s, mean 3.12 s, 78.5% under the 4.04 s window
+  EER               16.621%   95% CI [16.043, 17.071]
+  EER threshold     +0.8295
+  minDCF            0.3759   (C_miss 1, C_fa 10, pi_spoof 0.05; threshold -0.1111)
+  AUC               0.90755
+  d-prime           1.887
+  score mean/sd     bonafide +2.681/2.171   spoof -2.602/3.312
+  at EER threshold  acc 83.38%  F1 0.5088  P 0.366  R 0.834
+  at thr +0.0000    acc 78.68%  F1 0.4706  FAR 22.83%  FRR 8.19%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=1966     1.791%
+    A08   n=1966    18.214%
+    A09   n=1966    13.894%
+    A10   n=1966     2.181%
+    A11   n=1966     2.750%
+    A12   n=1966    10.533%
+    A13   n=1966     1.078%
+    A14   n=1966     6.213%
+    A15   n=1966    10.024%
+    A16   n=1966    10.227%
+    A17   n=1966    51.833%
+    A18   n=1966    25.895%
+    A19   n=1966    23.205%
+
+================================================================
+runs/official_eval_p40/asv19/ecapa_wb_s1_p40//ecapa_C1.csv   [cond C1]
+================================================================
+  trials            28500  (2942 bonafide / 25558 spoof)
+  source rate(s)    8000 Hz
+  duration          median 2.83 s, mean 3.12 s, 78.5% under the 4.04 s window
+  EER               16.587%   95% CI [16.071, 17.139]
+  EER threshold     +0.3336
+  minDCF            0.3700   (C_miss 1, C_fa 10, pi_spoof 0.05; threshold -0.8770)
+  AUC               0.90693
+  d-prime           1.912
+  score mean/sd     bonafide +2.306/2.249   spoof -3.122/3.324
+  at EER threshold  acc 83.41%  F1 0.5094  P 0.367  R 0.834
+  at thr +0.0000    acc 81.75%  F1 0.4959  FAR 18.86%  FRR 13.02%
+  per-attack EER (attack vs. all bonafide):
+    A07   n=1966     1.876%
+    A08   n=1966    19.335%
+    A09   n=1966    13.631%
+    A10   n=1966     2.181%
+    A11   n=1966     2.402%
+    A12   n=1966     9.659%
+    A13   n=1966     1.163%
+    A14   n=1966     5.907%
+    A15   n=1966     9.964%
+    A16   n=1966     9.616%
+    A17   n=1966    52.139%
+    A18   n=1966    25.794%
+    A19   n=1966    25.777%
+
+================================================================
+summary
+================================================================
+  condition          n     EER %               95% CI   minDCF      AUC   d-prime
+  RAW            28500    12.309       [11.90, 12.78]   0.2544   0.9413     2.417
+  P0             28500    12.537       [12.10, 12.95]   0.2621   0.9390     2.355
+  B1             28500    16.621       [16.04, 17.07]   0.3759   0.9076     1.887
+  C1             28500    16.587       [16.07, 17.14]   0.3700   0.9069     1.912
+
+wrote results/official_eval_p40/asv19/ecapa_wb_s1_p40.json

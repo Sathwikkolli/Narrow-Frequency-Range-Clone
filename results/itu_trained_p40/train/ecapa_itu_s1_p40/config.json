@@ -1,0 +1,58 @@
+{
+  "recipe": {
+    "model": "ecapa",
+    "data": "itu",
+    "seed": 1234,
+    "lr": 0.001,
+    "batch_size": 64,
+    "accum": 1,
+    "weight_decay": 0.0001,
+    "optimizer": "Adam",
+    "scheduler": null,
+    "loss": "weighted CE",
+    "class_weight": [
+      0.1,
+      0.9
+    ],
+    "augmentation": null,
+    "window": 64600,
+    "arch": {
+      "variant": "ecapa",
+      "channels": 512,
+      "n_mels": 80,
+      "f_min": 20,
+      "f_max": 8000
+    },
+    "max_epochs": 50,
+    "patience": 7,
+    "selection": "min dev EER, single best epoch",
+    "limit_train": 0,
+    "limit_dev": 0,
+    "condition": "C1",
+    "source_rate": 8000,
+    "resampler": "soxr:HQ",
+    "target_rate": 16000
+  },
+  "source": "eval/adapters/_ecapa.py (Mel 20-8000 Hz)",
+  "trainable_params": 6194818,
+  "n_train": 10152,
+  "n_dev": 9935,
+  "data_root": "/nfs/turbo/umd-hafiz/issf_server_data/AsvSpoofData_2019_NB",
+  "data_root_nb": null,
+  "protocols": "/home/ksathwik/asvspoof_protocols_p40",
+  "protocol_sha256": {
+    "train": "8d7910fe386648d9d9a508e50db443cf88ce6b36d681cd597e37f1b570bd5153",
+    "dev": "ac1aa4b4f0546aaa0af3b329815bbd5d942504f8370aa85bcd79752fd3864590"
+  },
+  "repo": "/home/ksathwik/Narrow-Frequency-Range-Clone",
+  "repo_commit": "b87ad178b56da3abcf373202a7140df08b9ed68d",
+  "clone_commit": "b87ad178b56da3abcf373202a7140df08b9ed68d",
+  "python": "3.7.16",
+  "torch": "1.8.1+cu111",
+  "cuda": "11.1",
+  "cudnn": 8005,
+  "tf32_matmul": true,
+  "gpu": "NVIDIA A40",
+  "host": "gl1526.arc-ts.umich.edu",
+  "started": "2026-11-20 17:41:30"
+}

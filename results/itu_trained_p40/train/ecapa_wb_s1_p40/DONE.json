@@ -1,0 +1,9 @@
+{
+  "run": "ecapa_wb_s1_p40",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 21,
+  "best_epoch": 14,
+  "best_dev_eer": 0.037263945554870184,
+  "best_sha256": "fe264b47e4be0760dfb24cf07178c27abee6bd05901bd0ed418df0480c053018",
+  "finished": "2026-11-20 20:11:56"
+}

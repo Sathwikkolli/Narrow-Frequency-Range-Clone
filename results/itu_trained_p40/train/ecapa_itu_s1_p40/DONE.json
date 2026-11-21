@@ -1,0 +1,9 @@
+{
+  "run": "ecapa_itu_s1_p40",
+  "stop_reason": "no dev EER improvement for 7 epochs",
+  "epochs": 26,
+  "best_epoch": 19,
+  "best_dev_eer": 0.05296583399043124,
+  "best_sha256": "29af8c84f6e20fd1ba7a0ff516440e69e55c3a5885914c294d7723eb8b7d9141",
+  "finished": "2026-11-20 20:49:17"
+}

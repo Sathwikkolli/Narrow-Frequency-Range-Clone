@@ -1,0 +1,18 @@
+
+results/official_eval_p40   (asv19 28500 trials, itw 12710 trials)
+(wb = trained on wideband 2019 LA, itu = trained on C1 telephone audio)
+
+EER %
+run                             asv19 RAW   asv19 P0   asv19 B1   asv19 C1    itw RAW     itw P0     itw B1     itw C1
+ecapa_itu_s1_p40                    13.97      13.83      13.32      11.02      54.63      54.22      55.37      50.75
+ecapa_wb_s1_p40                     12.31      12.54      16.62      16.59      43.22      42.63      63.05      63.64
+
+minDCF (C_miss 1, C_fa 10, pi_spoof 0.05; 1.0 = no better than chance)
+run                             asv19 RAW   asv19 P0   asv19 B1   asv19 C1    itw RAW     itw P0     itw B1     itw C1
+ecapa_itu_s1_p40                   0.3280     0.3311     0.3310     0.2689     1.0000     1.0000     0.9998     1.0000
+ecapa_wb_s1_p40                    0.2544     0.2621     0.3759     0.3700     1.0000     0.9999     1.0000     1.0000
+
+AUC
+run                             asv19 RAW   asv19 P0   asv19 B1   asv19 C1    itw RAW     itw P0     itw B1     itw C1
+ecapa_itu_s1_p40                   0.9277     0.9280     0.9368     0.9547     0.4445     0.4483     0.4228     0.4822
+ecapa_wb_s1_p40                    0.9413     0.9390     0.9076     0.9069     0.5959     0.6071     0.3062     0.3099
