@@ -64,6 +64,23 @@ def eer(bona, spoof):
     return float((frr[i] + far[i]) / 2.0), float(thr[i])
 
 
+# ASVspoof 5 countermeasure DCF: C_miss = 1 (a bonafide trial rejected),
+# C_fa = 10 (a spoof accepted), prior of a spoof = 0.05. Normalised by the cost of
+# the best trivial system, min(C_miss * (1 - pi), C_fa * pi) = 0.5, so 1.0 means
+# no better than always answering the same thing.
+DCF_C_MISS, DCF_C_FA, DCF_PI_SPOOF = 1.0, 10.0, 0.05
+
+
+def min_dcf(bona, spoof):
+    if len(bona) == 0 or len(spoof) == 0:
+        return float("nan"), float("nan")
+    frr, far, thr = det_curve(bona, spoof)
+    dcf = DCF_C_MISS * (1 - DCF_PI_SPOOF) * frr + DCF_C_FA * DCF_PI_SPOOF * far
+    dcf /= min(DCF_C_MISS * (1 - DCF_PI_SPOOF), DCF_C_FA * DCF_PI_SPOOF)
+    i = int(np.argmin(dcf))
+    return float(dcf[i]), float(thr[i])
+
+
 def auc(bona, spoof):
     """ROC AUC via rank sums (Mann-Whitney U), ties averaged."""
     if len(bona) == 0 or len(spoof) == 0:
@@ -160,12 +177,15 @@ def report(name, rows, args):
     print(f"  EER               {e * 100:.3f}%"
           + (f"   95% CI [{lo * 100:.3f}, {hi * 100:.3f}]" if args.bootstrap else ""))
     print(f"  EER threshold     {thr:+.4f}")
+    mdcf, mdcf_thr = min_dcf(b, s)
+    print(f"  minDCF            {mdcf:.4f}   (C_miss {DCF_C_MISS:g}, C_fa {DCF_C_FA:g}, "
+          f"pi_spoof {DCF_PI_SPOOF:g}; threshold {mdcf_thr:+.4f})")
     print(f"  AUC               {auc(b, s):.5f}")
     print(f"  d-prime           {dprime(b, s):.3f}")
     print(f"  score mean/sd     bonafide {b.mean():+.3f}/{b.std():.3f}   "
           f"spoof {s.mean():+.3f}/{s.std():.3f}")
 
-    m = at_threshold(b, s, thr)
+    m = m_eer = at_threshold(b, s, thr)
     print(f"  at EER threshold  acc {m['acc'] * 100:.2f}%  F1 {m['f1']:.4f}  "
           f"P {m['precision']:.3f}  R {m['recall']:.3f}")
     for t in ([0.0] + ([args.threshold] if args.threshold is not None else [])):
@@ -173,6 +193,7 @@ def report(name, rows, args):
         print(f"  at thr {t:+.4f}    acc {m['acc'] * 100:.2f}%  F1 {m['f1']:.4f}  "
               f"FAR {m['far'] * 100:.2f}%  FRR {m['frr'] * 100:.2f}%")
 
+    per_attack = {}
     if args.per_attack:
         atks = sorted({r["attack_id"] for r in rows
                        if r["label"] == "spoof" and r.get("attack_id") not in ("-", "", None)})
@@ -181,7 +202,8 @@ def report(name, rows, args):
             for a in atks:
                 sa = np.array([r["_score"] for r in rows
                                if r["label"] == "spoof" and r["attack_id"] == a])
-                print(f"    {a:<5} n={len(sa):<6} {eer(b, sa)[0] * 100:7.3f}%")
+                per_attack[a] = eer(b, sa)[0]
+                print(f"    {a:<5} n={len(sa):<6} {per_attack[a] * 100:7.3f}%")
 
     if args.plot_dir:
         write_det(name, b, s, args.plot_dir)
@@ -189,6 +211,10 @@ def report(name, rows, args):
     return dict(name=name, cond=",".join(conds), n=len(rows), n_bonafide=len(b),
                 n_spoof=len(s), eer=e, eer_ci=[lo, hi], eer_threshold=thr,
                 auc=auc(b, s), dprime=dprime(b, s),
+                min_dcf=mdcf, min_dcf_threshold=mdcf_thr,
+                min_dcf_params=dict(c_miss=DCF_C_MISS, c_fa=DCF_C_FA, pi_spoof=DCF_PI_SPOOF),
+                acc_at_eer=m_eer["acc"], f1_at_eer=m_eer["f1"],
+                per_attack_eer=per_attack,
                 bonafide_mean=float(b.mean()), bonafide_sd=float(b.std()),
                 spoof_mean=float(s.mean()), spoof_sd=float(s.std()),
                 pct_under_window=short)
@@ -242,12 +268,13 @@ def main():
     if len(summaries) > 1:
         print(f"\n{'=' * 64}\nsummary\n{'=' * 64}")
         print(f"  {'condition':<12} {'n':>7} {'EER %':>9} {'95% CI':>20} "
-              f"{'AUC':>8} {'d-prime':>9}")
+              f"{'minDCF':>8} {'AUC':>8} {'d-prime':>9}")
         for s in summaries:
             ci = (f"[{s['eer_ci'][0] * 100:.2f}, {s['eer_ci'][1] * 100:.2f}]"
                   if not math.isnan(s["eer_ci"][0]) else "-")
             print(f"  {s['cond'] or s['name'][:12]:<12} {s['n']:>7} "
-                  f"{s['eer'] * 100:>9.3f} {ci:>20} {s['auc']:>8.4f} {s['dprime']:>9.3f}")
+                  f"{s['eer'] * 100:>9.3f} {ci:>20} {s['min_dcf']:>8.4f} {s['auc']:>8.4f} "
+                  f"{s['dprime']:>9.3f}")
 
     if args.json_out:
         os.makedirs(os.path.dirname(os.path.abspath(args.json_out)) or ".", exist_ok=True)

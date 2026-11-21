@@ -71,16 +71,23 @@ res = {}
 for f in glob.glob(os.path.join(sys.argv[2], "*", "*.json")):
     ts, run = f.split(os.sep)[-2], os.path.basename(f)[:-5]
     for r in json.load(open(f)):
-        res[(run, ts, r["cond"])] = r["eer"] * 100
+        res[(run, ts, r["cond"])] = r
 if not res:
     sys.exit("no results yet")
 runs = sorted({k[0] for k in res}, key=lambda r: (r.split("_")[0], r))
 tss = [t for t in ("asv19", "itw") if any(k[1] == t for k in res)]
 head = "".join(f"{t + ' ' + c:>11s}" for t in tss for c in conds)
-print("EER %   (wb = trained on wideband 2019 LA, itu = trained on C1 telephone audio)")
-print(f"{'run':30s}{head}")
-for r in runs:
-    cells = "".join(f"{res[(r, t, c)]:11.2f}" if (r, t, c) in res else f"{'-':>11s}"
-                    for t in tss for c in conds)
-    print(f"{r:30s}{cells}")
+tables = [("EER %", "eer", 100, "{:11.2f}"),
+          ("minDCF (C_miss 1, C_fa 10, pi_spoof 0.05; 1.0 = no better than chance)", "min_dcf", 1, "{:11.4f}"),
+          ("AUC", "auc", 1, "{:11.4f}")]
+print("(wb = trained on wideband 2019 LA, itu = trained on C1 telephone audio)")
+for title, key, scale, fmt in tables:
+    print()
+    print(title)
+    print(f"{'run':30s}{head}")
+    for r in runs:
+        cells = "".join(fmt.format(res[(r, t, c)][key] * scale)
+                        if (r, t, c) in res and key in res[(r, t, c)] else f"{'-':>11s}"
+                        for t in tss for c in conds)
+        print(f"{r:30s}{cells}")
 EOF
